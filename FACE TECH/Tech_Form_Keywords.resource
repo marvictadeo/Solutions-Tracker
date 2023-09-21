@@ -172,7 +172,7 @@ Verify Master Data And Ticket Submission : FACE TECH
         ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
         #    ------- Submit The Ticket -------
         Run Keyword And Continue On Failure    Submit The Ticket    ${expected_title}
-        #    ------- Submit The Viewer -------
+        #    ------- Verify Ticket Viewer -------
         Run Keyword And Continue On Failure    Verify Ticket Title In The "Ticket Viewer"    ${expected_title}
         #    ------- VerifY Ticket Summary -------
         Run Keyword And Continue On Failure
@@ -203,10 +203,13 @@ Verify Master Data And Ticket Submission With CRM Checking : FACE TECH
         ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
         #    ------- Submit The Ticket -------
         Run Keyword And Continue On Failure    Submit The Ticket    ${expected_title}
-
-        #    ------ Solution Tracker Portal Verifications ------
+        #    ------- Verify Ticket Viewer -------
+        Run Keyword And Continue On Failure    Verify Ticket Title In The "Ticket Viewer"    ${expected_title}
+        #    ------- VerifY Ticket Summary -------
         Run Keyword And Continue On Failure
         ...    Verify Ticket Summary    ${expected_title}    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+
+        #    ------ Solution Tracker Portal Verifications ------
         Run Keyword And Continue On Failure    Get ST Ticket Number In Ticket Summary
         Verify The Ticket In Solution Tracker Portal    ${URL_ALL_CASES_FACE}    ${STR_CASE_NUM}
         Verify The Automated Ticket Title     ${STR_CASE_NUM}   ${sr_item}    ${st_item}    ${sc_item}
@@ -260,8 +263,7 @@ Verify Ticket Summary
             ${SR_RESULT}    Set Variable    //span[contains(text(),'Service Requirement:')]//following-sibling::strong[contains(text(),"${sr_item.strip()}")]
             Run Keyword And Continue On Failure    Page Should Contain Element    ${SR_RESULT}
         END
-        Verify Ticket Title In The "Ticket Details"
-        ...    ${expected_title}
+        Verify Ticket Title In The "Ticket Details"    ${expected_title}
 
 Navigate To Site
     [Documentation]    The user opens a browser and navigates to the site.

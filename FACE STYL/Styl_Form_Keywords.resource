@@ -232,7 +232,7 @@ Verify Master Data And Ticket Submission With CRM Checking : FACE STYL
         #    ------- Verify Ticket Viewer -------
         Run Keyword And Continue On Failure
         ...    Verify Ticket Title In The "Ticket Viewer"    ${EXPECTED_TITLE}
-        #    ------ Verify Ticket Viewer ------
+        #    ------ Verify Ticket Summary ------
         Run Keyword And Continue On Failure
         ...    Verify Ticket Summary
         ...    ${expected_title}    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${typof_output_item}
