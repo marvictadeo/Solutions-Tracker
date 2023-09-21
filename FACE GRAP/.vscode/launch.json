@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "robotframework-lsp",
+            "name": "Robot Framework: Launch template",
+            "request": "launch",
+            "args": [
+                "-T",
+                "-v",
+                "BROWSER:Chrome",
+                "-d",
+                "${workspaceFolder}\\Results",
+                "-r",
+                "None",
+                "-e",
+                "Deferred"
+            ]
+        },
+    ]
+}
