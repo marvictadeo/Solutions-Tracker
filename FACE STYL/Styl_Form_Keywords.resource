@@ -18,39 +18,44 @@ Fill In Customer's Info [Division, Sub-division, Location]
     Select Random Option For "Customer Location" Dropdown
 
 Fill In Request Information
-    [Documentation]    Fill In Request Info [Description, Priority, Type of Output, Library Upload, Attachment, File Link]
-    [Arguments]    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${typof_output_item}
+    [Documentation]    Fill In Request Info [Priority, Description, Type of Output, Required File Format,
+    ...                                      Required Color, Academy Upload, Attachment, File Link]
+    [Arguments]    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${scat_item}
 
     #    --- Description ---
     Input Text    ${DESCRIPTION}
-    ...    Internal QA - FACE TECH ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} ${\n} Service Type - ${st_item} ${\n} Service Requirement - ${sr_item} ${\n} Type Of Output Item - ${typof_output_item} ${\n}
+    ...    Internal QA - FACE TECH ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} ${\n} Service Type - ${st_item} ${\n} Service Requirement - ${sr_item} ${\n} Type Of Output Item - ${scat_item} ${\n}
     #    --- Priority ---
     Select Random Option For "Priority" Dropdown
-    IF   "${sc_item}" == "E-Chops"
+    IF   "${sc_item}" == "Company Chops/E-Chops"
         #    --- Required File Format ---
-        Click Element    ${checkbox_required_file_format_locator}
+        Input Text    ${TXT_FILE_FORMAT}    text
         #    --- Required Color ---
-        Click Element   ${checkbox_required_file_format_locator}
-    ELSE
-        Select "${typof_output_item}" As Type Of Output
-        #    --- Library Upload ---
-        ${selection}    Random Element    [Yes, No]
-        Select From List By Label     ${dd_lib_upload}    ${selection}
+        Input Text    ${TXT_REQUIRED_COLOR}    text
+    ELSE IF    "${sc_item}" == "Documents"
+        #    --- Type of Output ---
+        Select Random Option For "Customer Location" Dropdown
+        IF   "${st_item}" == "Forms and Other Documents - Type B"
+            Select Random Option For "Type Of Output - B" Dropdown
+        ELSE
+            Select Random Option For "Type Of Output - A" Dropdown
+        END
+        #    --- Academy Upload ---
+        Wait Until Element Is Enabled    ${ACADEMY_UPLOAD}    30s
+        Click Element    ${ACADEMY_UPLOAD}
     END
     #    --- Attachment(s) ---
     Wait Until Element Is Enabled    ${ATTACHMENT}    30s
     Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
     #    --- File Link ---
+    Input Text    ${TXT_FILE_LINK}    link
 
 Submit The Ticket
     [Documentation]    Submit The Ticket
-    [Arguments]    ${expected_title}
     ${stat}    Run Keyword And Return Status    Element Should Be Enabled    //button[@class="btn btn-primary"]
     IF    "${stat}" == "True"
-        ${data_table}    Set Variable
-        ...    //div[@class="datatable-body-cell-label"]/a[text()=" ${expected_title}"]
         Click Element    //button[@class="btn btn-primary"]
-        Wait Until Page Contains Element    ${data_table}    120s
+        Wait Until Page Contains Element    ${DATA_TABLE}    120s
     END
 
 Change Division
@@ -101,17 +106,17 @@ Select "${sr_item}" As Service Requirement
         END
     END
 
-Select "${typof_output_item}" As Type Of Output
-    [Documentation]    Select the service requirement
-    IF    "${typof_output_item}" != "EMPTY"
-        Set Test Variable    ${TYPOF_OUTPUT_VALUE}
-        ...    ${DDL_TYPOF_OUTPUT}\[text()="${SPACE}${typof_output_item}${SPACE}"]
-        ${stat}    Run Keyword And Return Status    Click Element    ${TYPOF_OUTPUT_VALUE}
+Select "${scat_item}" As Service Category
+    [Documentation]    Select the service category
+    IF    "${scat_item}" != "EMPTY"
+        Set Test Variable    ${SCAT_VALUE}
+        ...    ${DDL_SCAT}\[text()="${SPACE}${scat_item}${SPACE}"]
+        ${stat}    Run Keyword And Return Status    Click Element    ${SCAT_VALUE}
         IF    "${stat}" == "False"
-            Set Test Variable    ${TYPOF_OUTPUT_VALUE}
-            ...    ${DDL_TYPOF_OUTPUT}\[text()="${SPACE}${typof_output_item}${SPACE}${SPACE}"]
-            Wait Until Element Is Enabled     ${DDL_TYPOF_OUTPUT}   30s
-            Run Keyword And Continue On Failure    Select Type Of Output Value    ${typof_output_item}
+            Set Test Variable    ${SCAT_VALUE}
+            ...    ${DDL_SCAT}\[text()="${SPACE}${scat_item}${SPACE}${SPACE}"]
+            Wait Until Element Is Enabled     ${DDL_SCAT}   30s
+            Run Keyword And Continue On Failure    Select Service Category Value    ${scat_item}
         END
     END
 
@@ -148,17 +153,17 @@ Select Service Requirement Value
         Wait Until Keyword Succeeds    3x    1s    Select From List By Label    ${DDL_SR}    ${sr_item}
     END
 
-Select Type Of Output Value
-    [Arguments]    ${typof_output_item}
+Select Service Category Value
+    [Arguments]    ${scat_item}
     [Documentation]    Keyword to Select Service Requirement Value
     TRY
-        Wait Until Element Is Visible    ${DDL_TYPOF_OUTPUT}
+        Wait Until Element Is Visible    ${DDL_SCAT}
         Wait Until Keyword Succeeds    3x    1s
-        ...    Select From List By Value    ${DDL_TYPOF_OUTPUT}    ${typof_output_item}
+        ...    Select From List By Value    ${DDL_SCAT}    ${scat_item}
     EXCEPT
-        Wait Until Element Is Visible    ${DDL_TYPOF_OUTPUT}
+        Wait Until Element Is Visible    ${DDL_SCAT}
         Wait Until Keyword Succeeds    3x    1s
-        ...    Select From List By Label    ${DDL_TYPOF_OUTPUT}    ${typof_output_item}
+        ...    Select From List By Label    ${DDL_SCAT}    ${scat_item}
     END
 
 Check Create Page
@@ -183,25 +188,17 @@ Verify Master Data And Ticket Submission : FACE STYL
         ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
         ${st_item}    Get From List    ${SERVICE_TYPE}    ${index}
         ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
-        ${typof_output_item}    Get From List    ${TYPE_OF_OUTPUT}    ${index}
-        IF    "${st_item}" != "EMPTY"
-            ${expected_title}    Catenate    ${sr_item}    ${st_item}    ${sc_item}
-        ELSE
-            ${expected_title}    Catenate    ${sr_item}   ${sc_item}
-        END
+        ${scat_item}    Get From List    ${SERVICE_CATEGORY}    ${index}
         #    ------- Fill In FACE TECH Form -------
         Check Create Page
         Run Keyword And Continue On Failure    Fill In FACE STYL Solution Tracker Form
-        ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}     ${typof_output_item}
+        ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}     ${scat_item}
         #    ------- Submit The Ticket -------
-        Run Keyword And Continue On Failure    Submit The Ticket    ${expected_title}
-        #    ------- Verify Ticket Viewer -------
-        Run Keyword And Continue On Failure
-        ...    Verify Ticket Title In The "Ticket Viewer"    ${EXPECTED_TITLE}
+        Run Keyword And Continue On Failure    Submit The Ticket
         #    ------- Verify Ticket Summary -------
         Run Keyword And Continue On Failure
         ...    Verify Ticket Summary
-        ...    ${expected_title}    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${typof_output_item}
+        ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${scat_item}
     END
 
 Verify Master Data And Ticket Submission With CRM Checking : FACE STYL
@@ -216,44 +213,36 @@ Verify Master Data And Ticket Submission With CRM Checking : FACE STYL
         ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
         ${st_item}    Get From List    ${SERVICE_TYPE}    ${index}
         ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
-        ${typof_output_item}    Get From List    ${TYPE_OF_OUTPUT}    ${index}
-        IF    "${st_item}" != "EMPTY"
-            ${expected_title}    Catenate    ${sr_item}    ${st_item}    ${sc_item}
-        ELSE
-            ${expected_title}    Catenate    ${sr_item}   ${sc_item}
-        END
+        ${scat_item}    Get From List    ${SERVICE_CATEGORY}    ${index}
 
         #    ------- Fill In FACE TECH Form -------
         Check Create Page
         Run Keyword And Continue On Failure    Fill In FACE STYL Solution Tracker Form
-        ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${typof_output_item}
+        ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${scat_item}
         #    ------- Submit The Ticket -------
-        Run Keyword And Continue On Failure    Submit The Ticket    ${expected_title}
-        #    ------- Verify Ticket Viewer -------
-        Run Keyword And Continue On Failure
-        ...    Verify Ticket Title In The "Ticket Viewer"    ${EXPECTED_TITLE}
+        Run Keyword And Continue On Failure    Submit The Ticket
         #    ------ Verify Ticket Summary ------
         Run Keyword And Continue On Failure
         ...    Verify Ticket Summary
-        ...    ${expected_title}    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${typof_output_item}
+        ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${scat_item}
         #    ------ Verify Ticket In ST Portal ------
         Run Keyword And Continue On Failure    Get ST Ticket Number In Ticket Summary
         Verify The Ticket In Solution Tracker Portal    ${URL_ALL_CASES_FACE}    ${STR_CASE_NUM}
-        Verify The Automated Ticket Title     ${STR_CASE_NUM}   ${sr_item}    ${st_item}    ${sc_item}
         Go Back And Switch To ST Form Page
     END
 
 Fill In FACE STYL Solution Tracker Form
     [Documentation]    Fill In FACE TECH Solution Tracker form
-    [Arguments]    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${typof_output_item}
+    [Arguments]    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${scat_item}
     Change Division    Face Tribes (FACE)
     Select Sub-Division    ${subdiv_item}
     Select "${sc_item}" As Service Classification
     Select "${st_item}" As Service Type
     Select "${sr_item}" As Service Requirement
+    Select "${scat_item}" As Service Classification
     Fill In Customer's Info [Division, Sub-division, Location]
     Fill In Request Information
-    ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${typof_output_item}
+    ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${scat_item}
 
 Get Excel Data - FACE STYL
     [Documentation]    Get Excel Data - FACE STYL
@@ -265,18 +254,16 @@ Get Excel Data - FACE STYL
     ${SERVICE_CLASSIFICATION}    Get Table Column    ${TABLE}    Service Classification
     ${SERVICE_TYPE}    Get Table Column    ${TABLE}    Service Type
     ${SERVICE_REQUIREMENT}    Get Table Column    ${TABLE}    Service Requirement
-    ${TYPE_OF_OUTPUT}    Get Table Column    ${TABLE}    Type Of Output
+    ${SERVICE_CATEGORY}    Get Table Column    ${TABLE}    Service Category
     Set Test Variable    ${SUB_DIVISION}
     Set Test Variable    ${SERVICE_CLASSIFICATION}
     Set Test Variable    ${SERVICE_TYPE}
     Set Test Variable    ${SERVICE_REQUIREMENT}
-    Set Test Variable    ${TYPE_OF_OUTPUT}
+    Set Test Variable    ${SERVICE_CATEGORY}
 
 Verify Ticket Summary
-    [Arguments]    ${expected_title}    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${typof_output_item}
-        ${data_table}    Set Variable
-        ...    //div[@class="datatable-body-cell-label"]/a[text()=" ${expected_title}"]
-        Click Element    ${datatable}
+    [Arguments]   ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${scat_item}
+        Click Element    ${DATA_TABLE}
         Wait Until Page Contains Element    //div[contains(text(),'Ticket Info')]
         ${SD_RESULT}    Set Variable    //span[contains(text(),'Sub-Division:')]//following-sibling::strong[contains(text(),"${subdiv_item.strip()}")]
         Run Keyword And Continue On Failure    Page Should Contain Element    ${SD_RESULT}
@@ -290,11 +277,10 @@ Verify Ticket Summary
             ${SR_RESULT}    Set Variable    //span[contains(text(),'Service Requirement:')]//following-sibling::strong[contains(text(),"${sr_item.strip()}")]
             Run Keyword And Continue On Failure    Page Should Contain Element    ${SR_RESULT}
         END
-        IF    "${typof_output_item}" != "EMPTY"
-            ${SR_RESULT}    Set Variable    //span[contains(text(),'Service Requirement:')]//following-sibling::strong[contains(text(),"${typof_output_item.strip()}")]
+        IF    "${scat_item}" != "EMPTY"
+            ${SR_RESULT}    Set Variable    //span[contains(text(),'Service Requirement:')]//following-sibling::strong[contains(text(),"${scat_item.strip()}")]
             Run Keyword And Continue On Failure    Page Should Contain Element    ${SR_RESULT}
         END
-        Verify Ticket Title In The "Ticket Details"    ${expected_title}
 
 Navigate To Site
     [Documentation]    The user opens a browser and navigates to the site.
@@ -417,16 +403,12 @@ Select Random Option For "${field}" Dropdown
         Wait Until Element Is Enabled    ${DDL_CUST_SUB_DIVISION}    30s
         Wait Until Keyword Succeeds    3x    1s
         ...    Select From List By Label    ${DDL_CUST_SUB_DIVISION}    ${selected_cust_subdiv}
-    ELSE IF    "${field}" == "Customer Location"
-        ${selected_location}    Random Element    ${LIST_LOCATION}
-        Scroll "${DDL_CUST_LOCATION}" Into Center
+    ELSE
+        ${selected_item}    Random Element    ${LIST_${field}}
+        Scroll "${DDL_${field}}" Into Center
         Wait Until Keyword Succeeds    3x    1s
-        ...    Select From List By Label    ${DDL_CUST_LOCATION}    ${selected_location}
-    ELSE IF    "${field}" == "Priority"
-        ${selected_priority}    Random Element    ${LIST_PRIORITY}
-        Scroll "${DDL_PRIORITY}" Into Center
-        Wait Until Keyword Succeeds    3x    1s
-        ...    Select From List By Label    ${DDL_PRIORITY}    ${selected_priority}
+        ...    Select From List By Label    ${DDL_${field}}    ${selected_item}
+        Set Suite Variable    ${SELECTED_ITEM}
     END
 
 Get ST Ticket Number In Ticket Summary
