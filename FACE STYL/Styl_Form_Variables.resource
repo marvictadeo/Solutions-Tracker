@@ -35,17 +35,19 @@ ${DDL_DIVISION}                        //select[@formcontrolname="division"]
 ${DDL_SUBDIVISION}                     //select[@formcontrolname="subDivision"]
 ${DDL_CUST_DIVISION}                   //select[@formcontrolname="senderDivision"]
 ${DDL_CUST_SUB_DIVISION}               //select[@formcontrolname="senderSubDivision"]
-${DDL_CUST_LOCATION}                   //select[@formcontrolname="senderLocation"]
+${DDL_CUSTOMER_LOCATION}               //select[@formcontrolname="senderLocation"]
 ${DDL_PRIORITY}                        //select[@formcontrolname="priority"]
 ${DDL_SC}                              //select[@formcontrolname="serviceClassification"]
 ${DDL_ST}                              //select[@formcontrolname="serviceType"]
 ${DDL_SR}                              //select[@formcontrolname="serviceRequirement"]
+${DDL_SCAT}                            //select[@formcontrolname="serviceCategory"]
 ${CREATE}                              //div[@class="card-button__wrapper"]//div[text()='Create']
 ${ATTACHMENT}                          //input[@class="file-upload__input"]
 ${JPG_IMAGE_SAMPLE}                    ${CURDIR}${/}Jpg_Img_Photo.jpg
 ${MASTER_DATA}                         ${CURDIR}${/}..\\Master_File.xlsx
 ${SUBJECT}                             //input[@formcontrolname="subject"]
 ${DESCRIPTION}                         //textarea[@formcontrolname="description"]
+${DATA_TABLE}                          //div[@class="datatable-body-cell-label"]/a[text()=" Internal QA Test STYL"]
 
 # Global Variables
 ${ICON_PRELOADER}                      //div[contains(@class,'_loader_loader__en2c7')]
@@ -56,7 +58,10 @@ ${ICON_PRELOADER_ATTR}                 class
 ${ICON_PRELOADER_VERIFY_ATTR}          active
 
 @{LIST_PRIORITY}                      Minor    Major    Critical
-@{LIST_LOCATION}                      ET-VG1 (Empower Tribe VG1 Ltd.)
+@{LIST_REQUIRED_COLOR}                Red    Blue    Black    Other
+@{LIST_TYPE OF OUTPUT - A}            Editable    PDF    Both Editable and PDF
+@{LIST_TYPE OF OUTPUT - B}            PDF Form    Microsoft Form
+@{LIST_CUSTOMER_LOCATION}             ET-VG1 (Empower Tribe VG1 Ltd.)
 ...                                   ET-VG2 (Empower Tribe VG2 Ltd)
 ...                                   ET-VG3 (Empower Tribe VG3 Ltd)
 ...                                   ET1 (Empower Trust)
@@ -118,3 +123,10 @@ ${ICON_PRELOADER_VERIFY_ATTR}          active
 @{LIST_TREA_SUB_DIV}                      TREA INVE    TREA OTC    TREA PTP    TREA RTR    TREA TAX
 @{LIST_VALU_SUB_DIV}                      Customer Feedback    VALU    VALU DM    VALU IDM
 @{LIST_VISI_SUB_DIV}                      VISI STRA
+
+#    ---------------------- Pending Locators -----------------------
+${TXT_REQUIRED_COLOR}
+${TXT_FILE_FORMAT}
+${ACADEMY_UPLOAD}
+${TXT_FILE_LINK}
+${checkbox_required_file_format_locator}
