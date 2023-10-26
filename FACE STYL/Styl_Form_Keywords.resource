@@ -18,10 +18,12 @@ Fill In Customer's Info [Division, Sub-division, Location]
     Select Random Option For "Customer Location" Dropdown
 
 Fill In Request Information
-    [Documentation]    Fill In Request Info [Priority, Description, Type of Output, Required File Format,
+    [Documentation]    Fill In Request Info [Priority, Subject, Description, Type of Output, Required File Format,
     ...                                      Required Color, Academy Upload, Attachment, File Link]
     [Arguments]    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${scat_item}
 
+    #    --- Subject ---
+    Input Text    ${SUBJECT}    Internal QA Test STYL
     #    --- Description ---
     Input Text    ${DESCRIPTION}
     ...    Internal QA - FACE TECH ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} ${\n} Service Type - ${st_item} ${\n} Service Requirement - ${sr_item} ${\n} Type Of Output Item - ${scat_item} ${\n}
