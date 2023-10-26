@@ -30,9 +30,10 @@ Fill In Requestor's Info [Requestor's Name, Division, Sub-division, Location]
     Select Random Option For "Customer Division And Sub-Division" Dropdown
     Select Random Option For "Customer Location" Dropdown
 
-Fill In Request Info [Description, Priority, Date Needed]
+Fill In Request Info [Subject, Description, Priority, Date Needed]
     [Documentation]    Fill In Request Info [Description, Priority, Date Needed]
     [Arguments]    ${subdiv_item}    ${sc_item}    ${sr_item}
+    Input Text    ${SUBJECT}    Internal QA Test TECH
     Input Text    ${DESCRIPTION}
     ...    Internal QA - FACE TECH ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} ${\n} ${\n} Service Requirement - ${sr_item} ${\n}
     Select Random Option For "Priority" Dropdown
@@ -197,7 +198,7 @@ Fill In FACE TECH Solution Tracker Form
     #    Select "${st_item}" As Service Type
     Select "${sr_item}" As Service Requirement
     Fill In Requestor's Info [Requestor's Name, Division, Sub-division, Location]
-    Fill In Request Info [Description, Priority, Date Needed]
+    Fill In Request Info [Subject, Description, Priority, Date Needed]
     ...    ${subdiv_item}    ${sc_item}    ${sr_item}
     Fill In Product Info And Other Fields
 
