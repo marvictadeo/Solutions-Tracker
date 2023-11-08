@@ -29,6 +29,8 @@ Fill In Requestor's Info [Requestor's Name, Division, Sub-division, Location]
 Fill In Request Info [Screen Content, Description, Priority]
     [Documentation]    Fill In Request Info [Screen Content, Description, Priority]
     [Arguments]    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+    #    --- Subject ---
+    Input Text    ${SUBJECT}    Internal QA Test UX
     Input Text    ${PAGE-CONTENT-LOCATOR}
     ...    Internal QA - FACE UX ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} ${\n} Service Type - ${st_item} ${\n} Service Requirement - ${sr_item} ${\n}
     Input Text    ${DESCRIPTION}

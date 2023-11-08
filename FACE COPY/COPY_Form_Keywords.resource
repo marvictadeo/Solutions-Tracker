@@ -8,34 +8,50 @@ Library              SeleniumLibrary
 Library              FakerLibrary
 Library              RPA.Excel.Files
 Library              RPA.Tables
-Resource             PERF_Form_Variables.resource
+Resource             COPY_Form_Variables.resource
 Resource             Solution_Tracker_Portal_Keywords.resource
 
 
 *** Keywords ***
 Fill In Product Info And Other Fields
-    [Documentation]    Fill In [BRAN and Attachment]
-    Select Random Option For "Brand" Dropdown
+    [Documentation]    Fill In [Attachment]
     #    -----    Upload Sample Attachment    ----
     Wait Until Element Is Enabled    ${ATTACHMENT}    30s
     Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
 
 Fill In Requestor's Info [Requestor's Name, Division, Sub-division, Location]
     [Documentation]    Random Selection in Requestor's Info
-    Input Text    ${REQUESTOR_NAME}    FACE PERF Form Testing [INTERNAL QA]
+    Input Text    ${REQUESTOR_NAME}    FACE COPY Form Testing [INTERNAL QA]
     Select Random Option For "Customer Division And Sub-Division" Dropdown
     Select Random Option For "Customer Location" Dropdown
 
-Fill In Request Info [Description, Priority, Project Owner]
-    [Documentation]    Fill In Request Info [Description, Priority, Project Owner]
+Fill In Request Info [Description, Priority, Brand, Category Leader Name, Model Code]
+    [Documentation]    Fill In Request Info [Description, Priority, Brand, Category Leader Name, Model Code]
     [Arguments]    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
     #    --- Subject ---
-    Input Text    ${SUBJECT}    Internal QA Test PERF
-    Input Text    ${DESCRIPTION}
-    ...    Internal QA - FACE PERF ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} ${\n} Service Type - ${st_item} ${\n} Service Requirement - ${sr_item} ${\n}
+    Input Text    ${SUBJECT}    Internal QA Test COPY
+    ${txt_description_availability}    Run Keyword And Return Status    Element Should Be Visible    ${DESCRIPTION}
+    IF    "${txt_description_availability}" == "True"    Input Text    ${DESCRIPTION}    
+    ...    Internal QA - FACE COPY ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} ${\n} Service Type - ${st_item} ${\n} Service Requirement - ${sr_item} ${\n}
     Select Random Option For "Priority" Dropdown
-    ${project_owner_available}    Run Keyword And Return Status    Element Should Be Visible    ${TXT_PROJECT_OWNER}
-    IF    "${project_owner_available}" == "True"   Input Text    ${TXT_PROJECT_OWNER}     Internal QA - FACE PERF
+    ${ddl_brand_availability}    Run Keyword And Return Status    Element Should Be Visible    ${DDL_BRAND}
+    IF    "${ddl_brand_availability}" == "True"    Select Random Option For "Brand" Dropdown
+    ${product_cat_lead_availability}    Run Keyword And Return Status    Element Should Be Visible    ${TXT_PRDCAT_LEAD}
+    IF    "${product_cat_lead_availability}" == "True"    Input Text    ${TXT_PRDCAT_LEAD}    Internal MT QA TEST:COPY
+    ${ddl_model_code_availability}    Run Keyword And Return Status    Element Should Be Visible    ${DDL_MODEL_CODE}
+    IF    "${ddl_model_code_availability}" == "True"    Select Random Option For "Model Code" Dropdown
+
+Fill In Request Info [Link V1, Link Product Page, Link Web Page, Date ]
+    [Documentation]    Fill In Request Info [Link to V1, Link to product page, Link to web or mockup page]
+    ${link_to_v1_product_page}    Run Keyword And Return Status    Element Should Be Visible    ${TXT_V1_PROD_PAGE}
+    IF    "${link_to_v1_product_page}" == "True"    Input Text    ${TXT_V1_PROD_PAGE}    http://10.224-Internal-QA-FACE-COPY-V1
+    ${link_to_product_page}    Run Keyword And Return Status    Element Should Be Visible    ${TXT_PRODUCT_PAGE}
+    IF    "${link_to_product_page}" == "True"    Input Text    ${TXT_V1_PRODUCT_PAGE}    http://10.224-Internal-QA-FACE-COPY-PRODUCT-PAGE
+    ${link_to_web_page}    Run Keyword And Return Status    Element Should Be Visible    ${TXT_WEB_PAGE}
+    IF    "${link_to_product_page}" == "True"    Input Text    ${TXT_WEB_PAGE}    http://10.224-Internal-QA-FACE-COPY-WEB-PAGE
+    ${date_availability}    Run Keyword And Return Status    Element Should Be Visible    ${DATE_NEEDED}
+    ${next_date}    Get Current Date    result_format=%Y-%#m-%#d    increment=+1 day
+    IF    "${date_availability}" == "True"    Click Element    ${DATE_NEEDED}
 
 Submit The Ticket
     [Documentation]    Submit The Ticket
@@ -216,7 +232,7 @@ Fill In FACE PERF Solution Tracker Form
     Select "${st_item}" As Service Type
     Select "${sr_item}" As Service Requirement
     Fill In Requestor's Info [Requestor's Name, Division, Sub-division, Location]
-    Fill In Request Info [Description, Priority, Project Owner]
+    Fill In Request Info [Description, Priority]
     ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
     Fill In Product Info And Other Fields
 
@@ -392,6 +408,11 @@ Select Random Option For "${field}" Dropdown
         Scroll "${DDL_BRAND}" Into Center
         Wait Until Keyword Succeeds    3x    1s
         ...    Select From List By Label    ${DDL_BRAND}    ${selected_brand}
+    ELSE IF    "${field}" == "Model Code"
+        ${selected_model_code}    Random Element    ${LIST_MODEL_CODE}
+        Scroll "${DDL_MODEL_CODE}" Into Center
+        Wait Until Keyword Succeeds    3x    1s
+        ...    Select From List By Label    ${DDL_MODEL_CODE}    ${selected_model_code}
     END
 
 Get ST Ticket Number In Ticket Summary
