@@ -26,17 +26,17 @@ Fill In Request Information
     Input Text    ${SUBJECT}    Internal QA Test STYL
     #    --- Description ---
     Input Text    ${DESCRIPTION}
-    ...    Internal QA - FACE TECH ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} ${\n} Service Type - ${st_item} ${\n} Service Requirement - ${sr_item} ${\n} Type Of Output Item - ${scat_item} ${\n}
+    ...    Internal QA - FACE TECH ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} ${\n} Service Type - ${st_item} ${\n} Service Requirement - ${sr_item}
     #    --- Priority ---
     Select Random Option For "Priority" Dropdown
     IF   "${sc_item}" == "Company Chops/E-Chops"
         #    --- Required File Format ---
-        Input Text    ${TXT_FILE_FORMAT}    text
+        Input Text    ${TXT_FILE_FORMAT}    PNG
         #    --- Required Color ---
-        Input Text    ${TXT_REQUIRED_COLOR}    text
+        Input Text    ${TXT_REQUIRED_COLOR}    RED
     ELSE IF    "${sc_item}" == "Documents"
         #    --- Type of Output ---
-        Select Random Option For "Customer Location" Dropdown
+
         IF   "${st_item}" == "Forms and Other Documents - Type B"
             Select Random Option For "Type Of Output - B" Dropdown
         ELSE
@@ -44,17 +44,20 @@ Fill In Request Information
         END
         #    --- Academy Upload ---
         Wait Until Element Is Enabled    ${ACADEMY_UPLOAD}    30s
-        Click Element    ${ACADEMY_UPLOAD}
+        ${RAD_BTN_ACADEMY_UPLOAD}    Get WebElements    ${ACADEMY_UPLOAD}
+        ${RANDOM_BTN}    Random Element        ${RAD_BTN_ACADEMY_UPLOAD}
+        Click Element    ${RANDOM_BTN}
     END
     #    --- Attachment(s) ---
     Wait Until Element Is Enabled    ${ATTACHMENT}    30s
     Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
     #    --- File Link ---
-    Input Text    ${TXT_FILE_LINK}    link
+    Input Text    ${TXT_FILE_LINK}    https://www.learningcontainer.com/wp-content/uploads/2020/08/Sample-Webp-File-for-Testing-1.webp
+    #    Pause Execution
 
 Submit The Ticket
     [Documentation]    Submit The Ticket
-    ${stat}    Run Keyword And Return Status    Element Should Be Enabled    //button[@class="btn btn-primary"]
+    ${stat}    Run Keyword And Return Status    Wait Until Element Is Enabled    //button[@class="btn btn-primary"]    30s
     IF    "${stat}" == "True"
         Click Element    //button[@class="btn btn-primary"]
         Wait Until Page Contains Element    ${DATA_TABLE}    120s
@@ -64,20 +67,20 @@ Change Division
     [Arguments]    ${division}
     [Documentation]    Keyword to Change the Division
     Scroll "${DDL_DIVISION}" Into Center
-    Wait Until Element Is Enabled    ${DDL_DIVISION}
-    Select From List By Label    ${DDL_DIVISION}    ${division}
+    Wait Until Element Is Enabled    ${DDL_DIVISION}    30s
+    Wait Until Keyword Succeeds    3x    1s    Select From List By Label    ${DDL_DIVISION}    ${division}
 
 Select Sub-Division
     [Arguments]    ${subdiv_item}
     [Documentation]    Keyword to Change Sub-division
     Set Test Variable    ${SUBDIV_VALUE}    ${DDL_SUBDIVISION}\[text()="${SPACE}${subdiv_item}${SPACE}"]
     Wait Until Element Is Enabled    ${DDL_SUBDIVISION}    30s
-    Select From List By Label    ${DDL_SUBDIVISION}    ${subdiv_item}
+    Wait Until Keyword Succeeds    3x    1s    Select From List By Label    ${DDL_SUBDIVISION}    ${subdiv_item}
 
 Select "${sc_item}" As Service Classification
     [Documentation]    Select the service classification
-    ${stat}    Run Keyword And Return Status    Click Element    ${SC_VALUE}
-    IF    "${stat}" == "False"
+    ${not_empty}    Run Keyword And Return Status    Should Not Be Equal As Strings    ${sc_item}    EMPTY
+    IF    ${not_empty}
         Set Test Variable    ${SC_VALUE}    ${DDL_SC}\[text()="${SPACE}${sc_item}${SPACE}${SPACE}"]
         Wait Until Element Is Enabled    ${DDL_SC}    30s
         Run Keyword And Continue On Failure    Select Service Classification Value    ${sc_item}
@@ -85,7 +88,8 @@ Select "${sc_item}" As Service Classification
 
 Select "${st_item}" As Service Type
     [Documentation]    Select the service type
-    IF    "${st_item}" != "EMPTY"
+    ${not_empty}    Run Keyword And Return Status    Should Not Be Equal As Strings    ${st_item}    EMPTY
+    IF    ${not_empty}
         Set Test Variable    ${ST_VALUE}    ${DDL_ST}\[text()="${SPACE}${st_item}${SPACE}"]
         ${stat}    Run Keyword And Return Status    Click Element    ${ST_VALUE}
         IF    "${stat}" == "False"
@@ -98,7 +102,8 @@ Select "${st_item}" As Service Type
 
 Select "${sr_item}" As Service Requirement
     [Documentation]    Select the service requirement
-    IF    "${sr_item}" != "EMPTY"
+    ${not_empty}    Run Keyword And Return Status    Should Not Be Equal As Strings    ${sr_item}    EMPTY
+    IF    ${not_empty}
         Set Test Variable    ${SR_VALUE}    ${DDL_SR}\[text()="${SPACE}${sr_item}${SPACE}"]
         ${stat}    Run Keyword And Return Status    Click Element    ${SR_VALUE}
         IF    "${stat}" == "False"
@@ -110,7 +115,8 @@ Select "${sr_item}" As Service Requirement
 
 Select "${scat_item}" As Service Category
     [Documentation]    Select the service category
-    IF    "${scat_item}" != "EMPTY"
+    ${not_empty}    Run Keyword And Return Status    Should Not Be Equal As Strings    ${scat_item}    EMPTY
+    IF    ${not_empty}
         Set Test Variable    ${SCAT_VALUE}
         ...    ${DDL_SCAT}\[text()="${SPACE}${scat_item}${SPACE}"]
         ${stat}    Run Keyword And Return Status    Click Element    ${SCAT_VALUE}
@@ -184,6 +190,7 @@ Verify Master Data And Ticket Submission : FACE STYL
     #    ----- Change Excel Sheet Name -----
     Get Excel Data - FACE STYL    STYL
     ${length}    Get Length    ${SUB_DIVISION}
+    Pause Execution
     FOR    ${count}    IN RANGE    ${length}
         ${index}    Evaluate    ${count} - 1
         ${subdiv_item}    Get From List    ${SUB_DIVISION}    ${index}
@@ -241,7 +248,7 @@ Fill In FACE STYL Solution Tracker Form
     Select "${sc_item}" As Service Classification
     Select "${st_item}" As Service Type
     Select "${sr_item}" As Service Requirement
-    Select "${scat_item}" As Service Classification
+    Select "${scat_item}" As Service Category
     Fill In Customer's Info [Division, Sub-division, Location]
     Fill In Request Information
     ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${scat_item}

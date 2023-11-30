@@ -33,9 +33,9 @@ ${LBL_SUBJECT}                         //input[@aria-label="Subject"]
 
 ${DDL_DIVISION}                        //select[@formcontrolname="division"]
 ${DDL_SUBDIVISION}                     //select[@formcontrolname="subDivision"]
-${DDL_CUST_DIVISION}                   //select[@formcontrolname="senderDivision"]
-${DDL_CUST_SUB_DIVISION}               //select[@formcontrolname="senderSubDivision"]
-${DDL_CUST_LOCATION}                   //select[@formcontrolname="senderLocation"]
+${DDL_CUST_DIVISION}                   //label[@for="senderDivision"]//following-sibling::div/select
+${DDL_CUST_SUB_DIVISION}               //label[@for="senderSubDivision"]//following-sibling::div/select
+${DDL_CUST_LOCATION}                   //label[@for="senderLocation"]//following-sibling::div/select
 ${DDL_PRIORITY}                        //select[@formcontrolname="priority"]
 ${DDL_SC}                              //select[@formcontrolname="serviceClassification"]
 ${DDL_ST}                              //select[@formcontrolname="serviceType"]
@@ -125,10 +125,9 @@ ${ICON_PRELOADER_VERIFY_ATTR}          active
 @{LIST_VISI_SUB_DIV}                      VISI STRA
 
 #    ---------------------- Pending Locators -----------------------
-${DDL_TYPOF_OUTPUT}
-${DDL_BRAND}
-${TXT_BRAND_LEADER}
-${TXT_PRODUCT_LEADER}
-${TXT_MODEL_CODE}
-${REQUESTOR_NAME}
-${DATE_NEEDED}
+${DDL_BRAND}                              //label[@for="brand"]//following-sibling::div/select
+${TXT_BRAND_LEADER}                       //input[@formcontrolname="brandCategoryLeaderBcl"]
+${TXT_PRODUCT_LEADER}                     //input[@formcontrolname="performanceProductLeader"]
+${TXT_MODEL_CODE}                         //input[@formcontrolname="modelCodeText"]
+${REQUESTOR_NAME}                         //input[@formcontrolname="requestorName"]
+${DATE_NEEDED}                            //div[@class="input-group datepicker"]

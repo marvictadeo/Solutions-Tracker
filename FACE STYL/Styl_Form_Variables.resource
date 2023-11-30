@@ -33,9 +33,9 @@ ${LBL_SUBJECT}               //input[@aria-label="Subject"]
 
 ${DDL_DIVISION}                        //select[@formcontrolname="division"]
 ${DDL_SUBDIVISION}                     //select[@formcontrolname="subDivision"]
-${DDL_CUST_DIVISION}                   //select[@formcontrolname="senderDivision"]
-${DDL_CUST_SUB_DIVISION}               //select[@formcontrolname="senderSubDivision"]
-${DDL_CUSTOMER_LOCATION}               //select[@formcontrolname="senderLocation"]
+${DDL_CUST_DIVISION}                   //label[@for="senderDivision"]//following-sibling::div/select
+${DDL_CUST_SUB_DIVISION}               //label[@for="senderSubDivision"]//following-sibling::div/select
+${DDL_CUSTOMER LOCATION}               //label[@for="senderLocation"]//following-sibling::div/select
 ${DDL_PRIORITY}                        //select[@formcontrolname="priority"]
 ${DDL_SC}                              //select[@formcontrolname="serviceClassification"]
 ${DDL_ST}                              //select[@formcontrolname="serviceType"]
@@ -125,8 +125,9 @@ ${ICON_PRELOADER_VERIFY_ATTR}          active
 @{LIST_VISI_SUB_DIV}                      VISI STRA
 
 #    ---------------------- Pending Locators -----------------------
-${TXT_REQUIRED_COLOR}
-${TXT_FILE_FORMAT}
-${ACADEMY_UPLOAD}
-${TXT_FILE_LINK}
-${checkbox_required_file_format_locator}
+${TXT_REQUIRED_COLOR}                          //input[@formcontrolname="requiredColor"]
+${TXT_FILE_FORMAT}                             //input[@formcontrolname="requiredFileFormat"]
+${ACADEMY_UPLOAD}                              //label[@for="academyUpload"]//following-sibling::div/div[@class="form-check form-check-inline"]
+${TXT_FILE_LINK}                               //input[@formcontrolname="fileLink"]
+${DDL_TYPE OF OUTPUT - A}                      //select[@formcontrolname="typeOfOutput"]
+${DDL_TYPE OF OUTPUT - B}                      //select[@formcontrolname="typeOfOutput"]

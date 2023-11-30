@@ -15,11 +15,10 @@ Resource             Solution_Tracker_Portal_Keywords.resource
 *** Keywords ***
 Fill In Product Info And Other Fields
     [Documentation]    Fill In [BRAN Leader, Perf Prod Leader, Brand, Model Code, Attachment]
-    Input Text    ${TXT_BRAND_LEADER}    text
-    Input Text    ${TXT_PRODUCT_LEADER}    text
+    Input Text    ${TXT_BRAND_LEADER}    Bran Lead yjv
+    Input Text    ${TXT_PRODUCT_LEADER}    Perf Lead yjv
     Select Random Option For "Brand" Dropdown
-    Input Text    ${TXT_MODEL_CODE}    text
-
+    Input Text    ${TXT_MODEL_CODE}    1234567
     #    -----    Upload Sample Attachment    ----
     Wait Until Element Is Enabled    ${ATTACHMENT}    30s
     Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
@@ -39,6 +38,7 @@ Fill In Request Info [Subject, Description, Priority, Date Needed]
     Select Random Option For "Priority" Dropdown
     ${next_date}    Get Current Date    result_format=%Y-%#m-%#d    increment=+1 day
     Click Element    ${DATE_NEEDED}
+    Click Element    //div[@role='row']/div[@aria-label='${next_date}']
 
 Submit The Ticket
     [Documentation]    Submit The Ticket
@@ -53,14 +53,14 @@ Change Division
     [Documentation]    Keyword to Change the Division
     Scroll "${DDL_DIVISION}" Into Center
     Wait Until Element Is Enabled    ${DDL_DIVISION}
-    Select From List By Label    ${DDL_DIVISION}    ${division}
+    Wait Until Keyword Succeeds    3x    1s    Select From List By Label    ${DDL_DIVISION}    ${division}
 
 Select Sub-Division
     [Arguments]    ${subdiv_item}
     [Documentation]    Keyword to Change Sub-division
     Set Test Variable    ${SUBDIV_VALUE}    ${DDL_SUBDIVISION}\[text()="${SPACE}${subdiv_item}${SPACE}"]
     Wait Until Element Is Enabled    ${DDL_SUBDIVISION}    30s
-    Select From List By Label    ${DDL_SUBDIVISION}    ${subdiv_item}
+    Wait Until Keyword Succeeds    3x    1s    Select From List By Label    ${DDL_SUBDIVISION}    ${subdiv_item}
 
 Select "${sc_item}" As Service Classification
     [Documentation]    Select the service classification
@@ -144,6 +144,7 @@ Verify Master Data And Ticket Submission : FACE TECH
     Check Create Page
     #    ----- Change Excel Sheet Name -----
     Get Excel Data - FACE TECH    TECH
+    Pause Execution
     ${length}    Get Length    ${SUB_DIVISION}
     FOR    ${count}    IN RANGE    ${length}
         ${index}    Evaluate    ${count} - 1
@@ -210,12 +211,12 @@ Get Excel Data - FACE TECH
     Set Test Variable    ${TABLE}
     ${SUB_DIVISION}    Get Table Column    ${TABLE}    Sub-Division
     ${SERVICE_CLASSIFICATION}    Get Table Column    ${TABLE}    Service Classification
-    ${SERVICE_TYPE}    Get Table Column    ${TABLE}    Service Type
+#    ${SERVICE_TYPE}    Get Table Column    ${TABLE}    Service Type
     ${SERVICE_REQUIREMENT}    Get Table Column    ${TABLE}    Service Requirement
-    ${BRAND}    Get Table Column    ${TABLE}    Brand
+#    ${BRAND}    Get Table Column    ${TABLE}    Brand
     Set Test Variable    ${SUB_DIVISION}
     Set Test Variable    ${SERVICE_CLASSIFICATION}
-    Set Test Variable    ${SERVICE_TYPE}
+#    Set Test Variable    ${SERVICE_TYPE}
     Set Test Variable    ${SERVICE_REQUIREMENT}
 
 Verify Ticket Summary
