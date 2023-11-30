@@ -14,28 +14,28 @@ ${EMAIL}    email
 ${PASSWORD}    password
 
 # URL Sandbox
-${URL_ALL_CASES_FACE}    https://musictribeservice.crm5.dynamics.com/main.aspx?appid=22fd57cc-73f4-ed11-8848-002248ebf403&pagetype=entitylist&etn=incident&viewid=8eb7d675-e50f-ee11-8f6e-002248ebf403&viewType=1039
+${URL_ALL_CASES_FACE}                  https://musictribeservice.crm5.dynamics.com/main.aspx?appid=22fd57cc-73f4-ed11-8848-002248ebf403&pagetype=entitylist&etn=incident&viewid=8eb7d675-e50f-ee11-8f6e-002248ebf403&viewType=1039
 
 #    Locators
-${SEARCH_BOX}                //input[@aria-label='Case Filter by keyword']
-${SAVE_CASE}                 //button[@aria-label='Save (CTRL+S)']
-${TAB_DETAILED_INFO}         //li[@title='Detailed Information']
+${SEARCH_BOX}                          //input[@aria-label='Case Filter by keyword']
+${SAVE_CASE}                           //button[@aria-label='Save (CTRL+S)']
+${TAB_DETAILED_INFO}                   //li[@title='Detailed Information']
 
 # Login Modal
-${TXT_EMAIL}                 //input[@type="email"]
-${TXT_PASSWORD}              //input[@type="password"]
-${BTN_SUBMIT}                //input[@type='submit']
+${TXT_EMAIL}                           //input[@type="email"]
+${TXT_PASSWORD}                        //input[@type="password"]
+${BTN_SUBMIT}                          //input[@type='submit']
 
 # Ticket Details
-${LBL_SUBJECT}               //input[@aria-label="Subject"]
+${LBL_SUBJECT}                         //input[@aria-label="Subject"]
 
 #    ........................Solution Tracker Customer Website.....................................
 
 ${DDL_DIVISION}                        //select[@formcontrolname="division"]
 ${DDL_SUBDIVISION}                     //select[@formcontrolname="subDivision"]
-${DDL_CUST_DIVISION}                   //select[@formcontrolname="senderDivision"]
-${DDL_CUST_SUB_DIVISION}               //select[@formcontrolname="senderSubDivision"]
-${DDL_CUST_LOCATION}                   //select[@formcontrolname="senderLocation"]
+${DDL_CUST_DIVISION}                   //label[@for="senderDivision"]//following-sibling::div/select
+${DDL_CUST_SUB_DIVISION}               //label[@for="senderSubDivision"]//following-sibling::div/select
+${DDL_CUST_LOCATION}                   //label[@for="senderLocation"]//following-sibling::div/select
 ${DDL_PRIORITY}                        //select[@formcontrolname="priority"]
 ${DDL_SC}                              //select[@formcontrolname="serviceClassification"]
 ${DDL_ST}                              //select[@formcontrolname="serviceType"]
@@ -46,6 +46,7 @@ ${JPG_IMAGE_SAMPLE}                    ${CURDIR}${/}Jpg_Img_Photo.jpg
 ${MASTER_DATA}                         ${CURDIR}${/}..\\Master_File.xlsx
 ${SUBJECT}                             //input[@formcontrolname="subject"]
 ${DESCRIPTION}                         //textarea[@formcontrolname="description"]
+${DATA_TABLE}                          //div[@class="datatable-body-cell-label"]/a[text()=" Internal QA Test TECH"]
 
 # Global Variables
 ${ICON_PRELOADER}                      //div[contains(@class,'_loader_loader__en2c7')]
@@ -85,10 +86,9 @@ ${ICON_PRELOADER_VERIFY_ATTR}          active
 ...                                   MT-US1 (Music Tribe Commercial NV Inc.)
 ...                                   MT-VG1 (Music Tribe VG1 Ltd)
 
-@{LIST_BRANDS}                        Music Tribe    Midas    Klark Teknik    Lab Gruppen    Lake
-...                                   Tannoy    Turbosound    TC Electronics    TC Helicon
-...                                   Behringer    Aston Microphones    Bugera    Oberheim
-...                                   Auratone    Coolaudio    Eurocom
+@{LIST_BRANDS}                        Music Tribe    Aston Microphones    Midas    Lab Gruppen    Tannoy
+...                                   Turbosound    TC Electronic    TC Helicon
+...                                   Behringer    Klark Teknik    Bugera    Lake    Coolaudio
 
 @{LIST_FACE_DIVISION}                 AVAI    BRAN    BRAN COMM    COMP    CUST AVAI    CUST SUPP
 ...                                   DIGI  FACE     HEAR      HOSP
@@ -123,3 +123,11 @@ ${ICON_PRELOADER_VERIFY_ATTR}          active
 @{LIST_TREA_SUB_DIV}                      TREA INVE    TREA OTC    TREA PTP    TREA RTR    TREA TAX
 @{LIST_VALU_SUB_DIV}                      Customer Feedback    VALU    VALU DM    VALU IDM
 @{LIST_VISI_SUB_DIV}                      VISI STRA
+
+#    ---------------------- Pending Locators -----------------------
+${DDL_BRAND}                              //label[@for="brand"]//following-sibling::div/select
+${TXT_BRAND_LEADER}                       //input[@formcontrolname="brandCategoryLeaderBcl"]
+${TXT_PRODUCT_LEADER}                     //input[@formcontrolname="performanceProductLeader"]
+${TXT_MODEL_CODE}                         //input[@formcontrolname="modelCodeText"]
+${REQUESTOR_NAME}                         //input[@formcontrolname="requestorName"]
+${DATE_NEEDED}                            //div[@class="input-group datepicker"]

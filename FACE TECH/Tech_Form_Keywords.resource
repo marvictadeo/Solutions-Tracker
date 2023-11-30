@@ -14,19 +14,11 @@ Resource             Solution_Tracker_Portal_Keywords.resource
 
 *** Keywords ***
 Fill In Product Info And Other Fields
-    [Documentation]    Fill In [BRAN, Brand, Model Code, Model Name, Product Category L1, Material Category L1, Attachment]
+    [Documentation]    Fill In [BRAN Leader, Perf Prod Leader, Brand, Model Code, Attachment]
+    Input Text    ${TXT_BRAND_LEADER}    Bran Lead yjv
+    Input Text    ${TXT_PRODUCT_LEADER}    Perf Lead yjv
     Select Random Option For "Brand" Dropdown
-    Input Text    ${TXT_BRAN}    text
-    Input Text    ${TXT_MODEL_CODE}    text
-    Input Text    ${TXT_MODEL_NAME}    text
-    #    ----- Pending Master Data for Product Category L1 -------
-    ${selected_prod_cate_l1}    Random Element    ${PRODUCT_CAT_L1}
-    Click Element   ${LOCATOR_PRODUCT_CAT_L1_DROPDOWN}
-
-    #    ----- Pending Master Data for Material Category L1 -------
-    ${selected_mat_cate_l1}    Random Element    ${MATERIAL_CAT_L1}
-    Click Element   ${LOCATOR_MATERIAL_CAT_L1_DROPDOWN}
-
+    Input Text    ${TXT_MODEL_CODE}    1234567
     #    -----    Upload Sample Attachment    ----
     Wait Until Element Is Enabled    ${ATTACHMENT}    30s
     Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
@@ -37,24 +29,23 @@ Fill In Requestor's Info [Requestor's Name, Division, Sub-division, Location]
     Select Random Option For "Customer Division And Sub-Division" Dropdown
     Select Random Option For "Customer Location" Dropdown
 
-Fill In Request Info [Description, Priority, Date Needed]
+Fill In Request Info [Subject, Description, Priority, Date Needed]
     [Documentation]    Fill In Request Info [Description, Priority, Date Needed]
-    [Arguments]    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+    [Arguments]    ${subdiv_item}    ${sc_item}    ${sr_item}
+    Input Text    ${SUBJECT}    Internal QA Test TECH
     Input Text    ${DESCRIPTION}
-    ...    Internal QA - FACE TECH ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} ${\n} Service Type - ${st_item} ${\n} Service Requirement - ${sr_item} ${\n}
+    ...    Internal QA - FACE TECH ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} ${\n} ${\n} Service Requirement - ${sr_item} ${\n}
     Select Random Option For "Priority" Dropdown
     ${next_date}    Get Current Date    result_format=%Y-%#m-%#d    increment=+1 day
     Click Element    ${DATE_NEEDED}
+    Click Element    //div[@role='row']/div[@aria-label='${next_date}']
 
 Submit The Ticket
     [Documentation]    Submit The Ticket
-    [Arguments]    ${expected_title}
     ${stat}    Run Keyword And Return Status    Element Should Be Enabled    //button[@class="btn btn-primary"]
     IF    "${stat}" == "True"
-        ${data_table}    Set Variable
-        ...    //div[@class="datatable-body-cell-label"]/a[text()=" ${expected_title}"]
         Click Element    //button[@class="btn btn-primary"]
-        Wait Until Page Contains Element    ${data_table}    120s
+        Wait Until Page Contains Element    ${DATA_TABLE}    120s
     END
 
 Change Division
@@ -62,14 +53,14 @@ Change Division
     [Documentation]    Keyword to Change the Division
     Scroll "${DDL_DIVISION}" Into Center
     Wait Until Element Is Enabled    ${DDL_DIVISION}
-    Select From List By Label    ${DDL_DIVISION}    ${division}
+    Wait Until Keyword Succeeds    3x    1s    Select From List By Label    ${DDL_DIVISION}    ${division}
 
 Select Sub-Division
     [Arguments]    ${subdiv_item}
     [Documentation]    Keyword to Change Sub-division
     Set Test Variable    ${SUBDIV_VALUE}    ${DDL_SUBDIVISION}\[text()="${SPACE}${subdiv_item}${SPACE}"]
     Wait Until Element Is Enabled    ${DDL_SUBDIVISION}    30s
-    Select From List By Label    ${DDL_SUBDIVISION}    ${subdiv_item}
+    Wait Until Keyword Succeeds    3x    1s    Select From List By Label    ${DDL_SUBDIVISION}    ${subdiv_item}
 
 Select "${sc_item}" As Service Classification
     [Documentation]    Select the service classification
@@ -153,30 +144,23 @@ Verify Master Data And Ticket Submission : FACE TECH
     Check Create Page
     #    ----- Change Excel Sheet Name -----
     Get Excel Data - FACE TECH    TECH
+    Pause Execution
     ${length}    Get Length    ${SUB_DIVISION}
     FOR    ${count}    IN RANGE    ${length}
         ${index}    Evaluate    ${count} - 1
         ${subdiv_item}    Get From List    ${SUB_DIVISION}    ${index}
         ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
-        ${st_item}    Get From List    ${SERVICE_TYPE}    ${index}
         ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
-        IF    "${st_item}" != "EMPTY"
-            ${expected_title}    Catenate    ${sr_item}    ${st_item}    ${sc_item}
-        ELSE
-            ${expected_title}    Catenate    ${sr_item}   ${sc_item}
-        END
 
         #    ------- Fill In FACE TECH Form -------
         Check Create Page
         Run Keyword And Continue On Failure    Fill In FACE TECH Solution Tracker Form
-        ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+        ...    ${subdiv_item}    ${sc_item}   ${sr_item}
         #    ------- Submit The Ticket -------
-        Run Keyword And Continue On Failure    Submit The Ticket    ${expected_title}
-        #    ------- Verify Ticket Viewer -------
-        Run Keyword And Continue On Failure    Verify Ticket Title In The "Ticket Viewer"    ${expected_title}
+        Run Keyword And Continue On Failure    Submit The Ticket
         #    ------- VerifY Ticket Summary -------
         Run Keyword And Continue On Failure
-        ...    Verify Ticket Summary    ${expected_title}    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+        ...    Verify Ticket Summary    ${subdiv_item}    ${sc_item}    ${sr_item}
     END
 
 Verify Master Data And Ticket Submission With CRM Checking : FACE TECH
@@ -189,44 +173,34 @@ Verify Master Data And Ticket Submission With CRM Checking : FACE TECH
         ${index}    Evaluate    ${count} - 1
         ${subdiv_item}    Get From List    ${SUB_DIVISION}    ${index}
         ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
-        ${st_item}    Get From List    ${SERVICE_TYPE}    ${index}
         ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
-        IF    "${st_item}" != "EMPTY"
-            ${expected_title}    Catenate    ${sr_item}    ${st_item}    ${sc_item}
-        ELSE
-            ${expected_title}    Catenate    ${sr_item}   ${sc_item}
-        END
 
         #    ------- Fill In FACE TECH Form -------
         Check Create Page
         Run Keyword And Continue On Failure    Fill In FACE TECH Solution Tracker Form
-        ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+        ...    ${subdiv_item}    ${sc_item}      ${sr_item}
         #    ------- Submit The Ticket -------
-        Run Keyword And Continue On Failure    Submit The Ticket    ${expected_title}
-        #    ------- Verify Ticket Viewer -------
-        Run Keyword And Continue On Failure    Verify Ticket Title In The "Ticket Viewer"    ${expected_title}
+        Run Keyword And Continue On Failure    Submit The Ticket
         #    ------- VerifY Ticket Summary -------
         Run Keyword And Continue On Failure
-        ...    Verify Ticket Summary    ${expected_title}    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
-
+        ...    Verify Ticket Summary    ${subdiv_item}    ${sc_item}   ${sr_item}
         #    ------ Solution Tracker Portal Verifications ------
         Run Keyword And Continue On Failure    Get ST Ticket Number In Ticket Summary
         Verify The Ticket In Solution Tracker Portal    ${URL_ALL_CASES_FACE}    ${STR_CASE_NUM}
-        Verify The Automated Ticket Title     ${STR_CASE_NUM}   ${sr_item}    ${st_item}    ${sc_item}
         Go Back And Switch To ST Form Page
     END
 
 Fill In FACE TECH Solution Tracker Form
     [Documentation]    Fill In FACE TECH Solution Tracker form
-    [Arguments]    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+    [Arguments]    ${subdiv_item}    ${sc_item}    ${sr_item}
     Change Division    Face Tribes (FACE)
     Select Sub-Division    ${subdiv_item}
     Select "${sc_item}" As Service Classification
-    Select "${st_item}" As Service Type
+    #    Select "${st_item}" As Service Type
     Select "${sr_item}" As Service Requirement
     Fill In Requestor's Info [Requestor's Name, Division, Sub-division, Location]
-    Fill In Request Info [Description, Priority, Date Needed]
-    ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+    Fill In Request Info [Subject, Description, Priority, Date Needed]
+    ...    ${subdiv_item}    ${sc_item}    ${sr_item}
     Fill In Product Info And Other Fields
 
 Get Excel Data - FACE TECH
@@ -237,33 +211,26 @@ Get Excel Data - FACE TECH
     Set Test Variable    ${TABLE}
     ${SUB_DIVISION}    Get Table Column    ${TABLE}    Sub-Division
     ${SERVICE_CLASSIFICATION}    Get Table Column    ${TABLE}    Service Classification
-    ${SERVICE_TYPE}    Get Table Column    ${TABLE}    Service Type
+#    ${SERVICE_TYPE}    Get Table Column    ${TABLE}    Service Type
     ${SERVICE_REQUIREMENT}    Get Table Column    ${TABLE}    Service Requirement
-    ${BRAND}    Get Table Column    ${TABLE}    Brand
+#    ${BRAND}    Get Table Column    ${TABLE}    Brand
     Set Test Variable    ${SUB_DIVISION}
     Set Test Variable    ${SERVICE_CLASSIFICATION}
-    Set Test Variable    ${SERVICE_TYPE}
+#    Set Test Variable    ${SERVICE_TYPE}
     Set Test Variable    ${SERVICE_REQUIREMENT}
 
 Verify Ticket Summary
-    [Arguments]   ${expected_title}     ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
-        ${data_table}    Set Variable
-        ...    //div[@class="datatable-body-cell-label"]/a[text()=" ${expected_title}"]
-        Click Element    ${data_table}
+    [Arguments]     ${subdiv_item}    ${sc_item}    ${sr_item}
+        Click Element    ${DATA_TABLE}
         Wait Until Page Contains Element    //div[contains(text(),'Ticket Info')]
         ${SD_RESULT}    Set Variable    //span[contains(text(),'Sub-Division:')]//following-sibling::strong[contains(text(),"${subdiv_item.strip()}")]
         Run Keyword And Continue On Failure    Page Should Contain Element    ${SD_RESULT}
         ${SC_RESULT}    Set Variable    //span[contains(text(),'Service Classification:')]//following-sibling::strong[contains(text(),"${sc_item.strip()}")]
         Run Keyword And Continue On Failure    Page Should Contain Element    ${SC_RESULT}
-        IF    "${st_item}" != "EMPTY"
-            ${ST_RESULT}    Set Variable    //span[contains(text(),'Service Type:')]//following-sibling::strong[contains(text(),"${st_item.strip()}")]
-            Run Keyword And Continue On Failure    Page Should Contain Element    ${ST_RESULT}
-        END
         IF    "${sr_item}" != "EMPTY"
             ${SR_RESULT}    Set Variable    //span[contains(text(),'Service Requirement:')]//following-sibling::strong[contains(text(),"${sr_item.strip()}")]
             Run Keyword And Continue On Failure    Page Should Contain Element    ${SR_RESULT}
         END
-        Verify Ticket Title In The "Ticket Details"    ${expected_title}
 
 Navigate To Site
     [Documentation]    The user opens a browser and navigates to the site.
