@@ -1,0 +1,9 @@
+--exclude file-too-long
+--exclude missing-doc-test-case
+--exclude line-too-long
+--exclude too-few-calls-in-keyword
+--exclude too-many-calls-in-test-case
+--exclude 0504
+--exclude 0503
+--exclude 0501
+--exclude 0507
