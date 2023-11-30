@@ -126,8 +126,8 @@ ${LIST_PURPOSE}                           PDI1    PDI2    Website    Social Medi
 ${TXT_MODEL_CODE}                         Sample_Model_Code_000
 
 # Ticket Viewer Locators
-${TICKET_VIEWER_SEARCH}           //input[@formcontrolname='search']
-${TICKET_VIEWER_SEARCH_ICON}      //span[@class='icon icon-search']
+${TICKET_VIEWER_SEARCH}                   //input[@formcontrolname='search']
+${TICKET_VIEWER_SEARCH_ICON}              //span[@class='icon icon-search']
 
 # Ticket Info Locators
 ${BTN_CREATE_A_TICKET}                   //button[@routerlink='/create-ticket']
@@ -185,6 +185,7 @@ ${BTN_AGENT_PORTAL}              //header/div[1]/div[2]/a[1]
 ${TAB_NAME_LOGIN}                Sign in to your account
 ${UAT_TAB_NAME_AGENT_PORTAL}     Customer Service Agent Dashboard - Dynamics 365
 ${PROD_TAB_NAME_AGENT_PORTAL}    Solution Tracker Agent Dashboard - Dynamics 365
+${ST_TAB_PAGE}                   MT Solutions Tracker
 
 # Login Credentials
 ${EMAIL}                        ${EMPTY}

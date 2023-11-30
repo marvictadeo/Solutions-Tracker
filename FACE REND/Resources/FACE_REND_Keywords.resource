@@ -376,7 +376,7 @@ FACE REND: Ticket Submission With CRM Checking
     FACE REND: Get Excel Data
     ${length}    Get Length    ${SUB_DIVISION}
     # FOR    ${count}    IN RANGE    ${length}
-    FOR    ${count}    IN RANGE    1    2
+    FOR    ${count}    IN RANGE    1    3
         ${index}    Evaluate    ${count} - 1
         ${subdiv_item}    Get From List    ${SUB_DIVISION}    ${index}
         ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
@@ -405,9 +405,15 @@ FACE REND: Ticket Submission With CRM Checking
         ...        attachment=${JPG_NAME}    product_vector_attachment=${JPG_NAME}    complete_product_3d_attachment=${JPG_NAME}    ref_file_attachment=${JPG_NAME}    stock_img_attachment=${JPG_NAME}    # FACE REND Other Fields
         ...        brand=${brand_item}    purpose=${purpose_item}    type_of_output=${type_of_output_item}    rend_model_code=${TXT_MODEL_CODE}    # FACE REND Other Fields
 
-        # Scroll "${BTN_CREATE_A_TICKET}" Into Center
-        # Click Element    ${BTN_CREATE_A_TICKET}
+        Go Back And Switch To ST Form Page
+        Scroll "${BTN_CREATE_A_TICKET}" Into Center
+        Click Element    ${BTN_CREATE_A_TICKET}
     END
+
+Go Back And Switch To ST Form Page
+    [Documentation]    Go Back And Switch To ST Form Page
+    Switch Window    title=${ST_TAB_PAGE}
+    Wait Until Element Is Visible    ${TICKET_VIEWER_SEARCH}    30s
 
 FACE REND: Get Excel Data
     [Documentation]    Keyword to get excel data for FACE REND
@@ -585,15 +591,15 @@ Submit The Ticket
 
 Go To Agent Portal
     [Documentation]    Keyword to redirect the user to Agent Portal
-    # Scroll And Click The Element    ${BTN_AGENT_PORTAL}
-    # ${get_stat_1}    Run Keyword And Return Status    Switch Window    title=${TAB_NAME_LOGIN}    timeout=2s
+    Scroll And Click The Element    ${BTN_AGENT_PORTAL}
+    ${get_stat_1}    Run Keyword And Return Status    Switch Window    title=${TAB_NAME_LOGIN}    timeout=2s
+    Go To    ${UAT_CRM_V2}
     # IF    "${get_stat_1}" != "True"
     #     ${get_stat_2}    Run Keyword And Return Status    Switch Window    title=${UAT_TAB_NAME_AGENT_PORTAL}    timeout=2s
     #     IF    "${get_stat_2}" != "True"
     #         ${get_stat_2}    Run Keyword And Return Status    Switch Window    title=${PROD_TAB_NAME_AGENT_PORTAL}    timeout=2s
     #     END
     # END
-    Go To    ${UAT_CRM_V2}
 
 Login To Agent Portal
     [Documentation]    Keyword to login on Agent Portal
@@ -662,6 +668,12 @@ Verify CRM Details Of FACE REND
     The User Is On The Solution Tracker
     FACE REND: Ticket Submission With CRM Checking
 
+Go Back To CRM Search Page
+    [Documentation]    Go Back And Switch To ST Form Page
+    Wait Until Element Is Visible    //div/button[@title='Go back']
+    Click Element    //div/button[@title='Go back']
+    Wait Until Element Is Visible    ${SEARCH_BOX}    30s
+
 Verify Case Ticket Details In CRM For FACE REND
     [Documentation]    Verify CRM Details
     [Arguments]    ${subdivision}=${EMPTY}    ${service_classification}=${EMPTY}    ${service_type}=${EMPTY}    ${service_requirement}=${EMPTY}    ${service_category}=${EMPTY}    # Default fields
@@ -670,9 +682,15 @@ Verify Case Ticket Details In CRM For FACE REND
     ...            ${brand}=${EMPTY}    ${purpose}=${EMPTY}    ${type_of_output}=N/A    ${rend_model_code}=${TXT_MODEL_CODE}    # FACE REND Other Fields
     Get Subject
     ${case_num}    Get The Case Ticket Number In Ticket Viewer
-    Go To Agent Portal
+    ${get_stat}    Run Keyword And Return Status    Switch Window    title=Search - Dynamics 365
+    IF    "${get_stat}" == "False"
+        Go To Agent Portal
+    ELSE
+        Log    Switched to CRM Page.
+    END
     Login To Agent Portal
     Go To Agent Portal Ticket Details    ${case_num}
+
     # --- Compare Case Ticket Details vs CRM ---
     @{list_site_details}    Create List    ${case_num}    ${subdivision}     ${service_classification}    ${service_type}    ${service_requirement}
     ...                                    ${priority}    ${cust_division}    ${cust_subdivision}
@@ -688,6 +706,7 @@ Verify Case Ticket Details In CRM For FACE REND
         END
     END
 
+    Go Back To CRM Search Page
     # ============ CRM Verification V2 - END ============ #
 
     # --- TICKET VIEWER VERIFICATION ---#
