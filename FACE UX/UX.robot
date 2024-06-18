@@ -14,11 +14,11 @@ Resource             Solution_Tracker_Portal_Keywords.resource
 
 
 *** Test Cases ***
-Verify Ticket Creation : FACE UX
+Verify Master Data, Ticket Submission And Ticket Summary : FACE UX
     [Documentation]    Test Case to Verify FACE UX Form Master Data
     ...    Ticket Submission
     ...    Ticket Summary
-    Verify Master Data And Ticket Submission : FACE UX
+    Verify Master Data, Ticket Submission And Ticket Summary : FACE UX
 
 Verify Ticket Creation With CRM Checking : FACE UX
     [Documentation]    Test Case to Verify FACE UX Form Master Data
@@ -27,3 +27,7 @@ Verify Ticket Creation With CRM Checking : FACE UX
     ...    Created Ticket In The Solution Ticket Portal
     ...    Automated Ticket Title
     Verify Master Data And Ticket Submission With CRM Checking : FACE UX
+
+Verify UX DATA AND FIELD VALIDATION : FACE UX
+    [Documentation]    Test Case to Verify FACE UX Form Master Data
+    Verify Master Data And Field Validation : FACE UX

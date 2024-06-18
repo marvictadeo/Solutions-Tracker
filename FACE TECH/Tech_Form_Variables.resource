@@ -57,38 +57,39 @@ ${ICON_PRELOADER_ATTR}                 class
 ${ICON_PRELOADER_VERIFY_ATTR}          active
 
 @{LIST_PRIORITY}                      Minor    Major    Critical
-@{LIST_LOCATION}                      ET-VG1 (Empower Tribe VG1 Ltd.)
-...                                   ET-VG2 (Empower Tribe VG2 Ltd)
-...                                   ET-VG3 (Empower Tribe VG3 Ltd)
-...                                   ET1 (Empower Trust)
+@{LIST_LOCATION}                      ET1 (Empower Trust)
+...                                   ET-BM1 (Music Tribe Commercial BM Ltd.)
+...                                   ET-CN1 (Zhongshan BEHRINGER Electronics Limited)
+...                                   ET-DE1 (Music Tribe Brands DE GmbH)
+...                                   ET-DK1 (Music Tribe Brands DK A/S)
+...                                   ET-MY1 (Empower Tribe MY1 Sdn Bhd)
+...                                   ET-PH1 (Music Group Commercial BM Ltd. ROHQ)
+...                                   ET-SE1 (Empower Tribe SE1 AB)
+...                                   ET-UK1 (Music Tribe Brands UK Ltd.)
+...                                   ET-VG1 (Empower Tribe VG1 Ltd.)
+...                                   ET-VG2 (Empower Tribe VG2 Ltd.)
+...                                   ET-VG3 (Empower Tribe VG3 Ltd.)
+...                                   MT1 (Music Trust)
 ...                                   MT-BM1 (Music Tribe Global Services Ltd.)
-...                                   MT-BM2 (Music Tribe Commercial BM Ltd.)
 ...                                   MT-CA1 (Music Tribe Brands CA Ltd.)
 ...                                   MT-CN1 (Zhongshan Eurotec Electronics Limited)
-...                                   MT-CN2 (Zhongshan Eurotec Electronics Limited – Shenzhen Branch)
-...                                   MT-CN3 (Zhongshan Behringer Electronics Ltd.)
-...                                   MT-DE1 (Music Tribe Brands DE GmbH)
-...                                   MT-DK1 (Music Tribe Brands DK A/S)
+...                                   MT-DE1 (Music Tribe DE1 GmbH)
+...                                   MT-DK1 (Music Tribe DK1 A/S)
 ...                                   MT-DK2 (Music Tribe Innovation DK A/S)
 ...                                   MT-IN1 (Music Tribe Innovation Private Limited)
 ...                                   MT-MU1 (Music Tribe Manufacturing Ltd.)
-...                                   MT-MY1 (Music Tribe Commercial MY Sdn. Bhd.)
-...                                   MT-MY2 (Music Tribe Hi-Tech Electronics Sdn. Bhd.)
-...                                   MT-PH1 (Music Group Commercial BM Ltd. ROHQ)
-...                                   MT-PH2 (Music Tribe Services PH Corp.)
-...                                   MT-PH3 (Music Group Macao Commercial Offshore Limited ROHQ - Philippines) 
-...                                   MT-PH4 (Music Group Commercial PH Inc.)
-...                                   MT-PH5 (Behringer Holdings (Pte.) Ltd. ROHQ)
-...                                   MT-PH6 (Music Global Shared Services Inc.)
-...                                   MT-SE1 (Music Tribe Brands Sweden AB)
-...                                   MT-UK1 (Music Tribe Brands UK Ltd.)
-...                                   MT-UK4 (Aston Microphones Limited)
+...                                   MT-MY1 (Music Tribe Commercial MY Sdn Bhd)
+...                                   MT-PH1 (Music Global Shared Services Inc.)
+...                                   MT-SE1 (Music Tribe SE1 AB)
+...                                   MT-SE2 (Music Tribe Brands Sweden AB)
+...                                   MT-UK1 (Music Tribe UK1 A/S)
 ...                                   MT-US1 (Music Tribe Commercial NV Inc.)
-...                                   MT-VG1 (Music Tribe VG1 Ltd)
+...                                   MT-VG1 (Music Tribe VG1 Ltd.)
+...                                   MT-VG2 (Music Tribe VG2 Ltd.)
 
-@{LIST_BRANDS}                        Music Tribe    Aston Microphones    Midas    Lab Gruppen    Tannoy
+@{LIST_BRANDS}                        Aston Microphones    Midas    Lab Gruppen    Tannoy
 ...                                   Turbosound    TC Electronic    TC Helicon
-...                                   Behringer    Klark Teknik    Bugera    Lake    Coolaudio
+...                                   Behringer    Klark Teknik    Bugera    Lake
 
 @{LIST_FACE_DIVISION}                 AVAI    BRAN    BRAN COMM    COMP    CUST AVAI    CUST SUPP
 ...                                   DIGI  FACE     HEAR      HOSP

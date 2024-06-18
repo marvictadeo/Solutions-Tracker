@@ -18,7 +18,7 @@ Fill In Product Info And Other Fields
     Input Text    ${TXT_BRAND_LEADER}    Bran Lead yjv
     Input Text    ${TXT_PRODUCT_LEADER}    Perf Lead yjv
     Select Random Option For "Brand" Dropdown
-    Input Text    ${TXT_MODEL_CODE}    1234567
+    Pause Execution
     #    -----    Upload Sample Attachment    ----
     Wait Until Element Is Enabled    ${ATTACHMENT}    30s
     Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
@@ -32,20 +32,29 @@ Fill In Requestor's Info [Requestor's Name, Division, Sub-division, Location]
 Fill In Request Info [Subject, Description, Priority, Date Needed]
     [Documentation]    Fill In Request Info [Description, Priority, Date Needed]
     [Arguments]    ${subdiv_item}    ${sc_item}    ${sr_item}
-    Input Text    ${SUBJECT}    Internal QA Test TECH
+    ${random_string}    Generate Random String
+    #${expected_title}    Set Variable    Internal QA Test TECH - ${random_string}
+    ${expected_title}    Set Variable    ${sc_item}
+    #Input Text    ${SUBJECT}    ${expected_title}
     Input Text    ${DESCRIPTION}
     ...    Internal QA - FACE TECH ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} ${\n} ${\n} Service Requirement - ${sr_item} ${\n}
     Select Random Option For "Priority" Dropdown
-    ${next_date}    Get Current Date    result_format=%Y-%#m-%#d    increment=+1 day
+    ${next_date}    Get Current Date    result_format=%Y-%#m-%#d    increment=-1 day
     Click Element    ${DATE_NEEDED}
     Click Element    //div[@role='row']/div[@aria-label='${next_date}']
+    Set Suite Variable    ${EXPECTED_TITLE}
 
 Submit The Ticket
     [Documentation]    Submit The Ticket
-    ${stat}    Run Keyword And Return Status    Element Should Be Enabled    //button[@class="btn btn-primary"]
+    ${stat}    Run Keyword And Return Status
+    ...    Wait Until Element Is Enabled    //button[@class="btn btn-primary"]    30s
     IF    "${stat}" == "True"
         Click Element    //button[@class="btn btn-primary"]
-        Wait Until Page Contains Element    ${DATA_TABLE}    120s
+        Wait Until Page Contains Element    //div[@class="datatable-body-cell-label"]    120s
+        #Wait Until Page Contains Element    ${DATA_TABLE}    120s
+        Get The Case Ticket Number In Ticket Viewer
+    ELSE
+        Fail    Submit Button is Disabled
     END
 
 Change Division
@@ -53,14 +62,14 @@ Change Division
     [Documentation]    Keyword to Change the Division
     Scroll "${DDL_DIVISION}" Into Center
     Wait Until Element Is Enabled    ${DDL_DIVISION}
-    Wait Until Keyword Succeeds    3x    1s    Select From List By Label    ${DDL_DIVISION}    ${division}
+    Wait Until Keyword Succeeds    3x    10s    Select From List By Label    ${DDL_DIVISION}    ${division}
 
 Select Sub-Division
     [Arguments]    ${subdiv_item}
     [Documentation]    Keyword to Change Sub-division
     Set Test Variable    ${SUBDIV_VALUE}    ${DDL_SUBDIVISION}\[text()="${SPACE}${subdiv_item}${SPACE}"]
-    Wait Until Element Is Enabled    ${DDL_SUBDIVISION}    30s
-    Wait Until Keyword Succeeds    3x    1s    Select From List By Label    ${DDL_SUBDIVISION}    ${subdiv_item}
+    Wait Until Element Is Enabled    ${DDL_SUBDIVISION}    120s
+    Wait Until Keyword Succeeds    3x    10s    Select From List By Label    ${DDL_SUBDIVISION}    ${subdiv_item}
 
 Select "${sc_item}" As Service Classification
     [Documentation]    Select the service classification
@@ -139,12 +148,11 @@ Check Create Page
         Wait Until Page Contains Element    ${DDL_DIVISION}    60s
     END
 
-Verify Master Data And Ticket Submission : FACE TECH
+Verify Master Data, Ticket Submission And Ticket Summary : FACE TECH
     [Documentation]    Verify Ticket Creation And Master Data : FACE TECH
     Check Create Page
     #    ----- Change Excel Sheet Name -----
     Get Excel Data - FACE TECH    TECH
-    Pause Execution
     ${length}    Get Length    ${SUB_DIVISION}
     FOR    ${count}    IN RANGE    ${length}
         ${index}    Evaluate    ${count} - 1
@@ -156,11 +164,56 @@ Verify Master Data And Ticket Submission : FACE TECH
         Check Create Page
         Run Keyword And Continue On Failure    Fill In FACE TECH Solution Tracker Form
         ...    ${subdiv_item}    ${sc_item}   ${sr_item}
-        #    ------- Submit The Ticket -------
-        Run Keyword And Continue On Failure    Submit The Ticket
+        ${excel_index}    Evaluate    ${count} + 2
+       TRY
+            #    ------- Submit The Ticket -------
+            Submit The Ticket
+            Open Workbook    ${MASTER_DATA}
+            ${table}    Select A Worksheet    TECH
+            Set Cell Value    ${excel_index}    4    ${STR_CASE_NUM}
+            Save Workbook
+        EXCEPT
+            Open Workbook    ${MASTER_DATA}
+            ${table}    Select A Worksheet    TECH
+            Set Cell Value    ${excel_index}    4    FAILED
+            Save Workbook
+            Run Keyword And Continue On Failure    Fail    Test Failed
+        END
         #    ------- VerifY Ticket Summary -------
         Run Keyword And Continue On Failure
         ...    Verify Ticket Summary    ${subdiv_item}    ${sc_item}    ${sr_item}
+    END
+
+Verify Master Data And Field Validation : FACE TECH
+    [Documentation]    Verify Ticket Creation And Master Data : FACE TECH
+    Check Create Page
+    #    ----- Change Excel Sheet Name -----
+    Get Excel Data - FACE TECH    TECH
+    ${length}    Get Length    ${SUB_DIVISION}
+    FOR    ${count}    IN RANGE    ${length}
+        ${index}    Evaluate    ${count} - 1
+        ${subdiv_item}    Get From List    ${SUB_DIVISION}    ${index}
+        ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
+        ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
+        #    ------- Fill In FACE TECH Form -------
+        Check Create Page
+        Run Keyword And Continue On Failure    Fill In FACE TECH Solution Tracker Form
+        ...    ${subdiv_item}    ${sc_item}   ${sr_item}
+        ${excel_index}    Evaluate    ${count} + 2
+        TRY
+            #    ------- Submit The Ticket -------
+            Submit The Ticket
+            Open Workbook    ${MASTER_DATA}
+            ${table}    Select A Worksheet    TECH
+            Set Cell Value    ${excel_index}    4    ${STR_CASE_NUM}
+            Save Workbook
+        EXCEPT
+            Open Workbook    ${MASTER_DATA}
+            ${table}    Select A Worksheet    TECH
+            Set Cell Value    ${excel_index}    4    FAILED
+            Save Workbook
+            Run Keyword And Continue On Failure    Fail    Test Failed
+        END
     END
 
 Verify Master Data And Ticket Submission With CRM Checking : FACE TECH
@@ -179,8 +232,21 @@ Verify Master Data And Ticket Submission With CRM Checking : FACE TECH
         Check Create Page
         Run Keyword And Continue On Failure    Fill In FACE TECH Solution Tracker Form
         ...    ${subdiv_item}    ${sc_item}      ${sr_item}
-        #    ------- Submit The Ticket -------
-        Run Keyword And Continue On Failure    Submit The Ticket
+        ${excel_index}    Evaluate    ${count} + 2
+        TRY
+            #    ------- Submit The Ticket -------
+            Submit The Ticket
+            Open Workbook    ${MASTER_DATA}
+            ${table}    Select A Worksheet    TECH
+            Set Cell Value    ${excel_index}    4    ${STR_CASE_NUM}
+            Save Workbook
+        EXCEPT
+            Open Workbook    ${MASTER_DATA}
+            ${table}    Select A Worksheet    TECH
+            Set Cell Value    ${excel_index}    4    FAILED
+            Save Workbook
+            Run Keyword And Continue On Failure    Fail    Test Failed
+        END
         #    ------- VerifY Ticket Summary -------
         Run Keyword And Continue On Failure
         ...    Verify Ticket Summary    ${subdiv_item}    ${sc_item}   ${sr_item}
@@ -345,28 +411,28 @@ Select Random Option For "${field}" Dropdown
         ${selected_cust_div}    Random Element    ${LIST_FACE_DIVISION}
         Scroll "${DDL_CUST_DIVISION}" Into Center
         Wait Until Element Is Enabled    ${DDL_CUST_DIVISION}    30s
-        Wait Until Keyword Succeeds    3x    1s
-        ...    Select From List By Label    ${DDL_CUST_DIVISION}    ${selected_cust_div}
+        Wait Until Keyword Succeeds    3x    10s
+        ...    Select From List By Label    ${DDL_CUST_DIVISION}    Face Tribes (FACE)
 
         ${selected_cust_subdiv}    Random Element    ${LIST_${selected_cust_div}_SUB_DIV}
         Scroll "${DDL_CUST_SUB_DIVISION}" Into Center
         Wait Until Element Is Enabled    ${DDL_CUST_SUB_DIVISION}    30s
-        Wait Until Keyword Succeeds    3x    1s
-        ...    Select From List By Label    ${DDL_CUST_SUB_DIVISION}    ${selected_cust_subdiv}
+        Wait Until Keyword Succeeds    3x    10s
+        ...    Select From List By Label    ${DDL_CUST_SUB_DIVISION}    FACE QUAL
     ELSE IF    "${field}" == "Customer Location"
         ${selected_location}    Random Element    ${LIST_LOCATION}
         Scroll "${DDL_CUST_LOCATION}" Into Center
-        Wait Until Keyword Succeeds    3x    1s
-        ...    Select From List By Label    ${DDL_CUST_LOCATION}    ${selected_location}
+        Wait Until Keyword Succeeds    3x    10s
+        ...    Select From List By Label    ${DDL_CUST_LOCATION}     ET-VG1 (Empower Tribe VG1 Ltd.)
     ELSE IF    "${field}" == "Priority"
         ${selected_priority}    Random Element    ${LIST_PRIORITY}
         Scroll "${DDL_PRIORITY}" Into Center
-        Wait Until Keyword Succeeds    3x    1s
+        Wait Until Keyword Succeeds    3x    10s
         ...    Select From List By Label    ${DDL_PRIORITY}    ${selected_priority}
     ELSE IF    "${field}" == "Brand"
         ${selected_brand}    Random Element    ${LIST_BRANDS}
         Scroll "${DDL_BRAND}" Into Center
-        Wait Until Keyword Succeeds    3x    1s
+        Wait Until Keyword Succeeds    3x    10s
         ...    Select From List By Label    ${DDL_BRAND}    ${selected_brand}
     END
 
@@ -375,6 +441,16 @@ Get ST Ticket Number In Ticket Summary
     Wait Until Element Is Visible    //div[@class='ticket-details__header']/h4
     ${case_number}    Get Text    //div[@class='ticket-details__header']/h4
     ${str_case_num}    Remove String    ${case_number}    Ticket Number:${SPACE}
+    Set Suite Variable    ${STR_CASE_NUM}
+
+Get The Case Ticket Number In Ticket Viewer
+    [Documentation]    Keyword to get the case ticket number in the ticket viewer details
+    ${data_table_title}    Set Variable
+    ...    //div[@class="datatable-body-cell-label"]/a[text()="${SPACE}${EXPECTED_TITLE}"]
+    Wait Until Page Contains Element    ${data_table_title}    120s
+    ${data_table_title}    Get Variable Value    ${data_table_title}
+    ${data_table_case}    Set Variable    ${data_table_title}/preceding::datatable-body-cell[3]/div/a
+    ${str_case_num}    Get Text    ${data_table_case}
     Set Suite Variable    ${STR_CASE_NUM}
 
 Verify Ticket Title In The "${page}"

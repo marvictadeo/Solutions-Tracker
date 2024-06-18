@@ -10,11 +10,12 @@ ${BROWSER}                        Chrome
 
 #    ........................Solution Tracker Portal---------------------------------------------
 # Login Credentials
-${EMAIL}    email
-${PASSWORD}    password
+${EMAIL}    yna.calimlim@musictribe.com
+${PASSWORD}    Pass4Mail@041122*
 
 # URL Sandbox
 ${URL_ALL_CASES_FACE}    https://musictribeservice.crm5.dynamics.com/main.aspx?appid=22fd57cc-73f4-ed11-8848-002248ebf403&pagetype=entitylist&etn=incident&viewid=8eb7d675-e50f-ee11-8f6e-002248ebf403&viewType=1039
+${URL_ALL_CASES}         https://musictribeservice.crm5.dynamics.com/main.aspx?appid=b5f12461-796e-ee11-9ae7-002248ebf471&pagetype=entitylist&etn=incident&viewid=00000000-0000-0000-00aa-000010001030&viewType=1039
 
 #    Locators
 ${SEARCH_BOX}                //input[@aria-label='Case Filter by keyword']
@@ -47,7 +48,7 @@ ${JPG_IMAGE_SAMPLE}                    ${CURDIR}${/}Jpg_Img_Photo.jpg
 ${MASTER_DATA}                         ${CURDIR}${/}..\\Master_File.xlsx
 ${SUBJECT}                             //input[@formcontrolname="subject"]
 ${DESCRIPTION}                         //textarea[@formcontrolname="description"]
-${DATA_TABLE}                          //div[@class="datatable-body-cell-label"]/a[text()=" Internal QA Test STYL"]
+${DATA_TABLE}                          //div[@class="datatable-body-cell-label"]
 
 # Global Variables
 ${ICON_PRELOADER}                      //div[contains(@class,'_loader_loader__en2c7')]
@@ -61,34 +62,7 @@ ${ICON_PRELOADER_VERIFY_ATTR}          active
 @{LIST_REQUIRED_COLOR}                Red    Blue    Black    Other
 @{LIST_TYPE OF OUTPUT - A}            Editable    PDF    Both Editable and PDF
 @{LIST_TYPE OF OUTPUT - B}            PDF Form    Microsoft Form
-@{LIST_CUSTOMER_LOCATION}             ET-VG1 (Empower Tribe VG1 Ltd.)
-...                                   ET-VG2 (Empower Tribe VG2 Ltd)
-...                                   ET-VG3 (Empower Tribe VG3 Ltd)
-...                                   ET1 (Empower Trust)
-...                                   MT-BM1 (Music Tribe Global Services Ltd.)
-...                                   MT-BM2 (Music Tribe Commercial BM Ltd.)
-...                                   MT-CA1 (Music Tribe Brands CA Ltd.)
-...                                   MT-CN1 (Zhongshan Eurotec Electronics Limited)
-...                                   MT-CN2 (Zhongshan Eurotec Electronics Limited – Shenzhen Branch)
-...                                   MT-CN3 (Zhongshan Behringer Electronics Ltd.)
-...                                   MT-DE1 (Music Tribe Brands DE GmbH)
-...                                   MT-DK1 (Music Tribe Brands DK A/S)
-...                                   MT-DK2 (Music Tribe Innovation DK A/S)
-...                                   MT-IN1 (Music Tribe Innovation Private Limited)
-...                                   MT-MU1 (Music Tribe Manufacturing Ltd.)
-...                                   MT-MY1 (Music Tribe Commercial MY Sdn. Bhd.)
-...                                   MT-MY2 (Music Tribe Hi-Tech Electronics Sdn. Bhd.)
-...                                   MT-PH1 (Music Group Commercial BM Ltd. ROHQ)
-...                                   MT-PH2 (Music Tribe Services PH Corp.)
-...                                   MT-PH3 (Music Group Macao Commercial Offshore Limited ROHQ - Philippines) 
-...                                   MT-PH4 (Music Group Commercial PH Inc.)
-...                                   MT-PH5 (Behringer Holdings (Pte.) Ltd. ROHQ)
-...                                   MT-PH6 (Music Global Shared Services Inc.)
-...                                   MT-SE1 (Music Tribe Brands Sweden AB)
-...                                   MT-UK1 (Music Tribe Brands UK Ltd.)
-...                                   MT-UK4 (Aston Microphones Limited)
-...                                   MT-US1 (Music Tribe Commercial NV Inc.)
-...                                   MT-VG1 (Music Tribe VG1 Ltd)
+@{LIST_CUSTOMER_LOCATION}              ET-BM1 (Music Tribe Commercial BM Ltd.)
 
 @{LIST_FACE_DIVISION}                 AVAI    BRAN    BRAN COMM    COMP    CUST AVAI    CUST SUPP
 ...                                   DIGI  FACE     HEAR      HOSP

@@ -20,48 +20,37 @@ Fill In Product Info And Other Fields
     Wait Until Element Is Enabled    ${ATTACHMENT}    30s
     Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
 
-Fill In Requestor's Info [Requestor's Name, Division, Sub-division, Location]
+Fill In Requestor's Info [Division, Sub-division, Location]
     [Documentation]    Random Selection in Requestor's Info
-    Input Text    ${REQUESTOR_NAME}    FACE UX Form Testing [INTERNAL QA]
     Select Random Option For "Customer Division And Sub-Division" Dropdown
     Select Random Option For "Customer Location" Dropdown
 
-Fill In Request Info [Screen Content, Description, Priority]
-    [Documentation]    Fill In Request Info [Screen Content, Description, Priority]
+Fill In Request Info [Description, Priority, Project Owner]
+    [Documentation]    Fill In Request Info [Description, Priority, Project Owner]
     [Arguments]    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
-    #    --- Subject ---
-    Input Text    ${SUBJECT}    Internal QA Test UX
-    Input Text    ${PAGE-CONTENT-LOCATOR}
-    ...    Internal QA - FACE UX ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} ${\n} Service Type - ${st_item} ${\n} Service Requirement - ${sr_item} ${\n}
+    #${random_text}    Generate Random String
+    #${expected_title}    Set Variable    [Internal QA UX Form] - ${random_text}
+    #Input Text    ${SUBJECT}    ${expected_title}
+    ${expected_title}    Set Variable    ${sc_item}
     Input Text    ${DESCRIPTION}
-    ...    Internal QA - FACE UX ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} ${\n} Service Type - ${st_item} ${\n} Service Requirement - ${sr_item} ${\n}
+    ...    Internal QA - FACE UXUI ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} ${\n} Service Type - ${st_item} ${\n} Service Requirement - ${sr_item} ${\n}
     Select Random Option For "Priority" Dropdown
-    Input Text    ${PROJECT-OWNER-LOCATOR}    FACE UX Form Project Owner
-
-Submit The Ticket
-    [Documentation]    Submit The Ticket
-    [Arguments]    ${expected_title}
-    ${stat}    Run Keyword And Return Status    Element Should Be Enabled    //button[@class="btn btn-primary"]
-    IF    "${stat}" == "True"
-        ${data_table}    Set Variable
-        ...    //div[@class="datatable-body-cell-label"]/a[text()=" ${expected_title}"]
-        Click Element    //button[@class="btn btn-primary"]
-        Wait Until Page Contains Element    ${data_table}    120s
-    END
+    Input Text    ${PROJECT_OWNER}    FACE UX Form Project Owner yjv
+    Set Suite Variable    ${EXPECTED_TITLE}
 
 Change Division
     [Arguments]    ${division}
     [Documentation]    Keyword to Change the Division
     Scroll "${DDL_DIVISION}" Into Center
     Wait Until Element Is Enabled    ${DDL_DIVISION}
-    Select From List By Label    ${DDL_DIVISION}    ${division}
+    Wait Until Keyword Succeeds    3x    10s   Select From List By Label    ${DDL_DIVISION}    ${division}
 
 Select Sub-Division
     [Arguments]    ${subdiv_item}
     [Documentation]    Keyword to Change Sub-division
     Set Test Variable    ${SUBDIV_VALUE}    ${DDL_SUBDIVISION}\[text()="${SPACE}${subdiv_item}${SPACE}"]
     Wait Until Element Is Enabled    ${DDL_SUBDIVISION}    30s
-    Select From List By Label    ${DDL_SUBDIVISION}    ${subdiv_item}
+    Wait Until Keyword Succeeds    3x    10s    Select From List By Label    ${DDL_SUBDIVISION}    ${subdiv_item}
 
 Select "${sc_item}" As Service Classification
     [Documentation]    Select the service classification
@@ -140,11 +129,11 @@ Check Create Page
         Wait Until Page Contains Element    ${DDL_DIVISION}    60s
     END
 
-Verify Master Data And Ticket Submission : FACE UX
+Verify Master Data, Ticket Submission And Ticket Summary : FACE UX
     [Documentation]    Verify Ticket Creation And Master Data : FACE UX
     Check Create Page
     #    ----- Change Excel Sheet Name -----
-    Get Excel Data - FACE UX    UX
+    Get Excel Data - FACE UX    UXUI
     ${length}    Get Length    ${SUB_DIVISION}
     FOR    ${count}    IN RANGE    ${length}
         ${index}    Evaluate    ${count} - 1
@@ -152,24 +141,36 @@ Verify Master Data And Ticket Submission : FACE UX
         ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
         ${st_item}    Get From List    ${SERVICE_TYPE}    ${index}
         ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
-        IF    "${st_item}" != "EMPTY"
-            ${expected_title}    Catenate    ${sr_item}    ${st_item}    ${sc_item}
-        ELSE
-            ${expected_title}    Catenate    ${sr_item}   ${sc_item}
-        END
 
-        #    ------- Fill In FACE UX Form -------
+        #    ------- Fill In FACE UXUI Form -------
         Check Create Page
         Run Keyword And Continue On Failure    Fill In FACE UX Solution Tracker Form
         ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
-        #    ------- Submit The Ticket -------
-        Run Keyword And Continue On Failure    Submit The Ticket    ${expected_title}
-        #    ------- Verify Ticket Viewer -------
-        Run Keyword And Continue On Failure    Verify Ticket Title In The "Ticket Viewer"    ${expected_title}
-        #    ------- VerifY Ticket Summary -------
-        Run Keyword And Continue On Failure
-        ...    Verify Ticket Summary    ${expected_title}    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+        ${excel_index}    Evaluate    ${count} + 2
+
+        TRY
+            #    ------- Submit The Ticket -------
+            Submit The Ticket    ${sc_item}
+            Open Workbook    ${MASTER_DATA}
+            ${table}    Select A Worksheet    UXUI
+            IF    "${excel_index}" == "3"
+                Set Cell Value    7    5    ${STR_CASE_NUM}
+            END
+            Set Cell Value    ${excel_index}    5    ${STR_CASE_NUM}
+            Save Workbook
+        EXCEPT
+            Open Workbook    ${MASTER_DATA}
+            ${table}    Select A Worksheet    UXUI
+            Set Cell Value    ${excel_index}    5    FAILED
+            Save Workbook
+            Run Keyword And Continue On Failure    Fail    Test Failed
+            
+            #    ------- VerifY Ticket Summary -------
+            Run Keyword And Continue On Failure
+            ...    Verify Ticket Summary    ${subdiv_item}    ${st_item}    ${sc_item}    ${sr_item}
+        END
     END
+
 
 Verify Master Data And Ticket Submission With CRM Checking : FACE UX
     [Documentation]    Verify Master Data And Ticket Submission With CRM Checking : FACE UX
@@ -208,6 +209,68 @@ Verify Master Data And Ticket Submission With CRM Checking : FACE UX
         Go Back And Switch To ST Form Page
     END
 
+Verify Master Data And Field Validation : FACE UX
+    [Documentation]    Verify Master Data And Field Validation : FACE UX
+    Check Create Page
+    #    ----- Change Excel Sheet Name -----
+    Get Excel Data - FACE UX    UXUI
+    ${length}    Get Length    ${SUB_DIVISION}
+    FOR    ${count}    IN RANGE    ${length}
+        ${index}    Evaluate    ${count} - 1
+        ${subdiv_item}    Get From List    ${SUB_DIVISION}    ${index}
+        ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
+        ${st_item}    Get From List    ${SERVICE_TYPE}    ${index}
+        ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
+
+        #    ------- Fill In FACE UXUI Form -------
+        Check Create Page
+        Run Keyword And Continue On Failure    Fill In FACE UX Solution Tracker Form
+        ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+        ${excel_index}    Evaluate    ${count} + 2
+
+        TRY
+            #    ------- Submit The Ticket -------
+            Submit The Ticket    ${sc_item}
+            Open Workbook    ${MASTER_DATA}
+            ${table}    Select A Worksheet    UXUI
+            IF    "${excel_index}" == "3"
+                Set Cell Value    7    5    ${STR_CASE_NUM}
+            END
+            Set Cell Value    ${excel_index}    5    ${STR_CASE_NUM}
+            Save Workbook
+        EXCEPT
+            Open Workbook    ${MASTER_DATA}
+            ${table}    Select A Worksheet    UXUI
+            Set Cell Value    ${excel_index}    5    FAILED
+            Save Workbook
+            Run Keyword And Continue On Failure    Fail    Test Failed
+        END
+    END
+
+Submit The Ticket
+    [Documentation]    Submit The Ticket
+    [Arguments]    ${sc_item}
+    ${stat}    Run Keyword And Return Status
+    ...    Wait Until Element Is Enabled    //button[@class="btn btn-primary"]    30s
+    IF    "${stat}" == "True"
+        Click Element    //button[@class="btn btn-primary"]
+        Wait Until Page Contains Element    //div[@class="datatable-body-cell-label"]    120s
+        #Wait Until Page Contains Element    ${DATA_TABLE}    120s
+        Get The Case Ticket Number In Ticket Viewer 
+    ELSE
+        Fail    Submit Button is Disabled
+    END
+
+Get The Case Ticket Number In Ticket Viewer
+    [Documentation]    Keyword to get the case ticket number in the ticket viewer details
+    ${data_table_title}    Set Variable
+    ...    //div[@class="datatable-body-cell-label"]/a[text()="${SPACE}${EXPECTED_TITLE}"]
+    Wait Until Page Contains Element    ${data_table_title}    120s
+    ${data_table_title}    Get Variable Value    ${data_table_title}
+    ${data_table_case}    Set Variable    ${data_table_title}/preceding::datatable-body-cell[3]/div/a
+    ${str_case_num}    Get Text    ${data_table_case}
+    Set Suite Variable    ${STR_CASE_NUM}
+
 Fill In FACE UX Solution Tracker Form
     [Documentation]    Fill In FACE UX Solution Tracker form
     [Arguments]    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
@@ -216,8 +279,8 @@ Fill In FACE UX Solution Tracker Form
     Select "${sc_item}" As Service Classification
     Select "${st_item}" As Service Type
     Select "${sr_item}" As Service Requirement
-    Fill In Requestor's Info [Requestor's Name, Division, Sub-division, Location]
-    Fill In Request Info [Screen Content, Description, Priority]
+    Fill In Requestor's Info [Division, Sub-division, Location]
+    Fill In Request Info [Description, Priority, Project Owner]
     ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
     Fill In Product Info And Other Fields
 
@@ -231,14 +294,13 @@ Get Excel Data - FACE UX
     ${SERVICE_CLASSIFICATION}    Get Table Column    ${TABLE}    Service Classification
     ${SERVICE_TYPE}    Get Table Column    ${TABLE}    Service Type
     ${SERVICE_REQUIREMENT}    Get Table Column    ${TABLE}    Service Requirement
-    ${BRAND}    Get Table Column    ${TABLE}    Brand
     Set Test Variable    ${SUB_DIVISION}
     Set Test Variable    ${SERVICE_CLASSIFICATION}
     Set Test Variable    ${SERVICE_TYPE}
     Set Test Variable    ${SERVICE_REQUIREMENT}
 
 Verify Ticket Summary
-    [Arguments]   ${expected_title}     ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+    [Arguments]   ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
         ${data_table}    Set Variable
         ...    //div[@class="datatable-body-cell-label"]/a[text()=" ${expected_title}"]
         Click Element    ${data_table}
@@ -370,19 +432,19 @@ Select Random Option For "${field}" Dropdown
         ${selected_cust_div}    Random Element    ${LIST_FACE_DIVISION}
         Scroll "${DDL_CUST_DIVISION}" Into Center
         Wait Until Element Is Enabled    ${DDL_CUST_DIVISION}    30s
-        Wait Until Keyword Succeeds    3x    1s
-        ...    Select From List By Label    ${DDL_CUST_DIVISION}    ${selected_cust_div}
+        Wait Until Keyword Succeeds    3x    10s
+        ...    Select From List By Label    ${DDL_CUST_DIVISION}    Face Tribes (FACE)
 
         ${selected_cust_subdiv}    Random Element    ${LIST_${selected_cust_div}_SUB_DIV}
         Scroll "${DDL_CUST_SUB_DIVISION}" Into Center
         Wait Until Element Is Enabled    ${DDL_CUST_SUB_DIVISION}    30s
-        Wait Until Keyword Succeeds    3x    1s
-        ...    Select From List By Label    ${DDL_CUST_SUB_DIVISION}    ${selected_cust_subdiv}
+        Wait Until Keyword Succeeds    3x    10s
+        ...    Select From List By Label    ${DDL_CUST_SUB_DIVISION}    FACE QUAL
     ELSE IF    "${field}" == "Customer Location"
         ${selected_location}    Random Element    ${LIST_LOCATION}
-        Scroll "${DDL_CUST_LOCATION}" Into Center
-        Wait Until Keyword Succeeds    3x    1s
-        ...    Select From List By Label    ${DDL_CUST_LOCATION}    ${selected_location}
+        Scroll "${DDL_CUSTOMER LOCATION}" Into Center
+        Wait Until Keyword Succeeds    3x    10s
+        ...    Select From List By Label    ${DDL_CUSTOMER LOCATION}    ${selected_location}
     ELSE IF    "${field}" == "Priority"
         ${selected_priority}    Random Element    ${LIST_PRIORITY}
         Scroll "${DDL_PRIORITY}" Into Center
@@ -393,6 +455,7 @@ Select Random Option For "${field}" Dropdown
         Scroll "${DDL_BRAND}" Into Center
         Wait Until Keyword Succeeds    3x    1s
         ...    Select From List By Label    ${DDL_BRAND}    ${selected_brand}
+        Log    Brand
     END
 
 Get ST Ticket Number In Ticket Summary
