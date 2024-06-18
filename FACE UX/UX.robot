@@ -12,7 +12,6 @@ Resource             UX_Form_Keywords.resource
 Resource             Solution_Tracker_Portal_Keywords.resource
 
 
-
 *** Test Cases ***
 Verify Master Data, Ticket Submission And Ticket Summary : FACE UX
     [Documentation]    Test Case to Verify FACE UX Form Master Data
