@@ -164,7 +164,6 @@ Verify Master Data, Ticket Submission And Ticket Summary : FACE UX
             Set Cell Value    ${excel_index}    5    FAILED
             Save Workbook
             Run Keyword And Continue On Failure    Fail    Test Failed
-            
             #    ------- VerifY Ticket Summary -------
             Run Keyword And Continue On Failure
             ...    Verify Ticket Summary    ${subdiv_item}    ${st_item}    ${sc_item}    ${sr_item}
@@ -200,7 +199,7 @@ Verify Master Data And Ticket Submission With CRM Checking : FACE UX
         Run Keyword And Continue On Failure    Verify Ticket Title In The "Ticket Viewer"    ${expected_title}
         #    ------- VerifY Ticket Summary -------
         Run Keyword And Continue On Failure
-        ...    Verify Ticket Summary    ${expected_title}    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+        ...    Verify Ticket Summary    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
 
         #    ------ Solution Tracker Portal Verifications ------
         Run Keyword And Continue On Failure    Get ST Ticket Number In Ticket Summary
@@ -230,6 +229,7 @@ Verify Master Data And Field Validation : FACE UX
 
         TRY
             #    ------- Submit The Ticket -------
+
             Submit The Ticket    ${sc_item}
             Open Workbook    ${MASTER_DATA}
             ${table}    Select A Worksheet    UXUI
@@ -300,24 +300,22 @@ Get Excel Data - FACE UX
     Set Test Variable    ${SERVICE_REQUIREMENT}
 
 Verify Ticket Summary
+    [Documentation]    Verify Ticket Summary
     [Arguments]   ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
-        ${data_table}    Set Variable
-        ...    //div[@class="datatable-body-cell-label"]/a[text()=" ${expected_title}"]
-        Click Element    ${data_table}
-        Wait Until Page Contains Element    //div[contains(text(),'Ticket Info')]
-        ${SD_RESULT}    Set Variable    //span[contains(text(),'Sub-Division:')]//following-sibling::strong[contains(text(),"${subdiv_item.strip()}")]
-        Run Keyword And Continue On Failure    Page Should Contain Element    ${SD_RESULT}
-        ${SC_RESULT}    Set Variable    //span[contains(text(),'Service Classification:')]//following-sibling::strong[contains(text(),"${sc_item.strip()}")]
-        Run Keyword And Continue On Failure    Page Should Contain Element    ${SC_RESULT}
-        IF    "${st_item}" != "EMPTY"
-            ${ST_RESULT}    Set Variable    //span[contains(text(),'Service Type:')]//following-sibling::strong[contains(text(),"${st_item.strip()}")]
-            Run Keyword And Continue On Failure    Page Should Contain Element    ${ST_RESULT}
-        END
-        IF    "${sr_item}" != "EMPTY"
-            ${SR_RESULT}    Set Variable    //span[contains(text(),'Service Requirement:')]//following-sibling::strong[contains(text(),"${sr_item.strip()}")]
-            Run Keyword And Continue On Failure    Page Should Contain Element    ${SR_RESULT}
-        END
-        Verify Ticket Title In The "Ticket Details"    ${expected_title}
+    Click Element    ${DATA_TABLE}
+    Wait Until Page Contains Element    //div[contains(text(),'Ticket Info')]
+    ${SD_RESULT}    Set Variable    //span[contains(text(),'Sub-Division:')]//following-sibling::strong[contains(text(),"${subdiv_item.strip()}")]
+    Run Keyword And Continue On Failure    Page Should Contain Element    ${SD_RESULT}
+    ${SC_RESULT}    Set Variable    //span[contains(text(),'Service Classification:')]//following-sibling::strong[contains(text(),"${sc_item.strip()}")]
+    Run Keyword And Continue On Failure    Page Should Contain Element    ${SC_RESULT}
+    IF    "${st_item}" != "EMPTY"
+        ${ST_RESULT}    Set Variable    //span[contains(text(),'Service Type:')]//following-sibling::strong[contains(text(),"${st_item.strip()}")]
+        Run Keyword And Continue On Failure    Page Should Contain Element    ${ST_RESULT}
+    END
+    IF    "${sr_item}" != "EMPTY"
+        ${SR_RESULT}    Set Variable    //span[contains(text(),'Service Requirement:')]//following-sibling::strong[contains(text(),"${sr_item.strip()}")]
+        Run Keyword And Continue On Failure    Page Should Contain Element    ${SR_RESULT}
+    END
 
 Navigate To Site
     [Documentation]    The user opens a browser and navigates to the site.

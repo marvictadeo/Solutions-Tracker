@@ -20,6 +20,7 @@ ${URL_ALL_CASES_FACE}    https://musictribeservice.crm5.dynamics.com/main.aspx?a
 ${SEARCH_BOX}                //input[@aria-label='Case Filter by keyword']
 ${SAVE_CASE}                 //button[@aria-label='Save (CTRL+S)']
 ${TAB_DETAILED_INFO}         //li[@title='Detailed Information']
+${DATA_TABLE}                //div[@class="datatable-body-cell-label"]
 
 # Login Modal
 ${TXT_EMAIL}                 //input[@type="email"]

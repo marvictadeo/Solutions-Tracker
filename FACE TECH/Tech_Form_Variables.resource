@@ -125,10 +125,9 @@ ${ICON_PRELOADER_VERIFY_ATTR}          active
 @{LIST_VALU_SUB_DIV}                      Customer Feedback    VALU    VALU DM    VALU IDM
 @{LIST_VISI_SUB_DIV}                      VISI STRA
 
-#    ---------------------- Pending Locators -----------------------
 ${DDL_BRAND}                              //label[@for="brand"]//following-sibling::div/select
 ${TXT_BRAND_LEADER}                       //input[@formcontrolname="brandCategoryLeaderBcl"]
 ${TXT_PRODUCT_LEADER}                     //input[@formcontrolname="performanceProductLeader"]
-${TXT_MODEL_CODE}                         //input[@formcontrolname="modelCodeText"]
+${DDL_MODEL_CODE}                         //select[@formcontrolname="modelCodeEntry"]
 ${REQUESTOR_NAME}                         //input[@formcontrolname="requestorName"]
 ${DATE_NEEDED}                            //div[@class="input-group datepicker"]

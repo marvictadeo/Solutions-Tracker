@@ -18,7 +18,7 @@ Fill In Product Info And Other Fields
     Input Text    ${TXT_BRAND_LEADER}    Bran Lead yjv
     Input Text    ${TXT_PRODUCT_LEADER}    Perf Lead yjv
     Select Random Option For "Brand" Dropdown
-    Pause Execution
+    Select Random Option For "Model Code" Dropdown
     #    -----    Upload Sample Attachment    ----
     Wait Until Element Is Enabled    ${ATTACHMENT}    30s
     Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
@@ -39,7 +39,7 @@ Fill In Request Info [Subject, Description, Priority, Date Needed]
     Input Text    ${DESCRIPTION}
     ...    Internal QA - FACE TECH ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} ${\n} ${\n} Service Requirement - ${sr_item} ${\n}
     Select Random Option For "Priority" Dropdown
-    ${next_date}    Get Current Date    result_format=%Y-%#m-%#d    increment=-1 day
+    ${next_date}    Get Current Date    result_format=%Y-%#m-%#d    increment=+1 day
     Click Element    ${DATE_NEEDED}
     Click Element    //div[@role='row']/div[@aria-label='${next_date}']
     Set Suite Variable    ${EXPECTED_TITLE}
@@ -434,7 +434,62 @@ Select Random Option For "${field}" Dropdown
         Scroll "${DDL_BRAND}" Into Center
         Wait Until Keyword Succeeds    3x    10s
         ...    Select From List By Label    ${DDL_BRAND}    ${selected_brand}
+    ELSE IF    "${field}" == "Model Code"
+        Wait Until Keyword Succeeds    3x    1s    Select Random Option    ${DDL_MODEL_CODE}          ${DDL_MODEL_CODE}/option
     END
+
+Select Random Option
+    [Documentation]    Selects Random Option from the given (select) locator.
+    [Arguments]    ${locator}   ${options}    ${except_list}=${SPACE}
+    Scroll "${locator}" Into Center
+    Wait Until Element Is Enabled    ${locator}      30s
+    Click Element                    ${locator}
+    ${selected}    Wait Until Keyword Succeeds    10x    0s    Select Then Check Exception List    ${locator}    ${options}    ${except_list}
+    Log    Selected "${selected}" from the options of "${locator}".
+    Press Keys    ${locator}    ESCAPE
+    RETURN    ${selected}
+
+Select Then Check Exception List
+    [Documentation]    Selects Then Checks Exception List if selected value is valid. Throws error when invalid.
+    [Arguments]    ${locator}    ${options}    ${except_list}
+    ${index}    Get Random Index From Options    ${options}
+    ${option_locator}  Set Variable  (${options})[${index + 2}]
+    Set Test Variable    ${RANDOM_OPTION_LOCATOR}    ${option_locator}
+    ${selected}    Get Text    ${option_locator}
+    Select From List By Index    ${locator}    ${index + 1}
+    ${except_list_len}    Get Length    ${except_list}
+    IF    ${except_list_len} == ${0}    RETURN    ${selected}
+    ${except_list}    Convert To List If Not    ${except_list}
+    FOR    ${each}    IN    @{except_list}
+        IF    "${selected}" == "${each}"    Fail    Selected value "${each}" is included in the exception list ${except_list}.
+    END
+    RETURN    ${selected}
+
+Convert To List If Not
+    [Documentation]    Convert To List If Not
+    [Arguments]        ${variable}
+    ${datatype}        Evaluate                   type($variable).__name__
+    IF                 "${datatype}" != "list"
+        ${variable}    Create List                ${variable}
+    END
+    RETURN             ${variable}
+
+Get Random Index From Options
+    [Documentation]    Gets random index from the length of locator. starts with 0 ends with option's length - 1.
+    [Arguments]            ${locator}
+    ${element_count}       Get "${locator}" Length
+    IF    ${element_count} <= ${1}
+        Capture Page Screenshot
+        Fail    "${locator}" should have more than 1 option.
+    END
+    ${index}               Get Random Integer Range ${0} And ${element_count - 1}
+    RETURN                 ${index}
+
+Get "${locator}" Length
+    [Documentation]    Gets WebElement's Length.
+    ${elements}         Get WebElements        ${locator}
+    ${length}           Get Length             ${elements}
+    RETURN              ${length}
 
 Get ST Ticket Number In Ticket Summary
     [Documentation]    Get The Ticket Number
