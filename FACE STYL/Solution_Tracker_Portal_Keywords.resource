@@ -38,6 +38,8 @@ The User Navigate To CRM Site And Login
     Wait Until Element Is Visible    ${TXT_PASSWORD}    120s
     Input Text    ${TXT_PASSWORD}    ${PASSWORD}
     Click Element    ${BTN_SUBMIT}
+    #    Note: Make Sure That The Filter Set Correctly
+    #    Case Type Record == FACE Solution Tracker V2 before proceeding.
     Pause Execution    #    Input verification here
 
 Verify The Automated Ticket Title
