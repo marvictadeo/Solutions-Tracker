@@ -248,8 +248,8 @@ Select A Service Requirement
     END
 
 Select Service Requirement Value
-    [Arguments]    ${sr_item}
     [Documentation]    Keyword to Select Service Requirement Value
+    [Arguments]    ${sr_item}
     TRY
         Wait Until Element Is Visible    ${DDL_SR}
         Wait Until Keyword Succeeds    3x    1s    Select From List By Value    ${DDL_SR}    ${sr_item}
@@ -257,6 +257,35 @@ Select Service Requirement Value
         Wait Until Element Is Visible    ${DDL_SR}
         Wait Until Keyword Succeeds    3x    1s    Select From List By Label    ${DDL_SR}    ${sr_item}
     END
+
+Select A Brand
+    [Documentation]    Keyword to select a Brand
+    [Arguments]    ${brand}
+    Scroll And Click The Element    ${DDL_BRAND}
+    Set Test Variable    ${DDL_SELECTED_BRAND}    ${DDL_BRAND}/option[text()='${SPACE}${brand}${SPACE}']
+    Scroll And Click The Element    ${DDL_SELECTED_BRAND}
+
+Select A Model Name
+    [Documentation]    Keyword to select a Model Name
+    [Arguments]    ${brand}
+    Wait Until Element Is Enabled    ${DDL_MODEL_NAME}    30s
+    Scroll And Click The Element    ${DDL_MODEL_NAME}
+    IF    "${brand}" == "Aston Microphones"
+        Set Test Variable    ${DDL_SELECTED_MODEL_NAME}    //label[@for="modelCode"]/following-sibling::div/child::select/child::option[2]
+    ELSE
+        ${max_count}    Get Element Count    ${DDL_MODEL_NAME_OPTIONS}
+        ${get_random_num}    Generate A Random Number    2    ${max_count}
+        Set Test Variable    ${DDL_SELECTED_MODEL_NAME}    //label[@for="modelCode"]/following-sibling::div/child::select/child::option${get_random_num}
+    END
+
+    Scroll And Click The Element    ${DDL_SELECTED_MODEL_NAME}
+
+Select A PDI Type
+    [Documentation]    Keyword to select a PDI Type
+    [Arguments]    ${brand}
+    Scroll And Click The Element    ${DDL_BRAND}
+    Set Test Variable    ${DDL_SELECTED_BRAND}    ${DDL_BRAND}/option[text()='${SPACE}${brand}${SPACE}']
+    Scroll And Click The Element    ${DDL_SELECTED_BRAND}
 
 The User Selects A Service Classification
     [Documentation]    Select a service classification
@@ -325,10 +354,10 @@ Verify List Of Fields Based On Service Type
         # Run Keyword And Continue On Failure    Page Should Contain Element    ${FIELDS_FACE_PRIN}
     END
 
-Verify Ticket Creation For FACE PRIN
-    [Documentation]    Ticket Creation - FACE PRIN
-    The User Is On The Solution Tracker
-    FACE PRIN: Ticket Submission
+    # Verify Ticket Creation For FACE PRIN
+    #     [Documentation]    Ticket Creation - FACE PRIN
+    #     The User Is On The Solution Tracker
+    #     FACE PRIN: Ticket Submission
 
 The User Accessed The FACE PRIN Data
     [Documentation]    Keyword to open the about page workbook
@@ -337,28 +366,83 @@ The User Accessed The FACE PRIN Data
     ${table}    Select A Worksheet    ${sheet_name}
     Set Test Variable    ${TABLE}
 
-FACE PRIN: Ticket Submission
+# FACE PRIN: Ticket Submission
+#     [Documentation]    Keyword to fill in details and submit ticket using the master data
+#     FACE PRIN: Get Excel Data
+#     ${length}    Get Length    ${SUB_DIVISION}
+#     # FOR    ${count}    IN RANGE    ${length}
+#     FOR    ${count}    IN RANGE    1    2
+#         ${index}    Evaluate    ${count} - 1
+#         ${subdiv_item}    Get From List    ${SUB_DIVISION}    ${index}
+#         ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
+#         ${st_item}    Get From List    ${SERVICE_TYPE}    ${index}
+#         ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
+#         #    ------- Fill In FACE PRIN Form -------
+#         Run Keyword And Continue On Failure    FACE PRIN: Fill In Solution Tracker Form
+#         ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+#         #    ------- Submit The Ticket -------
+#         Run Keyword And Continue On Failure    Submit The Ticket
+#         #    ------- Verify Ticket Viewer -------
+#         Run Keyword And Continue On Failure    Verify Ticket Viewer Details
+#         #    ------- Verify Ticket Summary -------
+#         Run Keyword And Continue On Failure    Verify Ticket Summary    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+#         Scroll "${BTN_CREATE_A_TICKET}" Into Center
+#         Click Element    ${BTN_CREATE_A_TICKET}
+#     END
+
+Verify Case Ticket Summary In CRM For FACE PRIN
+    [Documentation]    Keyword to verify ticket creation and CRM Details for FACE PRIN
+    The User Is On The Solution Tracker
+    FACE PRIN: Ticket Submission With CRM Checking
+
+FACE PRIN: Ticket Submission With CRM Checking
     [Documentation]    Keyword to fill in details and submit ticket using the master data
     FACE PRIN: Get Excel Data
     ${length}    Get Length    ${SUB_DIVISION}
     # FOR    ${count}    IN RANGE    ${length}
-    FOR    ${count}    IN RANGE    1    2
+    FOR    ${count}    IN RANGE    1    3
         ${index}    Evaluate    ${count} - 1
         ${subdiv_item}    Get From List    ${SUB_DIVISION}    ${index}
         ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
-        ${st_item}    Get From List    ${SERVICE_TYPE}    ${index}
         ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
+        ${brand_item}    Get From List    ${BRAND}    ${index}
         #    ------- Fill In FACE PRIN Form -------
         Run Keyword And Continue On Failure    FACE PRIN: Fill In Solution Tracker Form
-        ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
-        #    ------- Submit The Ticket -------
-        Run Keyword And Continue On Failure    Submit The Ticket
-        #    ------- Verify Ticket Viewer -------
-        Run Keyword And Continue On Failure    Verify Ticket Viewer Details
-        #    ------- Verify Ticket Summary -------
-        Run Keyword And Continue On Failure    Verify Ticket Summary    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
-        Scroll "${BTN_CREATE_A_TICKET}" Into Center
-        Click Element    ${BTN_CREATE_A_TICKET}
+        ...    ${subdiv_item}    ${sc_item}    ${sr_item}
+        IF    "${sc_item}" == "${SC_BATTLE_CARD}" or "${sc_item}" == "${SC_DATA_SHEET}" or "${sc_item}" == "${SC_GIBO_MACA}" or "${sc_item}" == "${SC_SERVICE_MANUAL}"
+            Run Keyword And Continue On Failure    Fill In Other Information (Battle Card, Data Sheet, GIBO And MACA, Service Manual)    ${brand_item}
+        ELSE IF    "${sc_item}" == "${SC_MANUAL}" or "${sc_item}" == "${SC_QSG}"
+            Run Keyword And Continue On Failure    Fill In Other Information (Manual, QSG)    ${brand_item}
+        ELSE IF    "${sc_item}" == "${SC_RELEASE_NOTES}" or "${sc_item}" == "${SC_SERVICE_BULLETIN}" or "${sc_item}" == "${SC_SERVICE_SUPPORT_DOC}"
+            Run Keyword And Continue On Failure    Fill In Other Information (Release Notes, Service Bulletin, Service Support Document)    ${brand_item}
+        ELSE IF    "${sc_item}" == "${SC_TEMPLATE_CREATION}"
+            Run Keyword And Continue On Failure    Fill In Other Information (Template Creation)    ${brand_item}
+        ELSE IF    "${sc_item}" == "${SC_PDI}"
+            Run Keyword And Continue On Failure    Fill In Other Information (Template Creation)    ${brand_item}
+        ELSE IF    "${sc_item}" == "${SC_PLD}"
+            Run Keyword And Continue On Failure    Fill In Other Information (Template Creation)    ${brand_item}
+        END
+        # #    ------- Submit The Ticket -------
+        # Run Keyword And Continue On Failure    Submit The Ticket
+        # ${get_stat}    Run Keyword And Return Status   Wait Until Page Contains Element    ${TICKET_VIEWER_SEARCH}    500s
+        # IF    "${get_stat}" == "True"
+        #     #     ------- Verify Ticket Details -------
+        #     Run Keyword And Continue On Failure    Verify Case Ticket Details In CRM For FACE PRIN
+        #     ...        subdivision=${subdiv_item}    service_classification=${sc_item}    service_type=${st_item}    service_requirement=${sr_item}    # Default fields
+        #     ...        subject=${EMPTY}    description=${EMPTY}    priority=${SELECTED_PRIORITY}    cust_division=${SELECTED_CUST_DIV}    cust_subdivision=${SELECTED_CUST_SUBDIV}    cust_location=${SELECTED_LOCATION}    # Default fields
+        #     ...        brand=${EMPTY}    model_name=${EMPTY}    attachment=${EMPTY}    brand_cat_leader=${EMPTY}    prod_cat_leader=${EMPTY}    perf_cat_leader=${EMPTY}    reqs_name=${EMPTY}
+        #     ...        tech_writer=${EMPTY}    input_trim_size=${EMPTY}
+        #     ...        pdi_type=${EMPTY}    prod_feat_info=${EMPTY}    material_desc=${EMPTY}    attribute=${EMPTY}    competitor=${EMPTY}    est_availability_date=${EMPTY}    est_price=${EMPTY}
+        #     ...        forecast_ann_quantity=${EMPTY}    mkt_copy_attachments=${EMPTY}
+
+        #     Run Keyword And Continue On Failure    Go Back And Switch To ST Form Page
+        #     Run Keyword And Continue On Failure    Scroll "${BTN_CREATE_A_TICKET}" Into Center
+        #     Run Keyword And Continue On Failure    Click Element    ${BTN_CREATE_A_TICKET}
+        # ELSE
+        #     CONTINUE
+        # END
+        Pause Execution
+        Scroll And Click The Element    ${BTN_RESET}
     END
 
 FACE PRIN: Get Excel Data
@@ -366,12 +450,15 @@ FACE PRIN: Get Excel Data
     The User Accessed The FACE PRIN Data    ${SHEET_FACE_PRIN}
     ${SUB_DIVISION}    Get Table Column    ${TABLE}    ${CO_SUB_DIVISION}
     ${SERVICE_CLASSIFICATION}    Get Table Column    ${TABLE}    ${CO_SERVICE_CLASSIFICATION}
-    ${SERVICE_TYPE}    Get Table Column    ${TABLE}    ${CO_SERVICE_TYPE}
     ${SERVICE_REQUIREMENT}    Get Table Column    ${TABLE}    ${CO_SERVICE_REQUIREMENT}
+    ${BRAND}    Get Table Column    ${TABLE}    ${CO_BRAND}
+    ${QUARTER}    Get Table Column    ${TABLE}    ${CO_QUARTER}
+    ${YEAR}    Get Table Column    ${TABLE}    ${CO_YEAR}
+    ${YEAR}    Get Table Column    ${TABLE}    ${CO_YEAR}
     Set Test Variable    ${SUB_DIVISION}
     Set Test Variable    ${SERVICE_CLASSIFICATION}
-    Set Test Variable    ${SERVICE_TYPE}
     Set Test Variable    ${SERVICE_REQUIREMENT}
+    Set Test Variable    ${BRAND}
 
 Fill In Customer's Info [Division, Sub-division, Location]
     [Documentation]    Random Selection in Customer's Info
@@ -385,21 +472,25 @@ Select Random Option For "${field}" Dropdown
         Set Test Variable    ${SELECTED_CUST_DIV}
         Scroll "${DDL_CUST_DIVISION}" Into Center
         Wait Until Element Is Enabled    ${DDL_CUST_DIVISION}    30s
-        Wait Until Keyword Succeeds    3x    1s
-        ...    Select From List By Label    ${DDL_CUST_DIVISION}    ${selected_cust_div}
+        The User Clicks The "${DDL_CUST_DIVISION}"
+        Set Test Variable    ${DDL_SELECTED_DIV}    ${DDL_CUST_DIVISION}/option[text()='${SPACE}${selected_cust_div}${SPACE}']
+        Wait Until Keyword Succeeds    3x    1s    Scroll And Click The Element    ${DDL_SELECTED_DIV}
 
-        ${selected_cust_subdiv}    Random Element    ${LIST_${selected_cust_div}_SUB_DIV}
+        # ${selected_cust_subdiv}    Random Element    ${LIST_${selected_cust_div}_SUB_DIV}
+        ${selected_cust_subdiv}    Select A Customer Sub Division    ${selected_cust_div}
+        Set Test Variable    ${SELECTED_CUST_SUBDIV}
         Scroll "${DDL_CUST_SUB_DIVISION}" Into Center
         Wait Until Element Is Enabled    ${DDL_CUST_SUB_DIVISION}    30s
-        Wait Until Keyword Succeeds    3x    1s
-        ...    Select From List By Label    ${DDL_CUST_SUB_DIVISION}    ${selected_cust_subdiv}
-        Set Test Variable    ${SELECTED_CUST_SUBDIV}
+        The User Clicks The "${DDL_CUST_SUB_DIVISION}"
+        Set Test Variable    ${DDL_SELECTED_CUST_SUBDIV}    ${DDL_CUST_SUB_DIVISION}/option[text()='${SPACE}${selected_cust_subdiv}${SPACE}']
+        Wait Until Keyword Succeeds    3x    1s    Scroll And Click The Element    ${DDL_SELECTED_CUST_SUBDIV}
     ELSE IF    "${field}" == "Customer Location"
         ${selected_location}    Random Element    ${LIST_LOCATION}
-        Scroll "${DDL_CUST_LOCATION}" Into Center
-        Wait Until Keyword Succeeds    3x    1s
-        ...    Select From List By Label    ${DDL_CUST_LOCATION}    ${selected_location}
         Set Test Variable    ${SELECTED_LOCATION}
+        Scroll "${DDL_CUST_LOCATION}" Into Center
+        The User Clicks The "${DDL_CUST_LOCATION}"
+        Set Test Variable    ${DDL_SELECTED_CUST_LOC}    ${DDL_CUST_LOCATION}/option[text()='${SPACE}${selected_location}${SPACE}']
+        Wait Until Keyword Succeeds    3x    1s    Scroll And Click The Element    ${DDL_SELECTED_CUST_LOC}
     ELSE IF    "${field}" == "Priority"
         ${selected_priority}    Random Element    ${LIST_PRIORITY}
         Scroll "${DDL_PRIORITY}" Into Center
@@ -408,9 +499,41 @@ Select Random Option For "${field}" Dropdown
         Set Test Variable    ${SELECTED_PRIORITY}
     END
 
+Select A Customer Sub Division
+    [Documentation]    Select a customer sub div
+    [Arguments]    ${selected_cust_div}
+    IF    "${selected_cust_div}" == "Availability Tribes (AVAI)"
+        ${selected_cust_subdiv}    Random Element    ${LIST_AVAI_SUB_DIV}
+    ELSE IF    "${selected_cust_div}" == "Digital Tribes (DIGI)"
+        ${selected_cust_subdiv}    Random Element    ${LIST_DIGI_SUB_DIV}
+    ELSE IF    "${selected_cust_div}" == "Face Tribes${SPACE}${SPACE}(FACE)"
+        ${selected_cust_subdiv}    Random Element    ${LIST_FACE_SUB_DIV}
+    ELSE IF    "${selected_cust_div}" == "Heart Tribes (HEAR)"
+        ${selected_cust_subdiv}    Random Element    ${LIST_HEAR_SUB_DIV}
+    ELSE IF    "${selected_cust_div}" == "Horizon Tribe (HORIZON)"
+        ${selected_cust_subdiv}    Random Element    ${LIST_AVAI_SUB_DIV}
+    ELSE IF    "${selected_cust_div}" == "Hospitality Tribes (HOSP)"
+        ${selected_cust_subdiv}    Random Element    ${LIST_HOSP_SUB_DIV}
+    ELSE IF    "${selected_cust_div}" == "Innovation Tribes (INNO)"
+        ${selected_cust_subdiv}    Random Element    ${LIST_INNO_SUB_DIV}
+    ELSE IF    "${selected_cust_div}" == "Legal Tribes (LEGA)"
+        ${selected_cust_subdiv}    Random Element    ${LIST_LEGA_SUB_DIV}
+    ELSE IF    "${selected_cust_div}" == "Performance Tribes (PERF)"
+        ${selected_cust_subdiv}    Random Element    ${LIST_AVAI_SUB_DIV}
+    ELSE IF    "${selected_cust_div}" == "Research Tribes (RESE)"
+        ${selected_cust_subdiv}    Random Element    ${LIST_RESE_SUB_DIV}
+    ELSE IF    "${selected_cust_div}" == "Transformation Tribes (TRAN)"
+        ${selected_cust_subdiv}    Random Element    ${LIST_TRAN_SUB_DIV}
+    ELSE IF    "${selected_cust_div}" == "Treasure Tribes (TREA)"
+        ${selected_cust_subdiv}    Random Element    ${LIST_TREA_SUB_DIV}
+    ELSE IF    "${selected_cust_div}" == "Value Tribes (VALU)"
+        ${selected_cust_subdiv}    Random Element    ${LIST_VALU_SUB_DIV}
+    END
+    RETURN    ${selected_cust_subdiv}
+
 Fill In Request Information
-    [Documentation]    Fill In Request Info [Subject, Description, Priority, Type of Output, Library Upload, Attachment, File Link]
-    [Arguments]   ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+    [Documentation]    Fill In Request Info
+    [Arguments]   ${subdiv_item}    ${sc_item}    ${sr_item}    ${priority}    ${cust_division}    ${cust_subdivision}    ${cust_location}
     #    --- Subject ---
     ${get_current_date_and_time}    Get Current Date    result_format=%m-%d-%Y %H:%M:%S
     ${INPUT_SUBJ}    Catenate    ${INPUT_SUBJECT}${SPACE}${get_current_date_and_time}
@@ -418,23 +541,112 @@ Fill In Request Information
     Input Text    ${SUBJECT}    ${INPUT_SUBJ}
     #    --- Description ---
     Input Text    ${DESCRIPTION}
-    ...    ${INPUT_SUBJ} ${\n}Sub-Division - ${subdiv_item} ${\n}Service Classification - ${sc_item}${\n}${\n}Service Type - ${st_item} ${\n}Service Requirement - ${sr_item}
-    #    --- Priority ---
-    Select Random Option For "Priority" Dropdown
+    ...    ${INPUT_SUBJ}${\n}Sub-Division - ${subdiv_item}${\n}Service Classification - ${sc_item}${\n}Service Requirement - ${sr_item}${\n}
+    ...    Priority - ${priority}${\n}Customer Div - ${cust_division}${\n}Customer Sub-Div - ${cust_subdivision}${\n}Customer Loc - ${cust_location}
+
+Fill In Other Information (Battle Card, Data Sheet, GIBO And MACA, Service Manual)
+    [Documentation]    Fill In Battle Card, Data Sheet, GIBO and MACA, Service Manual Fields
+    [Arguments]    ${brand}
+    #    --- Brand ---
+    Select A Brand    ${brand}
+    #    --- Model Name ---
+    Select A Model Name    ${brand}
     #    --- Attachment(s) ---
     Wait Until Element Is Enabled    ${ATTACHMENT}    30s
     Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
+    #    --- Brand Category Leader ---
+    Input Text    ${BRAND_CAT_LEADER}    ${INPUT_BRAND_CAT_LEADER}
+    #    --- Product Category Leader ---
+    Input Text    ${PRODUCT_CAT_LEADER}    ${INPUT_PRODUCT_CAT_LEADER}
+    #    --- Performance Category Leader ---
+    Input Text    ${PERFORMANCE_CAT_LEADER}    ${INPUT_PERFORMANCE_CAT_LEADER}
+    #    --- Requestor's Name ---
+    Input Text    ${REQUESTORS_NAME}    ${INPUT_REQUESTORS_NAME}
+
+Fill In Other Information (Manual, QSG)
+    [Documentation]    Fill In Manual, QSG Fields
+    [Arguments]    ${brand}
+    #    --- Brand ---
+    Select A Brand    ${brand}
+    #    --- Model Name ---
+    Select A Model Name    ${brand}
+    #    --- Attachment(s) ---
+    Wait Until Element Is Enabled    ${ATTACHMENT}    30s
+    Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
+    #    --- Brand Category Leader ---
+    Input Text    ${BRAND_CAT_LEADER}    ${INPUT_BRAND_CAT_LEADER}
+    #    --- Product Category Leader ---
+    Input Text    ${PRODUCT_CAT_LEADER}    ${INPUT_PRODUCT_CAT_LEADER}
+    #    --- Performance Category Leader ---
+    Input Text    ${PERFORMANCE_CAT_LEADER}    ${INPUT_PERFORMANCE_CAT_LEADER}
+    #    --- Requestor's Name ---
+    Input Text    ${REQUESTORS_NAME}    ${INPUT_REQUESTORS_NAME}
+    #    --- Technical Writer ---
+    Input Text    ${TECHNICAL_WRITER}    ${INPUT_TECH_WRITER_NAME}
+    #    --- Input Trim Size ---
+    Input Text    ${TRIM_SIZE}    ${INPUT_TRIM_SIZE}
+
+Fill In Other Information (Release Notes, Service Bulletin, Service Support Document)
+    [Documentation]    Fill In Release Notes, Service Bulletin, Service Support Document Fields
+    [Arguments]    ${brand}
+    #    --- Brand ---
+    Select A Brand    ${brand}
+    #    --- Model Name ---
+    Select A Model Name    ${brand}
+    #    --- Attachment(s) ---
+    Wait Until Element Is Enabled    ${ATTACHMENT}    30s
+    Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
+    #    --- Brand Category Leader ---
+    Input Text    ${BRAND_CAT_LEADER}    ${INPUT_BRAND_CAT_LEADER}
+    #    --- Product Category Leader ---
+    Input Text    ${PRODUCT_CAT_LEADER}    ${INPUT_PRODUCT_CAT_LEADER}
+    #    --- Performance Category Leader ---
+    Input Text    ${PERFORMANCE_CAT_LEADER}    ${INPUT_PERFORMANCE_CAT_LEADER}
+    #    --- Requestor's Name ---
+    Input Text    ${REQUESTORS_NAME}    ${INPUT_REQUESTORS_NAME}
+    #    --- Technical Writer ---
+    Input Text    ${TECHNICAL_WRITER}    ${INPUT_TECH_WRITER_NAME}
+
+Fill In Other Information (Template Creation)
+    [Documentation]    Fill In Template Creation Fields
+    [Arguments]    ${brand}
+    #    --- Brand ---
+    Select A Brand    ${brand}
+    #    --- Attachment(s) ---
+    Wait Until Element Is Enabled    ${ATTACHMENT}    30s
+    Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
+    #    --- Requestor's Name ---
+    Input Text    ${REQUESTORS_NAME}    ${INPUT_REQUESTORS_NAME}
+
+Fill In Other Information (PDI Document)
+    [Documentation]    Fill In PDI Document Fields
+    [Arguments]    ${brand}
+    #    --- Brand ---
+    Select A Brand    ${brand}
+    #    --- Brand Category Leader ---
+    Input Text    ${BRAND_CAT_LEADER}    ${INPUT_BRAND_CAT_LEADER}
+    #    --- Product Category Leader ---
+    Input Text    ${PRODUCT_CAT_LEADER}    ${INPUT_PRODUCT_CAT_LEADER}
+    #    --- Performance Category Leader ---
+    Input Text    ${PERFORMANCE_CAT_LEADER}    ${INPUT_PERFORMANCE_CAT_LEADER}
+    #    --- PDI Type ---
+    #    --- Model Name ---
+    Select A Model Name    ${brand}
+    #    --- Requestor's Name ---
+    Input Text    ${REQUESTORS_NAME}    ${INPUT_REQUESTORS_NAME}
+    #    --- Technical Writer ---
+    Input Text    ${TECHNICAL_WRITER}    ${INPUT_TECH_WRITER_NAME}
 
 FACE PRIN: Fill In Solution Tracker Form
     [Documentation]    Keyword to fill in FACE PRIN Solution Tracker Form
-    [Arguments]    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+    [Arguments]    ${subdiv_item}    ${sc_item}    ${sr_item}
     Select A Division   ${DIV_VALUE}
     Select A Sub-Division    ${subdiv_item}
     Select A Service Classification    ${sc_item}
-    Select A Service Type    ${st_item}
     Select A Service Requirement    ${sr_item}
+    Select Random Option For "Priority" Dropdown
     Fill In Customer's Info [Division, Sub-division, Location]
-    Fill In Request Information   ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+    Fill In Request Information   ${subdiv_item}    ${sc_item}    ${sr_item}    ${SELECTED_PRIORITY}    ${SELECTED_CUST_DIV}    ${SELECTED_CUST_SUBDIV}    ${SELECTED_LOCATION}
 
 Submit The Ticket
     [Documentation]    Submit The Ticket
@@ -522,80 +734,19 @@ Get ST Ticket Number In Ticket Summary
     Set Suite Variable    ${STR_CASE_NUM}
     RETURN    ${STR_CASE_NUM}
 
-# ============ CRM Verification - START ============ #
-
-Verify Case Ticket Summary In CRM For FACE PRIN
-    [Documentation]    Keyword to verify ticket creation and CRM Details for FACE PRIN
-    ${ticket_info_details}    FACE PRIN: Get Ticket Info Summary
-    Verify Ticket Details In Agent Portal   ${ticket_info_details}
-    # FACE PRIN: Ticket Submission With CRM Checking
-
-# FACE PRIN: Ticket Submission With CRM Checking
-    # [Documentation]    Keyword to fill in details and submit ticket using the master data
-    # FACE PRIN: Get Excel Data
-    # ${length}    Get Length    ${SUB_DIVISION}
-    # # FOR    ${count}    IN RANGE    ${length}
-    # FOR    ${count}    IN RANGE    1    2
-    #     ${index}    Evaluate    ${count} - 1
-    #     ${subdiv_item}    Get From List    ${SUB_DIVISION}    ${index}
-    #     ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
-    #     ${st_item}    Get From List    ${SERVICE_TYPE}    ${index}
-    #     ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
-    #     #    ------- Fill In FACE PRIN Form -------
-    #     Run Keyword And Continue On Failure    FACE PRIN: Fill In Solution Tracker Form
-    #     ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
-    #     #    ------- Submit The Ticket -------
-    #     Run Keyword And Continue On Failure    Submit The Ticket
-    #     #    ------- Verify Ticket Viewer -------
-    #     Run Keyword And Continue On Failure    Verify Ticket Viewer Details
-    #     #    ------- Verify Ticket Summary -------
-    #     Run Keyword And Continue On Failure    Verify Ticket Summary    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
-    #    ------ Verify Ticket In ST Portal ------
-        # Run Keyword And Continue On Failure    Verify Ticket Details In Agent Portal
-    # END
-
-Ticket Viewer: Search A Case
-    [Documentation]    Keyword to search a case in the ticket viewer details
-    [Arguments]    ${keyword}
-    Wait Until Page Contains Element    ${BTN_VIEW}    10s
-    Scroll And Click The Element    ${BTN_VIEW}
-    Wait Until Page Contains Element    ${TICKET_VIEWER_SEARCH}    30s
-    Input Text    ${TICKET_VIEWER_SEARCH}    ${keyword}
-    Click Element    ${TICKET_VIEWER_SEARCH_ICON}
-
-FACE PRIN: Get Ticket Info Summary
-    [Documentation]    Keyword to get the ticket info summary
-    Ticket Viewer: Search A Case    ${INPUT_SUBJECT}
-    # Ticket Viewer: Search A Case     CAS-24611-S7T0F4
-    Set Test Variable    ${TICKET_VIEWER_CASES}    //a[contains(text(),'${INPUT_SUBJECT}')]
-    ${count}    Get Element Count    ${TICKET_VIEWER_CASES}
-    # Set Test Variable    ${SPECIFIC CASE}    (${TICKET_VIEWER_CASES})[${count}]
-    # --- To be uncommented once all cases are available on sandbox --- #
-    ${random_num}    Get Random Integer Range 1 And ${count}
-    Set Test Variable    ${SPECIFIC CASE}    (${TICKET_VIEWER_CASES})[${random_num}]
-    Scroll And Click The Element    ${SPECIFIC CASE}
-    Wait Until Page Contains Element    ${TICKET_INFO}    120s
-    ${ticket_info_details}    Get Ticket Info Details
-    RETURN    ${ticket_info_details}
-
-Verify Ticket Details In Agent Portal
-    [Documentation]    Keyword to verify ticket details in Agent Portal
-    [Arguments]    ${ticket_info_details}
-    Go To Agent Portal
-    Login To Agent Portal
-    Go To Agent Portal Ticket Details   ${ticket_info_details['Case_Num']}
-    Verify Agent Portal CRM Details    ${ticket_info_details}
+# ============ CRM Verification V2 - START ============ #
 
 Go To Agent Portal
     [Documentation]    Keyword to redirect the user to Agent Portal
     Scroll And Click The Element    ${BTN_AGENT_PORTAL}
     ${get_stat_1}    Run Keyword And Return Status    Switch Window    title=${TAB_NAME_LOGIN}    timeout=2s
-    IF    "${get_stat_1}" != "True"
-        ${get_stat_2}    Run Keyword And Return Status    Switch Window    title=${UAT_TAB_NAME_AGENT_PORTAL}    timeout=2s
-        IF    "${get_stat_2}" != "True"
-            ${get_stat_2}    Run Keyword And Return Status    Switch Window    title=${PROD_TAB_NAME_AGENT_PORTAL}    timeout=2s
-        END
-    END
+    Go To    ${UAT_CRM_V2}
+    # IF    "${get_stat_1}" != "True"
+    #     ${get_stat_2}    Run Keyword And Return Status    Switch Window    title=${UAT_TAB_NAME_AGENT_PORTAL}    timeout=2s
+    #     IF    "${get_stat_2}" != "True"
+    #         ${get_stat_2}    Run Keyword And Return Status    Switch Window    title=${PROD_TAB_NAME_AGENT_PORTAL}    timeout=2s
+    #     END
+    # END
 
 Login To Agent Portal
     [Documentation]    Keyword to login on Agent Portal
@@ -624,23 +775,107 @@ Go To Agent Portal Ticket Details
     Wait Until Page Contains Element    ${SEARCHED_CASE_NUM}    10s
     Click Element    ${SEARCHED_CASE_NUM}
 
-Verify Agent Portal CRM Details
-    [Documentation]    Keyword to verify agent portal details
-    [Arguments]    ${ticket_info_details}
-    FOR    ${site_data}    ${crm_element}    IN ZIP   ${CASE_TICKET_INFO_TO_VERIFY}    ${CRM_CASE_SUMMARY_FIELDS}
-        IF  "${site_data}" == "Priority"
-        Set Test Variable    ${CASE_SUMMARY_PRIORITY}    //div[contains(text(),'${ticket_info_details['${site_data}']}')]
-        Scroll "${CASE_SUMMARY_PRIORITY}" Into Center
-        Page Should Contain Element    ${CASE_SUMMARY_PRIORITY}
+Get CRM Details
+    [Documentation]    Get CRM Details
+    [Arguments]    ${DIV}
+    FOR    ${key}    IN    @{DIC_CRM_CASE_SUMMARY_${DIV}_FIELDS}
+        IF    "${key}" == "NUM"
+            Run Keyword And Continue On Failure    Wait Until Page Contains Element    ${CASE_SUMMARY_${key}}    60s
+            ${text}    Run Keyword And Continue On Failure    Scroll To Element And Get Element Attribute    ${CASE_SUMMARY_${key}}    value
+            Run Keyword And Continue On Failure    Set To Dictionary    ${DIC_CRM_CASE_SUMMARY_${DIV}_FIELDS}    ${key}=${text}
+        ELSE IF    "${key}" == "SR"
+            ${text}    Run Keyword And Continue On Failure    Scroll To Element And Get Element Attribute        ${CASE_SUMMARY_${key}}    title
+            Run Keyword And Continue On Failure    Set To Dictionary    ${DIC_CRM_CASE_SUMMARY_${DIV}_FIELDS}    ${key}=${text}
+        ELSE IF    "${key}" == "REQ_NAME" or "${key}" == "ATTACHMENT" or "${key}" == "DATE_NEEDED"
+            Run Keyword And Continue On Failure    The User Clicks The "${TAB_DETAILED_INFO}"
+            Run Keyword And Continue On Failure    Wait Until Page Contains Element    ${CASE_SUMMARY_${key}}    60s
+            ${text}    Run Keyword And Continue On Failure    Scroll To Element And Get Element Attribute    ${CASE_SUMMARY_${key}}    value
+            Run Keyword And Continue On Failure    Set To Dictionary    ${DIC_CRM_CASE_SUMMARY_${DIV}_FIELDS}   ${key}=${text}
+        ELSE IF    "${key}" == "PURPOSE" or "${key}" == "PRODUCT_VECTOR_IMG" or "${key}" == "COMPLETE_3D_IMG" or "${key}" == "REF_IMG" or "${key}" == "STOCK_IMG" or "${key}" == "TYPE_OF_OUTPUT" or "${key}" == "BRAND"
+            Run Keyword And Continue On Failure    The User Clicks The "${TAB_DETAILED_INFO}"
+            ${text}    Run Keyword And Continue On Failure    Scroll To Element And Get Element Attribute        ${CASE_SUMMARY_${key}}    title
+            Run Keyword And Continue On Failure    Set To Dictionary    ${DIC_CRM_CASE_SUMMARY_${DIV}_FIELDS}    ${key}=${text}
         ELSE
-        Wait Until Page Contains Element    ${crm_element}    30s
-        Scroll "${crm_element}" Into Center
-        ${agent_portal_data}    Get Element Attribute    ${crm_element}    title
-            IF    "${site_data}" == "Division"
-            Run Keyword And Continue On Failure    Should Be Equal    ${ticket_info_details['${site_data}']}    ${agent_portal_data}    collapse_spaces=true
-            ELSE
-            Run Keyword And Continue On Failure    Should Be Equal    ${ticket_info_details['${site_data}']}    ${agent_portal_data}
-            END
+            Run Keyword And Continue On Failure    Wait Until Page Contains Element    ${CASE_SUMMARY_${key}}    60s
+            ${text}    Run Keyword And Continue On Failure    Scroll To Element And Get Text    ${CASE_SUMMARY_${key}}
+            Run Keyword And Continue On Failure    Set To Dictionary    ${DIC_CRM_CASE_SUMMARY_${DIV}_FIELDS}    ${key}=${text}
         END
     END
-# ============ CRM Verification - END ============ #
+    RETURN    ${DIC_CRM_CASE_SUMMARY_${DIV}_FIELDS}
+
+Get Subject
+    [Documentation]    Get Subj
+    ${expected_title}    Get Variable Value    ${INPUT_SUBJ}
+    ${data_table_title}    Set Variable    //div[@class="datatable-body-cell-label"]/a[text()="${SPACE}${expected_title}"]
+    Wait Until Page Contains Element    ${data_table_title}    120s
+    Set Test Variable    ${DATA_TABLE_TITLE}
+
+
+
+Go Back To CRM Search Page
+    [Documentation]    Go Back And Switch To ST Form Page
+    Wait Until Element Is Visible    //div/button[@title='Go back']
+    Click Element    //div/button[@title='Go back']
+    Wait Until Element Is Visible    ${SEARCH_BOX}    30s
+
+Go Back And Switch To ST Form Page
+    [Documentation]    Go Back And Switch To ST Form Page
+    Switch Window    title=${ST_TAB_PAGE}
+    Wait Until Element Is Visible    ${TICKET_VIEWER_SEARCH}    30s
+
+Verify Case Ticket Details In CRM For FACE PRIN
+    [Documentation]    Verify CRM Details
+    [Arguments]    ${subdivision}=${EMPTY}    ${service_classification}=${EMPTY}    ${service_type}=${EMPTY}    ${service_requirement}=${EMPTY}    ${service_category}=${EMPTY}    # Default fields
+    ...            ${subject}=${EMPTY}    ${description}=${EMPTY}    ${priority}=${EMPTY}    ${cust_division}=${EMPTY}    ${cust_subdivision}=${EMPTY}    ${cust_location}=${EMPTY}    # Default fields
+    ...            ${brand}=${EMPTY}    ${model_name}=${EMPTY}    ${attachment}=${EMPTY}    ${brand_cat_leader}=${EMPTY}    ${prod_cat_leader}=${EMPTY}    ${perf_cat_leader}=${EMPTY}    ${reqs_name}=${EMPTY}
+    ...            ${tech_writer}=${EMPTY}    ${input_trim_size}=${EMPTY}
+    ...            ${pdi_type}=${EMPTY}    ${prod_feat_info}=${EMPTY}    ${material_desc}=${EMPTY}    ${attribute}=${EMPTY}    ${competitor}=${EMPTY}    ${est_availability_date}=${EMPTY}    ${est_price}=${EMPTY}
+    ...            ${forecast_ann_quantity}=${EMPTY}    ${mkt_copy_attachments}=${EMPTY}
+
+    Get Subject
+    ${case_num}    Get The Case Ticket Number In Ticket Viewer
+    ${get_stat}    Run Keyword And Return Status    Switch Window    title=Search - Dynamics 365
+    IF    "${get_stat}" == "False"
+        Go To Agent Portal
+    ELSE
+        Log    Switched to CRM Page.
+    END
+    Login To Agent Portal
+    Go To Agent Portal Ticket Details    ${case_num}
+
+    # --- Compare Case Ticket Details vs CRM ---
+    IF    "${service_type}" == "${ST_PRODUCT_IMG_REND}"
+        @{list_site_details}    Create List    ${case_num}    ${subdivision}     ${service_classification}    ${service_type}    ${service_requirement}
+        ...                                    ${priority}    ${cust_division}    ${cust_subdivision}
+        ...                                    ${brand}    ${purpose}    ${rend_model_code}
+        ...                                    ${product_vector_attachment}    ${complete_product_3d_attachment}
+
+        ${crm_rend_details}    Get CRM Details    IMG_REND
+    ELSE IF    "${service_type}" == "${ST_PRODUCT_IMG_LIFESTYLE}"
+        @{list_site_details}    Create List    ${case_num}    ${subdivision}     ${service_classification}    ${service_type}    ${service_requirement}
+        ...                                    ${priority}    ${cust_division}    ${cust_subdivision}
+        ...                                    ${brand}    ${purpose}    ${rend_model_code}
+        ...                                    ${ref_file_attachment}    ${stock_img_attachment}
+        ${crm_rend_details}    Get CRM Details    IMG_LIFESTYLE
+    ELSE IF    "${service_type}" == "${ST_PRODUCT_IMG_ASSET}"
+        @{list_site_details}    Create List    ${case_num}    ${subdivision}     ${service_classification}    ${service_type}    ${service_requirement}
+        ...                                    ${priority}    ${cust_division}    ${cust_subdivision}
+        ...                                    ${attachment}    ${brand}    ${purpose}    ${rend_model_code}    ${type_of_output}
+        ${crm_rend_details}    Get CRM Details    IMG_ASSET
+    ELSE IF    "${service_type}" == "${ST_VST_IMG_ASSET}"
+        @{list_site_details}    Create List    ${case_num}    ${subdivision}     ${service_classification}    ${service_type}    ${service_requirement}
+        ...                                    ${priority}    ${cust_division}    ${cust_subdivision}
+        ...                                    ${brand}    ${purpose}    ${rend_model_code}
+        ${crm_rend_details}    Get CRM Details    VST_ASSET
+    END
+
+    FOR    ${crm_data}    ${site_data}    IN ZIP    ${crm_rend_details}   ${list_site_details}
+        IF    "${crm_data}" == "ATTACHMENT" or "${crm_data}" == "PRODUCT_VECTOR_IMG" or "${crm_data}" == "COMPLETE_3D_IMG" or "${crm_data}" == "REF_IMG" or "${crm_data}" == "STOCK_IMG"
+            Run Keyword And Continue On Failure    Should Contain    ${crm_rend_details['${crm_data}']}    ${site_data}
+        ELSE
+            Run Keyword And Continue On Failure    Should Be Equal    ${crm_rend_details['${crm_data}']}    ${site_data}
+        END
+    END
+
+    Go Back To CRM Search Page
+    # ============ CRM Verification V2 - END ============ #
