@@ -28,7 +28,7 @@ Fill In Request Information
     #    Input Text    ${SUBJECT}    ${expected_title}
     Set Suite Variable    ${EXPECTED_TITLE}
     #    --- Description ---
-    ${expected_description}    Set Variable    Internal QA - FACE STYL ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} ${\n} Service Type - ${st_item} ${\n} Service Requirement - ${sr_item}
+    ${expected_description}    Set Variable    Internal QA - FACE STYL ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} Service Type - ${st_item} ${\n} Service Requirement - ${sr_item}
     Input Text    ${DESCRIPTION}    ${expected_description}
     Set Suite Variable    ${EXPECTED_DESCRIPTION}
     #    --- Priority ---
@@ -63,13 +63,56 @@ Submit The Ticket
     [Documentation]    Submit The Ticket
     ${stat}    Run Keyword And Return Status
     ...    Wait Until Element Is Enabled    //button[@class="btn btn-primary"]    30s
+    Retrieve All Entered Data In The Form
     IF    "${stat}" == "True"
         Click Element    //button[@class="btn btn-primary"]
         Wait Until Page Contains Element    //div[@class="datatable-body-cell-label"]    120s
         #Wait Until Page Contains Element    ${DATA_TABLE}    120s
         Get The Case Ticket Number In Ticket Viewer
     ELSE
+        Set Test Variable    ${STR_CASE_NUM}    Failed
+        Capture Page Screenshot
         Fail    Submit Button is Disabled
+    END
+
+Retrieve All Entered Data In The Form
+    [Documentation]    Get the information entered by the user in the form
+    ${DICT_RETRIEVED_VALUES}    Create Dictionary
+    FOR    ${field}    IN    @{LIST_STYL_ALL_FIELDS}
+        IF    "${field}"=="Attachment(s)/Link"
+            ${str_value}    Set Variable    Download
+            Set To Dictionary    ${DICT_RETRIEVED_VALUES}    ${field}=${str_value}
+        END
+        IF    "${field}"=="Subject"
+            ${str_value}    Set Variable    ${sc_item}
+            Set To Dictionary    ${DICT_RETRIEVED_VALUES}    ${field}=${str_value}
+        END
+        ${field_exist}    Run Keyword And Return Status    Element Should Be Visible    ${DICT_FORM_FIELDS_LOCATORS}[${field}]
+        IF    ${field_exist}==${False}
+            Log    N/A
+        ELSE
+            TRY
+                ${str_value}    Get Selected List Label   ${DICT_FORM_FIELDS_LOCATORS}[${field}]
+            EXCEPT
+                ${str_value}    Get Value   ${DICT_FORM_FIELDS_LOCATORS}[${field}]
+            END
+            Set To Dictionary    ${DICT_RETRIEVED_VALUES}    ${field}=${str_value}
+        END
+    END
+    Set Suite Variable    ${DICT_RETRIEVED_VALUES}
+
+Verify Ticket Summary Data
+    [Documentation]    The information provided by the user in the ticket form should match the ticket summary details.
+    Click Element    ${DATA_TABLE}
+    Wait Until Page Contains Element    //div[contains(text(),'Ticket Info')]
+    FOR    ${field}    IN    @{LIST_STYL_ALL_FIELDS}
+        ${field_exist}    Run Keyword And Return Status    Element Should Be Visible    ${DETAIL_${field}}
+        IF    ${field_exist}==${False}
+            Log    N/A
+        ELSE
+            ${actual_value}    Get Text    ${DETAIL_${field}}
+            Run Keyword And Continue On Failure    Should Be Equal As Strings     ${DICT_RETRIEVED_VALUES}[${field}]    ${actual_value}
+        END
     END
 
 Change Division
@@ -210,29 +253,18 @@ Verify Master Data, Ticket Submission And Ticket Summary : FACE STYL
         ${st_item}    Get From List    ${SERVICE_TYPE}    ${index}
         ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
         ${scat_item}    Get From List    ${SERVICE_CATEGORY}    ${index}
+        Set Test Variable    ${SC_ITEM}
         #    ------- Fill In FACE TECH Form -------
         Check Create Page
         Run Keyword And Continue On Failure    Fill In FACE STYL Solution Tracker Form
         ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}     ${scat_item}
 	    ${excel_index}    Evaluate    ${count} + 2
-        TRY
-            #    ------- Submit The Ticket -------
-            Submit The Ticket
-            Open Workbook    ${MASTER_DATA}
-            ${table}    Select A Worksheet    STYL
-            Set Cell Value    ${excel_index}    6    ${STR_CASE_NUM}
-            Save Workbook
-        EXCEPT
-            Open Workbook    ${MASTER_DATA}
-            ${table}    Select A Worksheet    STYL
-            Set Cell Value    ${excel_index}    6    FAILED
-            Save Workbook
-        END
-
+        #    ------- Submit The Ticket -------
+        Submit The Ticket
+        Set Cell Value    ${excel_index}    6    ${STR_CASE_NUM}
+        Save Workbook
         #    ------- Verify Ticket Summary -------
-        Run Keyword And Continue On Failure
-        ...    Verify Ticket Summary
-        ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${scat_item}
+        Run Keyword And Continue On Failure    Verify Ticket Summary Data
     END
 
 Verify Master Data And Ticket Submission With CRM Checking : FACE STYL
@@ -254,29 +286,20 @@ Verify Master Data And Ticket Submission With CRM Checking : FACE STYL
         Run Keyword And Continue On Failure    Fill In FACE STYL Solution Tracker Form
         ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${scat_item}
         ${excel_index}    Evaluate    ${count} + 2
-        TRY
-            #    ------- Submit The Ticket -------
-            Submit The Ticket
-            Open Workbook    ${MASTER_DATA}
-            ${table}    Select A Worksheet    STYL
-            Set Cell Value    ${excel_index}    6    ${STR_CASE_NUM}
-            Save Workbook
-        EXCEPT
-            Open Workbook    ${MASTER_DATA}
-            ${table}    Select A Worksheet    STYL
-            Set Cell Value    ${excel_index}    6    FAILED
-            Save Workbook
-        END
+        #    ------- Submit The Ticket -------
+        Submit The Ticket
+        Set Cell Value    ${excel_index}    6    ${STR_CASE_NUM}
+        Save Workbook
         #    ------ Verify Ticket Summary ------
         #Run Keyword And Continue On Failure
         #...    Verify Ticket Summary
         #...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${scat_item}
         #    ------ Verify Ticket In ST Portal ------
-        Verify The Ticket In Solution Tracker Portal    ${URL_ALL_CASES}    CAS-25997-C7K7C3
-        Verify CRM Summary Tab Ticket Details    CAS-25997-C7K7C3    FACE Solution Tracker V2    Face Tribes (FACE)
+        Verify The Ticket In Solution Tracker Portal    ${URL_ALL_CASES}    ${STR_CASE_NUM}
+        Verify CRM Summary Tab Ticket Details    ${STR_CASE_NUM}    FACE Solution Tracker V2    Face Tribes (FACE)
         ...    ${subdiv_item}    ${sc_item}    ${sr_item}    ${EXPECTED_TITLE}    ${DESCRIPTION}
         Go Back And Switch To ST Form Page
-        Set Cell Value    ${index}    Case Number    CAS-25997-C7K7C3
+        Set Cell Value    ${index}    Case Number    ${STR_CASE_NUM}
     END
 
 Verify Master Data And Field Validation : FACE STYL
@@ -298,20 +321,10 @@ Verify Master Data And Field Validation : FACE STYL
         Run Keyword And Continue On Failure    Fill In FACE STYL Solution Tracker Form
         ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${scat_item}
         ${excel_index}    Evaluate    ${count} + 2
-        TRY
-            #    ------- Submit The Ticket -------
-            Submit The Ticket
-            Open Workbook    ${MASTER_DATA}
-            ${table}    Select A Worksheet    STYL
-            Set Cell Value    ${excel_index}    6    ${STR_CASE_NUM}
-            Save Workbook
-        EXCEPT
-            Open Workbook    ${MASTER_DATA}
-            ${table}    Select A Worksheet    STYL
-            Set Cell Value    ${excel_index}    6    Test Failed
-            Save Workbook
-            Run Keyword And Continue On Failure    Fail    Test Failed
-        END
+        #    ------- Submit The Ticket -------
+        Submit The Ticket
+        Set Cell Value    ${excel_index}    6    ${STR_CASE_NUM}
+        Save Workbook
         #Run Keyword And Continue On Failure    Wait Until Element Is Enabled   //button[@class="btn btn-primary"]    20s
         #Pause Execution
     END
@@ -340,7 +353,7 @@ Fill In FACE STYL Solution Tracker Form
 Get Excel Data - FACE STYL
     [Documentation]    Get Excel Data - FACE STYL
     [Arguments]    ${sheet_name}
-    Open Workbook       ${MASTER_DATA}    read_only=True
+    Open Workbook       ${MASTER_DATA}
     ${table}    Select A Worksheet    ${sheet_name}
     Set Test Variable    ${TABLE}
     ${SUB_DIVISION}    Get Table Column    ${TABLE}    Sub-Division
