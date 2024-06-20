@@ -26,7 +26,7 @@ Verify Ticket Creation With CRM Checking : FACE STYL
     ...    Created Ticket In The Solution Ticket Portal
     ...    Automated Ticket Title
     Verify Master Data And Ticket Submission With CRM Checking : FACE STYL
- 
+
 Verify STYL Data And Field Validation : FACE STYL
     [Documentation]    Test Case to Verify FACE TECH Form Master Data
     ...                Ticket Submission

@@ -32,6 +32,38 @@ ${LBL_SUBJECT}               //input[@aria-label="Subject"]
 
 #    ........................Solution Tracker Customer Website.....................................
 
+#    Ticket Summary
+${TICKET_DETAILS_HEADER}     //*[@class='ticket-details__header']
+${TICKET_DETAILS_ITEMS}      //ul[@class='ticket-details__body']
+@{LIST_STYL_ALL_FIELDS}      Division      Sub-Division    Service Classification    Service Type    Service Requirement    Service Category
+...                          Subject    Description    Type of Output    Academy Upload    Attachment(s)/Link    Required File Format    Required Color    Priority
+...                          Customer Division    Customer Sub-Division     Customer Location
+
+${DETAIL_Division}                               ${TICKET_DETAILS_ITEMS}//li/span[contains(text(),"Division:")]/following-sibling::strong
+${DETAIL_Sub-Division}                           ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Sub-Division:")]/following-sibling::strong
+${DETAIL_Service Classification}                 ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Classification:")]/following-sibling::strong
+${DETAIL_Service Type}                           ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Type:")]/following-sibling::strong
+${DETAIL_Service Requirement}                    ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Requirement:")]/following-sibling::strong
+${DETAIL_Service Category}                       ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Category:")]/following-sibling::strong
+${DETAIL_Type of Output}                         ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Type of Output:")]/following-sibling::strong
+${DETAIL_Academy Upload}                         ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Academy Upload:")]/following-sibling::strong
+${DETAIL_Attachment(s)/Link}                     ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Attachment(s)/Link:")]/following-sibling::strong
+${DETAIL_Required File Format}                   ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Required File Format:")]/following-sibling::strong
+${DETAIL_Required Color}                         ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Required Color:")]/following-sibling::strong
+${DETAIL_Priority}                               ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Priority:")]/following-sibling::strong
+${DETAIL_Customer Division}                      ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Division:")]/following-sibling::strong
+${DETAIL_Customer Sub-Division}                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Sub-Division:")]/following-sibling::strong
+${DETAIL_Customer Location}                      ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Location:")]/following-sibling::strong
+${DETAIL_Subject}                                ${TICKET_DETAILS_HEADER}/p[2]
+${DETAIL_Description}                            ${TICKET_DETAILS_HEADER}/p[3]
+
+#    Ticket Creation Form
+&{DICT_FORM_FIELDS_LOCATORS}           Division=${DDL_DIVISION}    Sub-Division=${DDL_SUBDIVISION}    Service Classification=${DDL_SC}    Service Type=${DDL_ST}
+...                                    Service Requirement=${DDL_SR}    Service Category=${DDL_SCAT}
+...                                    Description=${DESCRIPTION}    Type of Output=${DDL_TYPE OF OUTPUT - A}    Academy Upload=${ACADEMY_UPLOAD}
+...                                    Required File Format=${TXT_FILE_FORMAT}    Required Color=${TXT_REQUIRED_COLOR}    Priority=${DDL_PRIORITY}
+...                                    Customer Division=${DDL_CUST_DIVISION}    Customer Sub-Division=${DDL_CUST_SUB_DIVISION}     Customer Location=${DDL_CUSTOMER LOCATION}
+
 ${DDL_DIVISION}                        //select[@formcontrolname="division"]
 ${DDL_SUBDIVISION}                     //select[@formcontrolname="subDivision"]
 ${DDL_CUST_DIVISION}                   //label[@for="senderDivision"]//following-sibling::div/select
@@ -98,7 +130,6 @@ ${ICON_PRELOADER_VERIFY_ATTR}          active
 @{LIST_VALU_SUB_DIV}                      Customer Feedback    VALU    VALU DM    VALU IDM
 @{LIST_VISI_SUB_DIV}                      VISI STRA
 
-#    ---------------------- Pending Locators -----------------------
 ${TXT_REQUIRED_COLOR}                          //input[@formcontrolname="requiredColor"]
 ${TXT_FILE_FORMAT}                             //input[@formcontrolname="requiredFileFormat"]
 ${ACADEMY_UPLOAD}                              //label[@for="academyUpload"]//following-sibling::div/div[@class="form-check form-check-inline"]

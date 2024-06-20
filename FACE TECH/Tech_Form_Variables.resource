@@ -31,6 +31,39 @@ ${LBL_SUBJECT}                         //input[@aria-label="Subject"]
 
 #    ........................Solution Tracker Customer Website.....................................
 
+#    Ticket Summary
+${TICKET_DETAILS_HEADER}     //*[@class='ticket-details__header']
+${TICKET_DETAILS_ITEMS}      //ul[@class='ticket-details__body']
+@{LIST_TECH_ALL_FIELDS}      Division      Sub-Division    Service Classification    Service Requirement    Subject
+...                          Description    Attachment    Brand    Brand Category Leader    Performance Product Leader    Model Code
+...                          Priority    Date Needed     Requestor's Name
+...                          Customer Division    Customer Sub-Division     Customer Location
+
+${DETAIL_Division}                               ${TICKET_DETAILS_ITEMS}//li/span[contains(text(),"Division:")]/following-sibling::strong
+${DETAIL_Sub-Division}                           ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Sub-Division:")]/following-sibling::strong
+${DETAIL_Service Classification}                 ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Classification:")]/following-sibling::strong
+${DETAIL_Service Requirement}                    ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Requirement:")]/following-sibling::strong
+${DETAIL_Attachment}                             ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Attachment:")]/following-sibling::strong
+${DETAIL_Brand}                                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Brand:")]/following-sibling::strong
+${DETAIL_Brand Category Leader}                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Brand Category Leader:")]/following-sibling::strong
+${DETAIL_Performance Product Leader}             ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Performance Product Leader:")]/following-sibling::strong
+${DETAIL_Priority}                               ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Priority:")]/following-sibling::strong
+${DETAIL_Date Needed}                            ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Date Needed:")]/following-sibling::strong
+${DETAIL_Requestor's Name}                       ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Requestor's Name:")]/following-sibling::strong
+${DETAIL_Model Code}                             ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Model Code:")]/following-sibling::strong
+${DETAIL_Customer Division}                      ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Division:")]/following-sibling::strong
+${DETAIL_Customer Sub-Division}                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Sub-Division:")]/following-sibling::strong
+${DETAIL_Customer Location}                      ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Location:")]/following-sibling::strong
+${DETAIL_Subject}                                ${TICKET_DETAILS_HEADER}/p[2]
+${DETAIL_Description}                            ${TICKET_DETAILS_HEADER}/p[3]
+
+#    Ticket Creation Form
+&{DICT_FORM_FIELDS_LOCATORS}           Division=${DDL_DIVISION}    Sub-Division=${DDL_SUBDIVISION}    Service Classification=${DDL_SC}
+...                                    Service Requirement=${DDL_SR}    Subject=${EMPTY}    Description=${DESCRIPTION}    Brand=${DDL_BRAND}    Brand Category Leader=${TXT_BRAND_LEADER}
+...                                    Performance Product Leader=${TXT_PRODUCT_LEADER}            Priority=${DDL_PRIORITY}    Date Needed=${TXT_DATE_NEEDED}
+...                                    Requestor's Name=${REQUESTOR_NAME}    Model Code=${DDL_MODEL_CODE}
+...                                    Customer Division=${DDL_CUST_DIVISION}    Customer Sub-Division=${DDL_CUST_SUB_DIVISION}     Customer Location=${DDL_CUST_LOCATION}
+
 ${DDL_DIVISION}                        //select[@formcontrolname="division"]
 ${DDL_SUBDIVISION}                     //select[@formcontrolname="subDivision"]
 ${DDL_CUST_DIVISION}                   //label[@for="senderDivision"]//following-sibling::div/select
@@ -46,7 +79,7 @@ ${JPG_IMAGE_SAMPLE}                    ${CURDIR}${/}Jpg_Img_Photo.jpg
 ${MASTER_DATA}                         ${CURDIR}${/}..\\Master_File.xlsx
 ${SUBJECT}                             //input[@formcontrolname="subject"]
 ${DESCRIPTION}                         //textarea[@formcontrolname="description"]
-${DATA_TABLE}                          //div[@class="datatable-body-cell-label"]/a[text()=" Internal QA Test TECH"]
+${DATA_TABLE}                          //div[@class="datatable-body-cell-label"]
 
 # Global Variables
 ${ICON_PRELOADER}                      //div[contains(@class,'_loader_loader__en2c7')]
@@ -131,3 +164,4 @@ ${TXT_PRODUCT_LEADER}                     //input[@formcontrolname="performanceP
 ${DDL_MODEL_CODE}                         //select[@formcontrolname="modelCodeEntry"]
 ${REQUESTOR_NAME}                         //input[@formcontrolname="requestorName"]
 ${DATE_NEEDED}                            //div[@class="input-group datepicker"]
+${TXT_DATE_NEEDED}                        //div[@class="input-group datepicker"]/input

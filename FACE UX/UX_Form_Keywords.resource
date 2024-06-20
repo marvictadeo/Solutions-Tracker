@@ -148,28 +148,17 @@ Verify Master Data, Ticket Submission And Ticket Summary : FACE UX
         ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
         ${excel_index}    Evaluate    ${count} + 2
 
-        TRY
-            #    ------- Submit The Ticket -------
-            Submit The Ticket    ${sc_item}
-            Open Workbook    ${MASTER_DATA}
-            ${table}    Select A Worksheet    UXUI
-            IF    "${excel_index}" == "3"
-                Set Cell Value    7    5    ${STR_CASE_NUM}
-            END
-            Set Cell Value    ${excel_index}    5    ${STR_CASE_NUM}
-            Save Workbook
-        EXCEPT
-            Open Workbook    ${MASTER_DATA}
-            ${table}    Select A Worksheet    UXUI
-            Set Cell Value    ${excel_index}    5    FAILED
-            Save Workbook
-            Run Keyword And Continue On Failure    Fail    Test Failed
-            #    ------- VerifY Ticket Summary -------
-            Run Keyword And Continue On Failure
-            ...    Verify Ticket Summary    ${subdiv_item}    ${st_item}    ${sc_item}    ${sr_item}
+        #    ------- Submit The Ticket -------
+        Submit The Ticket    ${sc_item}
+        IF    "${excel_index}" == "3"
+            Set Cell Value    7    5    ${STR_CASE_NUM}
         END
+        Set Cell Value    ${excel_index}    5    ${STR_CASE_NUM}
+        Save Workbook
+        #    ------- VerifY Ticket Summary -------
+        Run Keyword And Continue On Failure
+        ...    Verify Ticket Summary    ${subdiv_item}    ${st_item}    ${sc_item}    ${sr_item}
     END
-
 
 Verify Master Data And Ticket Submission With CRM Checking : FACE UX
     [Documentation]    Verify Master Data And Ticket Submission With CRM Checking : FACE UX
@@ -226,25 +215,13 @@ Verify Master Data And Field Validation : FACE UX
         Run Keyword And Continue On Failure    Fill In FACE UX Solution Tracker Form
         ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
         ${excel_index}    Evaluate    ${count} + 2
-
-        TRY
-            #    ------- Submit The Ticket -------
-
-            Submit The Ticket    ${sc_item}
-            Open Workbook    ${MASTER_DATA}
-            ${table}    Select A Worksheet    UXUI
-            IF    "${excel_index}" == "3"
-                Set Cell Value    7    5    ${STR_CASE_NUM}
-            END
-            Set Cell Value    ${excel_index}    5    ${STR_CASE_NUM}
-            Save Workbook
-        EXCEPT
-            Open Workbook    ${MASTER_DATA}
-            ${table}    Select A Worksheet    UXUI
-            Set Cell Value    ${excel_index}    5    FAILED
-            Save Workbook
-            Run Keyword And Continue On Failure    Fail    Test Failed
-        END
+        #    ------- Submit The Ticket -------
+        Submit The Ticket    ${sc_item}
+        # IF    "${excel_index}" == "3"
+        #    Set Cell Value    7    5    ${STR_CASE_NUM}
+        # END
+        Set Cell Value    ${excel_index}    5    ${STR_CASE_NUM}
+        Save Workbook
     END
 
 Submit The Ticket
@@ -258,6 +235,8 @@ Submit The Ticket
         #Wait Until Page Contains Element    ${DATA_TABLE}    120s
         Get The Case Ticket Number In Ticket Viewer 
     ELSE
+        Set Test Variable    ${STR_CASE_NUM}    Failed
+        Capture Page Screenshot
         Fail    Submit Button is Disabled
     END
 
@@ -284,10 +263,10 @@ Fill In FACE UX Solution Tracker Form
     ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
     Fill In Product Info And Other Fields
 
-Get Excel Data - FACE UX 
+Get Excel Data - FACE UX
     [Documentation]    Get Excel Data - FACE UX
     [Arguments]    ${sheet_name}
-    Open Workbook       ${MASTER_DATA}    read_only=True
+    Open Workbook       ${MASTER_DATA}
     ${table}    Select A Worksheet    ${sheet_name}
     Set Test Variable    ${TABLE}
     ${SUB_DIVISION}    Get Table Column    ${TABLE}    Sub-Division

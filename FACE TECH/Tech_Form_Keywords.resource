@@ -37,7 +37,7 @@ Fill In Request Info [Subject, Description, Priority, Date Needed]
     ${expected_title}    Set Variable    ${sc_item}
     #Input Text    ${SUBJECT}    ${expected_title}
     Input Text    ${DESCRIPTION}
-    ...    Internal QA - FACE TECH ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} ${\n} ${\n} Service Requirement - ${sr_item} ${\n}
+    ...    Internal QA - FACE TECH ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} Service Requirement - ${sr_item}
     Select Random Option For "Priority" Dropdown
     ${next_date}    Get Current Date    result_format=%Y-%#m-%#d    increment=+1 day
     Click Element    ${DATE_NEEDED}
@@ -48,12 +48,15 @@ Submit The Ticket
     [Documentation]    Submit The Ticket
     ${stat}    Run Keyword And Return Status
     ...    Wait Until Element Is Enabled    //button[@class="btn btn-primary"]    30s
+    Retrieve All Entered Data In The Form
     IF    "${stat}" == "True"
         Click Element    //button[@class="btn btn-primary"]
         Wait Until Page Contains Element    //div[@class="datatable-body-cell-label"]    120s
         #Wait Until Page Contains Element    ${DATA_TABLE}    120s
         Get The Case Ticket Number In Ticket Viewer
     ELSE
+        Set Test Variable    ${STR_CASE_NUM}    Failed
+        Capture Page Screenshot
         Fail    Submit Button is Disabled
     END
 
@@ -165,23 +168,12 @@ Verify Master Data, Ticket Submission And Ticket Summary : FACE TECH
         Run Keyword And Continue On Failure    Fill In FACE TECH Solution Tracker Form
         ...    ${subdiv_item}    ${sc_item}   ${sr_item}
         ${excel_index}    Evaluate    ${count} + 2
-       TRY
-            #    ------- Submit The Ticket -------
-            Submit The Ticket
-            Open Workbook    ${MASTER_DATA}
-            ${table}    Select A Worksheet    TECH
-            Set Cell Value    ${excel_index}    4    ${STR_CASE_NUM}
-            Save Workbook
-        EXCEPT
-            Open Workbook    ${MASTER_DATA}
-            ${table}    Select A Worksheet    TECH
-            Set Cell Value    ${excel_index}    4    FAILED
-            Save Workbook
-            Run Keyword And Continue On Failure    Fail    Test Failed
-        END
+        #    ------- Submit The Ticket -------
+        Submit The Ticket
+        Set Cell Value    ${excel_index}    4    ${STR_CASE_NUM}
+        Save Workbook
         #    ------- VerifY Ticket Summary -------
-        Run Keyword And Continue On Failure
-        ...    Verify Ticket Summary    ${subdiv_item}    ${sc_item}    ${sr_item}
+        Run Keyword And Continue On Failure    Verify Ticket Summary Data
     END
 
 Verify Master Data And Field Validation : FACE TECH
@@ -200,20 +192,10 @@ Verify Master Data And Field Validation : FACE TECH
         Run Keyword And Continue On Failure    Fill In FACE TECH Solution Tracker Form
         ...    ${subdiv_item}    ${sc_item}   ${sr_item}
         ${excel_index}    Evaluate    ${count} + 2
-        TRY
-            #    ------- Submit The Ticket -------
-            Submit The Ticket
-            Open Workbook    ${MASTER_DATA}
-            ${table}    Select A Worksheet    TECH
-            Set Cell Value    ${excel_index}    4    ${STR_CASE_NUM}
-            Save Workbook
-        EXCEPT
-            Open Workbook    ${MASTER_DATA}
-            ${table}    Select A Worksheet    TECH
-            Set Cell Value    ${excel_index}    4    FAILED
-            Save Workbook
-            Run Keyword And Continue On Failure    Fail    Test Failed
-        END
+        #    ------- Submit The Ticket -------
+        Submit The Ticket
+        Set Cell Value    ${excel_index}    4    ${STR_CASE_NUM}
+        Save Workbook
     END
 
 Verify Master Data And Ticket Submission With CRM Checking : FACE TECH
@@ -233,20 +215,12 @@ Verify Master Data And Ticket Submission With CRM Checking : FACE TECH
         Run Keyword And Continue On Failure    Fill In FACE TECH Solution Tracker Form
         ...    ${subdiv_item}    ${sc_item}      ${sr_item}
         ${excel_index}    Evaluate    ${count} + 2
-        TRY
-            #    ------- Submit The Ticket -------
-            Submit The Ticket
-            Open Workbook    ${MASTER_DATA}
-            ${table}    Select A Worksheet    TECH
-            Set Cell Value    ${excel_index}    4    ${STR_CASE_NUM}
-            Save Workbook
-        EXCEPT
-            Open Workbook    ${MASTER_DATA}
-            ${table}    Select A Worksheet    TECH
-            Set Cell Value    ${excel_index}    4    FAILED
-            Save Workbook
-            Run Keyword And Continue On Failure    Fail    Test Failed
-        END
+        #    ------- Submit The Ticket -------
+        Submit The Ticket
+        Open Workbook    ${MASTER_DATA}
+        ${table}    Select A Worksheet    TECH
+        Set Cell Value    ${excel_index}    4    ${STR_CASE_NUM}
+        Save Workbook
         #    ------- VerifY Ticket Summary -------
         Run Keyword And Continue On Failure
         ...    Verify Ticket Summary    ${subdiv_item}    ${sc_item}   ${sr_item}
@@ -272,7 +246,7 @@ Fill In FACE TECH Solution Tracker Form
 Get Excel Data - FACE TECH
     [Documentation]    Get Excel Data - FACE TECH
     [Arguments]    ${sheet_name}
-    Open Workbook       ${MASTER_DATA}    read_only=True
+    Open Workbook       ${MASTER_DATA}
     ${table}    Select A Worksheet    ${sheet_name}
     Set Test Variable    ${TABLE}
     ${SUB_DIVISION}    Get Table Column    ${TABLE}    Sub-Division
@@ -297,6 +271,42 @@ Verify Ticket Summary
             ${SR_RESULT}    Set Variable    //span[contains(text(),'Service Requirement:')]//following-sibling::strong[contains(text(),"${sr_item.strip()}")]
             Run Keyword And Continue On Failure    Page Should Contain Element    ${SR_RESULT}
         END
+
+Retrieve All Entered Data In The Form
+    [Documentation]    Get the information entered by the user in the form
+    ${DICT_RETRIEVED_VALUES}    Create Dictionary
+    FOR    ${field}    IN    @{LIST_TECH_ALL_FIELDS}
+        IF    "${field}"=="Attachment" or "${field}"=="Subjecrt"
+            ${str_value}    Set Variable    Download
+            Set To Dictionary    ${DICT_RETRIEVED_VALUES}    ${field}=${str_value}
+        END
+        ${field_exist}    Run Keyword And Return Status    Element Should Be Visible    ${DICT_FORM_FIELDS_LOCATORS}[${field}]
+        IF    ${field_exist}==${False}
+            Log    N/A
+        ELSE
+            TRY
+                ${str_value}    Get Selected List Label   ${DICT_FORM_FIELDS_LOCATORS}[${field}]
+            EXCEPT
+                ${str_value}    Get Value   ${DICT_FORM_FIELDS_LOCATORS}[${field}]
+            END
+            Set To Dictionary    ${DICT_RETRIEVED_VALUES}    ${field}=${str_value}
+        END
+    END
+    Set Suite Variable    ${DICT_RETRIEVED_VALUES}
+
+Verify Ticket Summary Data
+    [Documentation]    The information provided by the user in the ticket form should match the ticket summary details.
+    Click Element    ${DATA_TABLE}
+    Wait Until Page Contains Element    //div[contains(text(),'Ticket Info')]
+    FOR    ${field}    IN    @{LIST_TECH_ALL_FIELDS}
+        ${field_exist}    Run Keyword And Return Status    Element Should Be Visible    ${DETAIL_${field}}
+        IF    ${field_exist}==${False}
+            Log    N/A
+        ELSE
+            ${actual_value}    Get Text    ${DETAIL_${field}}
+            Run Keyword And Continue On Failure    Should Be Equal As Strings     ${DICT_RETRIEVED_VALUES}[${field}]    ${actual_value}
+        END
+    END
 
 Navigate To Site
     [Documentation]    The user opens a browser and navigates to the site.
