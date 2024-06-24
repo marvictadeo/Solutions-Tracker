@@ -16,7 +16,7 @@ Resource             Solution_Tracker_Portal_Keywords.resource
 Fill In Attachment And Project Owner And Stakeholders Fields
     [Documentation]    Fill In Attachment And Project Owner And Stakeholders Fields
     [Arguments]    ${sc_item}
-    IF    "${sc_item}" == "Master Data" or "${sc_item}" == "User Acceptance Test (UAT) Verification" or "${sc_item}" == "User Testing"
+    IF    "${sc_item}" == "Master Data" or "${sc_item}" == "User Acceptance Test (UAT) Verification" or "${sc_item}" == "User Training"
         Wait Until Element Is Enabled    ${ATTACHMENT}    30s
         Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
     ELSE IF    "${sc_item}" != "Templates"
