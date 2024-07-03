@@ -8,6 +8,30 @@ ${BTN_CREATE}                      //div[@class="card-button__wrapper"]//div[tex
 ${DATA_TABLE}                      //div[@class="datatable-body-cell-label"]/a[text()=" Internal QA Test GRAP"]
 ${JPG_IMAGE_SAMPLE}                ${CURDIR}${/}Jpg_Img_Photo.jpg
 
+#    ----------------------------------Solution Tracker Portal---------------------------------------------
+# Login Credentials
+${EMAIL}    email
+${PASSWORD}   password
+
+# URL Sandbox
+${URL_ALL_CASES_FACE}    https://musictribeservice.crm5.dynamics.com/main.aspx?appid=22fd57cc-73f4-ed11-8848-002248ebf403&pagetype=entitylist&etn=incident&viewid=8eb7d675-e50f-ee11-8f6e-002248ebf403&viewType=1039
+${URL_ALL_CASES}         https://musictribeservice.crm5.dynamics.com/main.aspx?appid=b5f12461-796e-ee11-9ae7-002248ebf471&pagetype=entitylist&etn=incident&viewid=00000000-0000-0000-00aa-000010001030&viewType=1039
+
+#    Locators
+${SEARCH_BOX}                //input[@aria-label='Case Filter by keyword']
+${SAVE_CASE}                 //button[@aria-label='Save (CTRL+S)']
+${TAB_DETAILED_INFO}         //li[@title='Detailed Information']
+
+# Login Modal
+${TXT_EMAIL}                 //input[@type="email"]
+${TXT_PASSWORD}              //input[@type="password"]
+${BTN_SUBMIT}                //input[@type='submit']
+
+# Ticket Details
+${LBL_SUBJECT}               //input[@aria-label="Subject"]
+
+#    ---------------------------Solution Tracker Customer Website------------------------------------------
+
 # Excel Data
 ${MASTER_DATA}                          ${CURDIR}${/}..\\Master_File.xlsx
 

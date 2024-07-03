@@ -55,6 +55,11 @@ The User Clicks The "${element}"
         Log    Catches any exception when clicking through an element.
     END
 
+Clear Text Field
+    [Documentation]    Keyword to clear the text field using Press Keys function. Can be used as a workaround if Clear Element Text is not working.
+    [Arguments]  ${locator}
+    SeleniumLibrary.Press Keys    ${locator}    CTRL+a+BACKSPACE
+
 # ==========================================================================================#
 # ---------------------- KEYWORDS THAT USE JAVASCRIPTS (JS) - START ----------------------- #
 # ==========================================================================================#
@@ -241,6 +246,7 @@ Fill Out Banner Asset Design Form
 
 Select Product Details
     [Documentation]    Fills up the Product Details Section for Product Launch Asset
+    Wait Until Element Is Visible   ${DDL_PRODUCT_CATEGORY}/option    ${MAX_TIMEOUT}
     @{product_category_items}    Get List Items    ${DDL_PRODUCT_CATEGORY}
     Remove Values From List    ${product_category_items}    - - -
     ${selected_product_category}    Random Element    ${product_category_items}
@@ -416,3 +422,14 @@ Verify Ticket Summary
             ${SR_RESULT}    Set Variable    //span[contains(text(),'Service Requirement:')]//following-sibling::strong[contains(text(),"${sr_item.strip()}")]
             Run Keyword And Continue On Failure    Page Should Contain Element    ${SR_RESULT}
     END
+
+Open Link In New Tab
+    [Documentation]    Opens the Link In New Tab
+    [Arguments]    ${link}
+    ${valid_link}    Run Keyword And Return Status    Should Contain    ${link}    http
+    IF    ${valid_link}
+        Execute Javascript   window.open('${link}');
+    ELSE
+        Execute Javascript   window.open('https://${link}');
+    END
+    Switch Window    NEW

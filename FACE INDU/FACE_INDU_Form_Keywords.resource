@@ -55,6 +55,11 @@ The User Clicks The "${element}"
         Log    Catches any exception when clicking through an element.
     END
 
+Clear Text Field
+    [Documentation]    Keyword to clear the text field using Press Keys function. Can be used as a workaround if Clear Element Text is not working.
+    [Arguments]  ${locator}
+    SeleniumLibrary.Press Keys    ${locator}    CTRL+a+BACKSPACE
+
 # ==========================================================================================#
 # ---------------------- KEYWORDS THAT USE JAVASCRIPTS (JS) - START ----------------------- #
 # ==========================================================================================#
@@ -134,7 +139,7 @@ Complete FACE INDU Form
     Select "${sr_item}" Service Requirement
     Enter Requestor's Information
     Enter Generic Request Info    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
-    Enter Service Classification-Specific Info    ${sc_item}
+    Enter Service Classification-Specific Info
 
 Select Sub-Division
     [Documentation]    Selects the specified Sub-Division
@@ -159,7 +164,7 @@ Select "${st_item}" Service Type
         ${stat}    Run Keyword And Return Status    Click Element    ${ST_VALUE}
         IF    "${stat}" == "False"
             Set Test Variable    ${ST_VALUE}    ${DDL_ST}\[contains(text(),"${SPACE}${st_item}${SPACE}${SPACE}")]
-            Wait Until Element Is Enabled    ${DDL_ST}
+            Wait Until Element Is Enabled    ${DDL_ST}    15s
             Run Keyword And Continue On Failure    Select ST VALUE    ${st_item}
         END
     END
@@ -171,7 +176,7 @@ Select "${sr_item}" Service Requirement
         ${stat}    Run Keyword And Return Status    Click Element    ${SR_VALUE}
         IF    "${stat}" == "False"
             Set Test Variable    ${SR_VALUE}    ${DDL_SR}\[contains(text(),"${SPACE}${sr_item}${SPACE}${SPACE}")]
-            Wait Until Element Is Enabled    ${DDL_SR}
+            Wait Until Element Is Enabled    ${DDL_SR}    15s
             Run Keyword And Continue On Failure    Select SR VALUE    ${sr_item}
         END
     END
@@ -188,14 +193,11 @@ Enter Generic Request Info
     [Documentation]    Fills in the Request Information: Description, Priority
     [Arguments]    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
     Select Random Option From "Brand" Dropdown
-    Input Text    ${TXT_SUBJECT}    ${INPUT_SUBJECT}
-    Set Test Variable    ${EXPECTED_TITLE}    ${INPUT_SUBJECT}
     Input Text    ${TXT_DESCRIPTION}    [QA Test] FACE INDU ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} Service Type - ${st_item} ${\n} Service Requirement - ${sr_item}
     Select Random Option From "Priority" Dropdown
 
 Enter Service Classification-Specific Info
     [Documentation]    Fills in the Request Information unique to certain Service Classifications
-    [Arguments]    ${sc_item}
     IF    "${sc_item}" == "ID/PDI Artwork"
         Fill Out ID/PDI Artwork Form
     ELSE IF    "${sc_item}" == "Design Style Guide"
@@ -227,15 +229,16 @@ Fill Out ID/PDI Artwork Form
         Select Random Model Code Option From Dropdown
     END
     Select Random Option From "Development Classification" Dropdown
-    IF    "${SELECTED_DEV_CLASSIFICATION}" == "External OEM"
-        Choose File    ${IMG_PRODUCT_3D}     ${JPG_IMAGE_SAMPLE}
-        Choose File    ${IMG_ROADMAP}        ${JPG_IMAGE_SAMPLE}
-    END
+    IF    "${SELECTED_DEV_CLASSIFICATION}" == "External OEM"    Choose File    ${IMG_PRODUCT_3D}     ${JPG_IMAGE_SAMPLE}
+    # FAILED HERE
+
+    Choose File    ${IMG_ROADMAP}        ${JPG_IMAGE_SAMPLE}
     Choose File    ${IMG_REQUIREMENT}    ${JPG_IMAGE_SAMPLE}
+    Set Test Variable    ${EXPECTED_TITLE}    ${SC_ITEM}
 
 Select Random Model Code Option From Dropdown
     [Documentation]    Waits until the Model Code dropdown is enabled and loaded then randomly selects an option
-    Scroll "${DDL_MODEL_CODE_OPTION}" Into Center
+    Scroll "${DDL_MODEL_CODE}" Into Center
     Wait Until Element Is Enabled    ${DDL_MODEL_CODE}
     Wait Until Element Is Visible    ${DDL_MODEL_CODE_OPTION}    ${MAX_TIMEOUT}
     ${model_code_items}    Get List Items    ${DDL_MODEL_CODE}
@@ -247,11 +250,12 @@ Select Random Model Code Option From Dropdown
 
 Fill Out ID/PDI Artwork Text Fields
     [Documentation]    Fills Out Text fields for ID/PDI Artwork Form
+    Scroll "${TXT_BRAND_CATEGORY_LEAD}" Into Center
     Input Text    ${TXT_BRAND_CATEGORY_LEAD}    ${INPUT_BRAND_CATEGORY_LEAD}
     Input Text    ${TXT_SERIES_NAME}    ${INPUT_SERIES_NAME}
     Input Text    ${TXT_PRODUCT_FEATURE_LIST}    ${INPUT_PRODUCT_FEATURE_LIST}
-    #Input Text    ${TXT_PRODUCT_3D}    ${INPUT_PRODUCT_3D}
-    #Input Text    ${TXT_ROADMAP}    ${INPUT_ROADMAP}
+    # Input Text    ${TXT_PRODUCT_3D}    ${INPUT_PRODUCT_3D}
+    # Input Text    ${TXT_ROADMAP}    ${INPUT_ROADMAP}
     Input Text    ${TXT_DESIGN_REQUIREMENT}    ${INPUT_DESIGN_REQUIREMENT}
     Input Text    ${TXTA_COMPETITOR1}    ${INPUT_COMPETITOR1}
     Input Text    ${TXTA_COMPETITOR2}    ${INPUT_COMPETITOR2}
@@ -259,6 +263,7 @@ Fill Out ID/PDI Artwork Text Fields
 
 Fill Out Model Text Fields
     [Documentation]    Enters model code and model name
+    Scroll "${TXT_MODEL_CODE}" Into Center
     Input Text    ${TXT_MODEL_CODE}    ${INPUT_MODEL_CODE}
     Input Text    ${TXT_MODEL_NAME}    ${INPUT_MODEL_NAME}
 
@@ -268,9 +273,11 @@ Fill Out Design Style Guide Form
     Select Random Option From "Material Category L1" Dropdown
     Select Random Option From "Material Category L2" Dropdown
     Select Random Option From "Material Category L3" Dropdown
+    Set Test Variable    ${EXPECTED_TITLE}    ${SC_ITEM}
 
 Fill Out Design Style Guide Text Fields
     [Documentation]    Fills Out Text fields for Design Style Guide Form
+    Scroll "${TXT_BRAND_CATEGORY_LEAD}" Into Center
     Input Text    ${TXT_BRAND_CATEGORY_LEAD}    ${INPUT_BRAND_CATEGORY_LEAD}
     Input Text    ${TXT_SERIES_NAME}    ${INPUT_SERIES_NAME}
     Input Text    ${TXT_COMPETITOR1}    ${INPUT_COMPETITOR1}
@@ -289,7 +296,9 @@ Fill Out Competitive Analysis Form
     Select Random Option From "Material Category L1" Dropdown
     Select Random Option From "Material Category L2" Dropdown
     Select Random Option From "Material Category L3" Dropdown
-    Select Checkbox    ${CBX_ARTWORK_APPROVED}
+    Scroll "${CBX_ARTWORK_APPROVED}" Into Center
+    Click Element    ${CBX_ARTWORK_APPROVED}
+    Set Test Variable    ${EXPECTED_TITLE}    ${SC_ITEM}
 
 Fill Out Artwork Release Form
     [Documentation]    Enters the details needed for Artwork Release
@@ -297,40 +306,38 @@ Fill Out Artwork Release Form
     Input Text    ${TXT_PERFORMANCE_PRODUCT_SPECIALIST}    ${INPUT_PERFORMANCE_PRODUCT_SPECIALIST}
     Select Random Model Code Option From Dropdown
     Select Random Option From "Development Classification" Dropdown
+    Set Test Variable    ${EXPECTED_TITLE}    ${SC_ITEM}
 
 Fill Out Logo Design Form
     [Documentation]    Enters the details needed for Logo Design
-    Input Text    ${TXT_BRAND_CATEGORY_LEAD}    ${INPUT_BRAND_CATEGORY_LEAD}
-    Input Text    ${TXT_SERIES_NAME}    ${INPUT_SERIES_NAME}
     Select Random Model Code Option From Dropdown
     Input Text    ${TXT_LOGO_TEXT}    ${INPUT_LOGO_TEXT}
-    Choose File   ${IMG_REFERENCE}    ${JPG_IMAGE_SAMPLE}
+    Choose File   ${IMG_REFERENCES}    ${JPG_IMAGE_SAMPLE}
     Input Text    ${TXT_FILE_LINK}    ${INPUT_FILE_LINK}
-    Input Text    ${TXT_PANTONE_COLOR}    ${INPUT_PANTONE}
-    Select Random Option From "Material Category L1" Dropdown
-    Select Random Option From "Material Category L2" Dropdown
-    Select Random Option From "Material Category L3" Dropdown
+    Set Test Variable    ${EXPECTED_TITLE}    ${SC_ITEM}
 
 Fill Out Design Specification Form
     [Documentation]    Enters the details needed for Design Specification
-    Input Text    ${TXT_BRAND_CATEGORY_LEAD}    ${INPUT_BRAND_CATEGORY_LEAD}
     Select Random Model Code Option From Dropdown
     Select Random Option From "Development Classification" Dropdown
+    Scroll "${TXT_PERFORMANCE_PRODUCT_SPECIALIST}" Into Center
     Input Text    ${TXT_PERFORMANCE_PRODUCT_SPECIALIST}    ${INPUT_PERFORMANCE_PRODUCT_SPECIALIST}
-    Input Text    ${TXT_PANTONE_COLOR}    ${INPUT_PANTONE}
-    Choose File    ${IMG_REFERENCE}    ${JPG_IMAGE_SAMPLE}
+    Set Test Variable    ${EXPECTED_TITLE}    ${SC_ITEM}
 
 Fill Out Sample Color Evaluation Form
     [Documentation]    Enters the details needed for Sample Color Evaluation
-    Input Text    ${TXT_BRAND_CATEGORY_LEAD}    ${INPUT_BRAND_CATEGORY_LEAD}
-    Fill Out Model Text Fields
+    Select Random Model Code Option From Dropdown
     Input Text    ${TXT_PERFORMANCE_PRODUCT_SPECIALIST}    ${INPUT_PERFORMANCE_PRODUCT_SPECIALIST}
+    Input Text    ${TXT_PANTONE_COLOR}    ${INPUT_PANTONE}
+#    Scroll "${IMG_REQUIREMENT}" Into Center
     Choose File    ${IMG_REQUIREMENT}    ${JPG_IMAGE_SAMPLE}
+    Set Test Variable    ${EXPECTED_TITLE}    ${SC_ITEM}
 
 Fill Out Product Artwork Colors Form
     [Documentation]    Enters the details needed for Product Artwork Colors
     Select Random Model Code Option From Dropdown
-    Choose File    ${IMG_REFERENCE}    ${JPG_IMAGE_SAMPLE}
+    Choose File    ${IMG_IMAGE_REFERENCE}    ${JPG_IMAGE_SAMPLE}
+    Set Test Variable    ${EXPECTED_TITLE}    ${SC_ITEM}
 
 # End of fill out keywords
 
@@ -369,6 +376,7 @@ Check Create Page
 Select SC VALUE
     [Documentation]    Selects Service Classification
     [Arguments]    ${sc_item}
+    Sleep    5s
     TRY
         Wait Until Element Is Visible    ${DDL_SC}
         Wait Until Keyword Succeeds    3x    1s    Select From List By Value    ${DDL_SC}    ${sc_item}
@@ -380,6 +388,7 @@ Select SC VALUE
 Select ST VALUE
     [Documentation]    Selects Service Type
     [Arguments]    ${st_item}
+    Sleep    5s
     TRY
         Wait Until Element Is Visible    ${DDL_ST}
         Wait Until Keyword Succeeds    3x    1s    Select From List By Value    ${DDL_ST}    ${st_item}
@@ -391,6 +400,7 @@ Select ST VALUE
 Select SR VALUE
     [Documentation]    Selects Service Requirement
     [Arguments]    ${sr_item}
+    Sleep    5s
     TRY
         Wait Until Element Is Visible    ${DDL_SR}
         Wait Until Keyword Succeeds    3x    1s    Select From List By Value    ${DDL_SR}    ${sr_item}
@@ -474,9 +484,9 @@ Select Random Option From "${field}" Dropdown
         Remove Values From List    ${material_category_l3_items}    - - -
         ${selected_material_l3}    Random Element    ${material_category_l3_items}
         The User Clicks The "${DDL_MATERIAL_CATEGORY_L3}"
-        Set Test Variable    ${DDL_SELECTED_MATERIAL_CATEGORY_L3}    ${DDL_MATERIAL_CATEGORY_L2}/option[text()='${selected_material_l2}']
-        Wait Until Keyword Succeeds    3x    1s    Scroll And Click The Element    ${DDL_SELECTED_MATERIAL_CATEGORY_L2}
-        Set Test Variable    ${SELECTED_MATERIAL_L2}
+        Set Test Variable    ${DDL_SELECTED_MATERIAL_CATEGORY_L3}    ${DDL_MATERIAL_CATEGORY_L3}/option[text()='${selected_material_l3}']
+        Wait Until Keyword Succeeds    3x    1s    Scroll And Click The Element    ${DDL_SELECTED_MATERIAL_CATEGORY_L3}
+        Set Test Variable    ${SELECTED_MATERIAL_L3}
     END
 
 # Add other fields here
@@ -499,3 +509,14 @@ Verify Ticket Summary
             ${SR_RESULT}    Set Variable    //span[contains(text(),'Service Requirement:')]//following-sibling::strong[contains(text(),"${sr_item.strip()}")]
             Run Keyword And Continue On Failure    Page Should Contain Element    ${SR_RESULT}
     END
+
+Open Link In New Tab
+    [Documentation]    Opens the Link In New Tab
+    [Arguments]    ${link}
+    ${valid_link}    Run Keyword And Return Status    Should Contain    ${link}    http
+    IF    ${valid_link}
+        Execute Javascript   window.open('${link}');
+    ELSE
+        Execute Javascript   window.open('https://${link}');
+    END
+    Switch Window    NEW
