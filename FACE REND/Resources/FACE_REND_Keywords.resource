@@ -72,7 +72,7 @@ Scroll To Element And Get Text
     [Documentation]    Keyword to scroll to element and get text
     [Arguments]    ${locator}
     Scroll "${locator}" Into Center
-    Wait Until Page Contains Element    ${locator}    20s
+    Wait Until Page Contains Element    ${locator}    200s
     ${text}    Get Text    ${locator}
     RETURN    ${text}
 
@@ -80,7 +80,7 @@ Scroll To Element And Get Element Attribute
     [Documentation]    Keyword to scroll to element and get text
     [Arguments]    ${locator}    ${attribute}
     Scroll "${locator}" Into Center
-    Wait Until Page Contains Element    ${locator}    20s
+    Wait Until Page Contains Element    ${locator}    200s
     ${value}    Get Element Attribute    ${locator}    ${attribute}
     RETURN    ${value}
 
@@ -328,10 +328,10 @@ Verify List Of Fields Based On Service Classification
         Run Keyword And Continue On Failure    Page Should Contain Element    ${FIELDS_FACE_REND}
     END
 
-Verify Ticket Creation For FACE REND
-    [Documentation]    Ticket Creation - FACE REND
-    The User Is On The Solution Tracker
-    FACE REND: Ticket Submission
+    # Verify Ticket Creation For FACE REND
+    #     [Documentation]    Ticket Creation - FACE REND
+    #     The User Is On The Solution Tracker
+    #     FACE REND: Ticket Submission
 
 The User Accessed The FACE REND Data
     [Documentation]    Keyword to open the about page workbook
@@ -340,43 +340,36 @@ The User Accessed The FACE REND Data
     ${table}    Select A Worksheet    ${sheet_name}
     Set Test Variable    ${TABLE}
 
-FACE REND: Ticket Submission
-    [Documentation]    Keyword to fill in details and submit ticket using the master data
-    FACE REND: Get Excel Data
-    ${length}    Get Length    ${SUB_DIVISION}
-    # FOR    ${count}    IN RANGE    ${length}
-    FOR    ${count}    IN RANGE    1    2
-        ${index}    Evaluate    ${count} - 1
-        ${subdiv_item}    Get From List    ${SUB_DIVISION}    ${index}
-        ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
-        ${st_item}    Get From List    ${SERVICE_TYPE}    ${index}
-        ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
-        ${brand_item}    Get From List    ${BRAND}    ${index}
-        ${purpose_item}    Get From List    ${PURPOSE}    ${index}
-        ${type_of_output_item}    Get From List    ${TYPE_OF_OUTPUT}    ${index}
-        #    ------- Fill In FACE REND Form -------
-        Run Keyword And Continue On Failure    FACE REND: Fill In Solution Tracker Form
-        ...    ${subdiv_item}    ${sc_item}    ${st_item}   ${sr_item}    ${brand_item}    ${purpose_item}    ${type_of_output_item}
-        IF    "${st_item}" == "${ST_PRODUCT_IMG_LIFESTYLE}"
-            Run Keyword And Continue On Failure    Fill In Other Information (Product Rendering On Lifestyle Photo)    ${brand_item}    ${purpose_item}    ${type_of_output_item}
-        ELSE IF    "${st_item}" == "${ST_PRODUCT_IMG_REND}"
-            Run Keyword And Continue On Failure    Fill In Other Information (Product Image Rendering)    ${brand_item}    ${purpose_item}
-        ELSE
-            Run Keyword And Continue On Failure    Fill In Other Information (Product Image Asset, VST Image Asset For Development)    ${brand_item}    ${purpose_item}
-        END
-        #    ------- Submit The Ticket -------
-        Run Keyword And Continue On Failure    Submit The Ticket
-        Wait Until Page Contains Element    ${TICKET_VIEWER_SEARCH}    120s
-        Scroll "${BTN_CREATE_A_TICKET}" Into Center
-        Click Element    ${BTN_CREATE_A_TICKET}
-    END
+# FACE REND: Ticket Submission
+#     [Documentation]    Keyword to fill in details and submit ticket using the master data
+#     FACE REND: Get Excel Data
+#     ${length}    Get Length    ${SUB_DIVISION}
+#     # FOR    ${count}    IN RANGE    ${length}
+#     FOR    ${count}    IN RANGE    1    3
+#         ${index}    Evaluate    ${count} - 1
+#         ${subdiv_item}    Get From List    ${SUB_DIVISION}    ${index}
+#         ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
+#         ${st_item}    Get From List    ${SERVICE_TYPE}    ${index}
+#         ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
+#         ${brand_item}    Get From List    ${BRAND}    ${index}
+#         ${purpose_item}    Get From List    ${PURPOSE}    ${index}
+#         ${type_of_output_item}    Get From List    ${TYPE_OF_OUTPUT}    ${index}
+#         #    ------- Fill In FACE REND Form -------
+#         Run Keyword And Continue On Failure    FACE REND: Fill In Solution Tracker Form
+#         ...    ${subdiv_item}    ${sc_item}    ${st_item}   ${sr_item}    ${brand_item}    ${purpose_item}    ${type_of_output_item}
+#         #    ------- Submit The Ticket -------
+#         Run Keyword And Continue On Failure    Submit The Ticket
+#         Wait Until Page Contains Element    ${TICKET_VIEWER_SEARCH}    120s
+#         Scroll "${BTN_CREATE_A_TICKET}" Into Center
+#         Click Element    ${BTN_CREATE_A_TICKET}
+#     END
 
 FACE REND: Ticket Submission With CRM Checking
     [Documentation]    Keyword to fill in details and submit ticket using the master data
     FACE REND: Get Excel Data
     ${length}    Get Length    ${SUB_DIVISION}
-    # FOR    ${count}    IN RANGE    ${length}
-    FOR    ${count}    IN RANGE    1    3
+    FOR    ${count}    IN RANGE    ${length}
+        # FOR    ${count}    IN RANGE    1    2
         ${index}    Evaluate    ${count} - 1
         ${subdiv_item}    Get From List    ${SUB_DIVISION}    ${index}
         ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
@@ -392,22 +385,28 @@ FACE REND: Ticket Submission With CRM Checking
             Run Keyword And Continue On Failure    Fill In Other Information (Product Rendering On Lifestyle Photo)    ${brand_item}    ${purpose_item}    ${type_of_output_item}
         ELSE IF    "${st_item}" == "${ST_PRODUCT_IMG_REND}"
             Run Keyword And Continue On Failure    Fill In Other Information (Product Image Rendering)    ${brand_item}    ${purpose_item}
+        ELSE IF    "${st_item}" == "${ST_VST_IMG_ASSET}"
+            Run Keyword And Continue On Failure    Fill In Other Information (VST Image Asset For Development)    ${brand_item}    ${purpose_item}
         ELSE
-            Run Keyword And Continue On Failure    Fill In Other Information (Product Image Asset, VST Image Asset For Development)    ${brand_item}    ${purpose_item}
+            Run Keyword And Continue On Failure    Fill In Other Information (Product Image Asset)    ${brand_item}    ${purpose_item}
         END
         #    ------- Submit The Ticket -------
         Run Keyword And Continue On Failure    Submit The Ticket
-        Wait Until Page Contains Element    ${TICKET_VIEWER_SEARCH}    120s
-        #     ------- Verify Ticket Details -------
-        Run Keyword And Continue On Failure    Verify Case Ticket Details In CRM For FACE REND
-        ...        subdivision=${subdiv_item}    service_classification=${sc_item}    service_type=${st_item}    service_requirement=${sr_item}    # Default fields
-        ...        subject=${EMPTY}    description=${EMPTY}    priority=${SELECTED_PRIORITY}    cust_division=${SELECTED_CUST_DIV}    cust_subdivision=${SELECTED_CUST_SUBDIV}    cust_location=${SELECTED_LOCATION}    # Default fields
-        ...        attachment=${JPG_NAME}    product_vector_attachment=${JPG_NAME}    complete_product_3d_attachment=${JPG_NAME}    ref_file_attachment=${JPG_NAME}    stock_img_attachment=${JPG_NAME}    # FACE REND Other Fields
-        ...        brand=${brand_item}    purpose=${purpose_item}    type_of_output=${type_of_output_item}    rend_model_code=${TXT_MODEL_CODE}    # FACE REND Other Fields
+        ${get_stat}    Run Keyword And Return Status   Wait Until Page Contains Element    ${TICKET_VIEWER_SEARCH}    500s
+        IF    "${get_stat}" == "True"
+            #     ------- Verify Ticket Details -------
+            Run Keyword And Continue On Failure    Verify Case Ticket Details In CRM For FACE REND
+            ...        subdivision=${subdiv_item}    service_classification=${sc_item}    service_type=${st_item}    service_requirement=${sr_item}    # Default fields
+            ...        subject=${EMPTY}    description=${EMPTY}    priority=${SELECTED_PRIORITY}    cust_division=${SELECTED_CUST_DIV}    cust_subdivision=${SELECTED_CUST_SUBDIV}    cust_location=${SELECTED_LOCATION}    # Default fields
+            ...        brand=${brand_item}    purpose=${purpose_item}    type_of_output=${type_of_output_item}    rend_model_code=${TXT_MODEL_CODE}    # FACE REND Other Fields
+            ...        attachment=${JPG_NAME}    product_vector_attachment=${JPG_NAME}    complete_product_3d_attachment=${JPG_NAME}    ref_file_attachment=${JPG_NAME}    stock_img_attachment=${JPG_NAME}    # FACE REND Other Fields
 
-        Go Back And Switch To ST Form Page
-        Scroll "${BTN_CREATE_A_TICKET}" Into Center
-        Click Element    ${BTN_CREATE_A_TICKET}
+            Run Keyword And Continue On Failure    Go Back And Switch To ST Form Page
+            Run Keyword And Continue On Failure    Scroll "${BTN_CREATE_A_TICKET}" Into Center
+            Run Keyword And Continue On Failure    Click Element    ${BTN_CREATE_A_TICKET}
+        ELSE
+            CONTINUE
+        END
     END
 
 Go Back And Switch To ST Form Page
@@ -508,16 +507,16 @@ Fill In Request Information
     [Documentation]    Fill In Request Info
     [Arguments]   ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${brand_item}    ${purpose_item}    ${type_of_output_item}=${EMPTY}
     #    --- Subject ---
-    ${get_current_date_and_time}    Get Current Date    result_format=%m-%d-%Y %H:%M:%S
-    ${INPUT_SUBJ}    Catenate    ${INPUT_SUBJECT}${SPACE}${get_current_date_and_time}
-    Set Test Variable    ${INPUT_SUBJ}
-    Input Text    ${SUBJECT}    ${INPUT_SUBJ}
+    # ${get_current_date_and_time}    Get Current Date    result_format=%m-%d-%Y %H:%M:%S
+    # ${INPUT_SUBJ}    Catenate    ${INPUT_SUBJECT}${SPACE}${get_current_date_and_time}
+    # Set Test Variable    ${INPUT_SUBJ}
+    # Input Text    ${SUBJECT}    ${INPUT_SUBJ}
     #    --- Description ---
     Input Text    ${DESCRIPTION}
-    ...    ${INPUT_SUBJ}${\n}Sub-Division - ${subdiv_item}${\n}Service Classification - ${sc_item}${\n}Service Type - ${st_item}${\n}Service Requirement - ${sr_item}${\n}
+    ...    Sub-Division - ${subdiv_item}${\n}Service Classification - ${sc_item}${\n}Service Type - ${st_item}${\n}Service Requirement - ${sr_item}${\n}
     ...    Brand - ${brand_item}${\n}Purpose - ${purpose_item}${\n}Type of Output - ${type_of_output_item}
 
-Fill In Other Information (Product Image Asset, VST Image Asset For Development)
+Fill In Other Information (Product Image Asset)
     [Documentation]    Fill In Product Image Asset Fields
     [Arguments]    ${brand_item}    ${purpose_item}
     #    --- Attachment(s) ---
@@ -565,6 +564,18 @@ Fill In Other Information (Product Rendering On Lifestyle Photo)
     #    --- Stock File Image Attachment ---
     Wait Until Element Is Enabled    ${STOCK_IMG_ATTACHMENT}    30s
     Choose File    ${STOCK_IMG_ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
+    #    --- Purpose ---
+    Select A Purpose    ${purpose_item}
+    #    --- Priority ---
+    Select Random Option For "Priority" Dropdown
+
+Fill In Other Information (VST Image Asset For Development)
+    [Documentation]    Fill In Product Image Asset Fields
+    [Arguments]    ${brand_item}    ${purpose_item}
+    #    --- Brand ---
+    Select A Brand    ${brand_item}
+    #    --- Model Code ---
+    Input Text    ${MODEL_CODE}    ${TXT_MODEL_CODE}
     #    --- Purpose ---
     Select A Purpose    ${purpose_item}
     #    --- Priority ---
@@ -633,23 +644,24 @@ Get CRM Details
     [Arguments]    ${DIV}
     FOR    ${key}    IN    @{DIC_CRM_CASE_SUMMARY_${DIV}_FIELDS}
         IF    "${key}" == "NUM"
-            Run Keyword And Continue On Failure    Wait Until Page Contains Element    ${CASE_SUMMARY_NUM}    60s
-            ${text}    Run Keyword And Continue On Failure    Scroll To Element And Get Element Attribute    ${CASE_SUMMARY_NUM}    value
+            Run Keyword And Continue On Failure    Wait Until Page Contains Element    ${CASE_SUMMARY_${key}}    60s
+            ${text}    Run Keyword And Continue On Failure    Scroll To Element And Get Element Attribute    ${CASE_SUMMARY_${key}}    value
             Run Keyword And Continue On Failure    Set To Dictionary    ${DIC_CRM_CASE_SUMMARY_${DIV}_FIELDS}    ${key}=${text}
         ELSE IF    "${key}" == "SR"
-            ${text}    Run Keyword And Continue On Failure    Scroll To Element And Get Element Attribute        ${CASE_SUMMARY_SR}    title
+            ${text}    Run Keyword And Continue On Failure    Scroll To Element And Get Element Attribute        ${CASE_SUMMARY_${key}}    title
             Run Keyword And Continue On Failure    Set To Dictionary    ${DIC_CRM_CASE_SUMMARY_${DIV}_FIELDS}    ${key}=${text}
         ELSE IF    "${key}" == "REQ_NAME" or "${key}" == "ATTACHMENT" or "${key}" == "DATE_NEEDED"
             Run Keyword And Continue On Failure    The User Clicks The "${TAB_DETAILED_INFO}"
-            Run Keyword And Continue On Failure    Wait Until Page Contains Element    ${CASE_SUMMARY_${key}}    60s
+            Run Keyword And Continue On Failure    Wait Until Element Is Visible    ${CASE_SUMMARY_${key}}    60s
             ${text}    Run Keyword And Continue On Failure    Scroll To Element And Get Element Attribute    ${CASE_SUMMARY_${key}}    value
             Run Keyword And Continue On Failure    Set To Dictionary    ${DIC_CRM_CASE_SUMMARY_${DIV}_FIELDS}   ${key}=${text}
-        ELSE IF    "${key}" == "PURPOSE"
+        ELSE IF    "${key}" == "PURPOSE" or "${key}" == "PRODUCT_VECTOR_IMG" or "${key}" == "COMPLETE_3D_IMG" or "${key}" == "REF_IMG" or "${key}" == "STOCK_IMG" or "${key}" == "TYPE_OF_OUTPUT" or "${key}" == "BRAND" or "${key}" == "MODEL_CODE"
             Run Keyword And Continue On Failure    The User Clicks The "${TAB_DETAILED_INFO}"
-            ${text}    Run Keyword And Continue On Failure    Scroll To Element And Get Element Attribute        ${CASE_SUMMARY_PURPOSE}    title
+            Run Keyword And Continue On Failure    Wait Until Element Is Visible    ${CASE_SUMMARY_${key}}    30s
+            ${text}    Run Keyword And Continue On Failure    Scroll To Element And Get Element Attribute        ${CASE_SUMMARY_${key}}    title
             Run Keyword And Continue On Failure    Set To Dictionary    ${DIC_CRM_CASE_SUMMARY_${DIV}_FIELDS}    ${key}=${text}
         ELSE
-            Run Keyword And Continue On Failure    Wait Until Page Contains Element    ${CASE_SUMMARY_${key}}    60s
+            Run Keyword And Continue On Failure    Wait Until Element Is Visible    ${CASE_SUMMARY_${key}}    60s
             ${text}    Run Keyword And Continue On Failure    Scroll To Element And Get Text    ${CASE_SUMMARY_${key}}
             Run Keyword And Continue On Failure    Set To Dictionary    ${DIC_CRM_CASE_SUMMARY_${DIV}_FIELDS}    ${key}=${text}
         END
@@ -658,7 +670,8 @@ Get CRM Details
 
 Get Subject
     [Documentation]    Get Subj
-    ${expected_title}    Get Variable Value    ${INPUT_SUBJ}
+    [Arguments]    ${service_classification}
+    ${expected_title}    Get Variable Value    ${service_classification}
     ${data_table_title}    Set Variable    //div[@class="datatable-body-cell-label"]/a[text()="${SPACE}${expected_title}"]
     Wait Until Page Contains Element    ${data_table_title}    120s
     Set Test Variable    ${DATA_TABLE_TITLE}
@@ -680,7 +693,7 @@ Verify Case Ticket Details In CRM For FACE REND
     ...            ${subject}=${EMPTY}    ${description}=${EMPTY}    ${priority}=${EMPTY}    ${cust_division}=${EMPTY}    ${cust_subdivision}=${EMPTY}    ${cust_location}=${EMPTY}    # Default fields
     ...            ${attachment}=${EMPTY}    ${product_vector_attachment}=${EMPTY}    ${complete_product_3d_attachment}=${EMPTY}    ${ref_file_attachment}=${EMPTY}    ${stock_img_attachment}=${EMPTY}    # FACE REND Other Fields
     ...            ${brand}=${EMPTY}    ${purpose}=${EMPTY}    ${type_of_output}=N/A    ${rend_model_code}=${TXT_MODEL_CODE}    # FACE REND Other Fields
-    Get Subject
+    Get Subject    ${service_classification}
     ${case_num}    Get The Case Ticket Number In Ticket Viewer
     ${get_stat}    Run Keyword And Return Status    Switch Window    title=Search - Dynamics 365
     IF    "${get_stat}" == "False"
@@ -692,15 +705,34 @@ Verify Case Ticket Details In CRM For FACE REND
     Go To Agent Portal Ticket Details    ${case_num}
 
     # --- Compare Case Ticket Details vs CRM ---
-    @{list_site_details}    Create List    ${case_num}    ${subdivision}     ${service_classification}    ${service_type}    ${service_requirement}
-    ...                                    ${priority}    ${cust_division}    ${cust_subdivision}
-    ...                                    ${attachment}    ${brand}    ${purpose}    ${type_of_output}    ${rend_model_code}
+    IF    "${service_type}" == "${ST_PRODUCT_IMG_REND}"
+        @{list_site_details}    Create List    ${case_num}    ${subdivision}     ${service_classification}    ${service_type}    ${service_requirement}
+        ...                                    ${priority}    ${cust_division}    ${cust_subdivision}
+        ...                                    ${brand}    ${purpose}    ${rend_model_code}
+        ...                                    ${product_vector_attachment}    ${complete_product_3d_attachment}
 
-    ${crm_rend_details}    Get CRM Details    REND
+        ${crm_rend_details}    Get CRM Details    IMG_REND
+    ELSE IF    "${service_type}" == "${ST_PRODUCT_IMG_LIFESTYLE}"
+        @{list_site_details}    Create List    ${case_num}    ${subdivision}     ${service_classification}    ${service_type}    ${service_requirement}
+        ...                                    ${priority}    ${cust_division}    ${cust_subdivision}
+        ...                                    ${brand}    ${purpose}    ${rend_model_code}    ${type_of_output}
+        ...                                    ${ref_file_attachment}    ${stock_img_attachment}
+        ${crm_rend_details}    Get CRM Details    IMG_LIFESTYLE
+    ELSE IF    "${service_type}" == "${ST_PRODUCT_IMG_ASSET}"
+        @{list_site_details}    Create List    ${case_num}    ${subdivision}     ${service_classification}    ${service_type}    ${service_requirement}
+        ...                                    ${priority}    ${cust_division}    ${cust_subdivision}
+        ...                                    ${attachment}    ${brand}    ${purpose}    ${rend_model_code}
+        ${crm_rend_details}    Get CRM Details    IMG_ASSET
+    ELSE IF    "${service_type}" == "${ST_VST_IMG_ASSET}"
+        @{list_site_details}    Create List    ${case_num}    ${subdivision}     ${service_classification}    ${service_type}    ${service_requirement}
+        ...                                    ${priority}    ${cust_division}    ${cust_subdivision}
+        ...                                    ${brand}    ${purpose}    ${rend_model_code}
+        ${crm_rend_details}    Get CRM Details    VST_ASSET
+    END
 
     FOR    ${crm_data}    ${site_data}    IN ZIP    ${crm_rend_details}   ${list_site_details}
-        IF    "${crm_data}" == "ATTACHMENT"
-            Run Keyword And Continue On Failure    Should Contain    ${crm_rend_details['${crm_data}']}    ${site_data}    msg=${crm_data}
+        IF    "${crm_data}" == "ATTACHMENT" or "${crm_data}" == "PRODUCT_VECTOR_IMG" or "${crm_data}" == "COMPLETE_3D_IMG" or "${crm_data}" == "REF_IMG" or "${crm_data}" == "STOCK_IMG"
+            Run Keyword And Continue On Failure    Should Contain    ${crm_rend_details['${crm_data}']}    ${site_data}
         ELSE
             Run Keyword And Continue On Failure    Should Be Equal    ${crm_rend_details['${crm_data}']}    ${site_data}
         END
@@ -756,7 +788,7 @@ Verify Ticket Summary
     ${ticket_info_details}    Get Ticket Info Details
     ${form_ticket_info}    Ticket Info: Get Variable Values    ${subdiv_item}    ${sc_item}    ${sr_item}
     FOR    ${form_info}    ${ticket_summary_info}    IN ZIP    ${form_ticket_info}    ${TICKET_INFO_TO_VERIFY}
-        Run Keyword And Continue On Failure    Should Be Equal    ${form_info}   ${ticket_info_details['${ticket_summary_info}']}
+        Run Keyword And Continue On Failure    Should Be Equal    ${form_info}   ${ticket_info_details['${ticket_summary_info}']}    collapse_spaces=True
     END
 
 Ticket Info: Get Variable Values

@@ -8,47 +8,77 @@ Library              SeleniumLibrary
 Library              FakerLibrary
 Library              RPA.Excel.Files
 Library              RPA.Tables
-Resource             UX_Form_Variables.resource
+Resource             BA_Form_Variables.resource
 Resource             Solution_Tracker_Portal_Keywords.resource
 
 
 *** Keywords ***
-Fill In Product Info And Other Fields
-    [Documentation]    Fill In [BRAN and Attachment]
-    #    -----    Upload Sample Attachment    ----
-    Wait Until Element Is Enabled    ${ATTACHMENT}    30s
-    Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
+Fill In Attachment And Project Owner And Stakeholders Fields
+    [Documentation]    Fill In Attachment And Project Owner And Stakeholders Fields
+    [Arguments]    ${sc_item}
+    IF    "${sc_item}" == "Master Data" or "${sc_item}" == "User Acceptance Test (UAT) Verification" or "${sc_item}" == "User Training"
+        Wait Until Element Is Enabled    ${ATTACHMENT}    30s
+        Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
+    ELSE IF    "${sc_item}" != "Templates"
+        IF    "${sc_item}" == "Requirement Documentation" or "${sc_item}" == "Vision Document"
+            Element Should Be Visible     //label[@for='attachment']/span[contains(text(),"*")]
+        END
+        Input Project Owner And Stakeholders Field
+        Wait Until Element Is Enabled    ${ATTACHMENT}    30s
+        Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
+    END
 
-Fill In Requestor's Info [Division, Sub-division, Location]
+Input Project Owner And Stakeholders Field
+    [Documentation]    Input Project Owner And Stakeholders Field
+    Wait Until Element Is Visible    ${LBL_PROJECT_STAKEHOLDERS}    30s
+    Input Text    ${TXT_PROJECT_STAKEHOLDERS}    Project Owner and Stakeholders CE
+
+Fill In Requestor's Info [Requestor's Name, Division, Sub-division, Location]
     [Documentation]    Random Selection in Requestor's Info
+    Input Text    ${REQUESTOR_NAME}    FACE BA Form Testing [INTERNAL QA]
     Select Random Option For "Customer Division And Sub-Division" Dropdown
     Select Random Option For "Customer Location" Dropdown
 
-Fill In Request Info [Description, Priority, Project Owner]
-    [Documentation]    Fill In Request Info [Description, Priority, Project Owner]
-    [Arguments]    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
-    #${random_text}    Generate Random String
-    #${expected_title}    Set Variable    [Internal QA UX Form] - ${random_text}
-    #Input Text    ${SUBJECT}    ${expected_title}
+Fill In Request Info [Description, Priority]
+    [Documentation]    Fill In Request Info [Description, Priority]
+    [Arguments]    ${subdiv_item}    ${sc_item}    ${sr_item}
+    # ${random_string}    Generate Random String
+    # ${expected_title}    Set Variable    Internal QA Test BA - ${random_string}
     ${expected_title}    Set Variable    ${sc_item}
+    # Input Text    ${SUBJECT}    ${expected_title}
     Input Text    ${DESCRIPTION}
-    ...    Internal QA - FACE UXUI ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} Service Type - ${st_item} ${\n} Service Requirement - ${sr_item}
+    ...    Internal QA - FACE BA ${\n} Sub-Division - ${subdiv_item} ${\n} Service Classification - ${sc_item} ${\n} Service Requirement - ${sr_item}
     Select Random Option For "Priority" Dropdown
-    Input Text    ${PROJECT_OWNER}    FACE UX Form Project Owner yjv
     Set Suite Variable    ${EXPECTED_TITLE}
+
+Submit The Ticket
+    [Documentation]    Submit The Ticket
+    ${stat}    Run Keyword And Return Status
+    ...    Wait Until Element Is Enabled    //button[@class="btn btn-primary"]    30s
+    Retrieve All Entered Data In The Form
+    IF    "${stat}" == "True"
+        Click Element    //button[@class="btn btn-primary"]
+        Wait Until Page Contains Element    //div[@class="datatable-body-cell-label"]    200s
+        # Wait Until Page Contains Element    ${DATA_TABLE}    120s
+        Get The Case Ticket Number In Ticket Viewer
+    ELSE
+        Set Test Variable    ${STR_CASE_NUM}    Failed
+        Capture Page Screenshot
+        Fail    Submit Button is Disabled
+    END
 
 Change Division
     [Arguments]    ${division}
     [Documentation]    Keyword to Change the Division
     Scroll "${DDL_DIVISION}" Into Center
     Wait Until Element Is Enabled    ${DDL_DIVISION}
-    Wait Until Keyword Succeeds    3x    10s   Select From List By Label    ${DDL_DIVISION}    ${division}
+    Wait Until Keyword Succeeds    3x    10s    Select From List By Label    ${DDL_DIVISION}    ${division}
 
 Select Sub-Division
     [Arguments]    ${subdiv_item}
     [Documentation]    Keyword to Change Sub-division
     Set Test Variable    ${SUBDIV_VALUE}    ${DDL_SUBDIVISION}\[text()="${SPACE}${subdiv_item}${SPACE}"]
-    Wait Until Element Is Enabled    ${DDL_SUBDIVISION}    30s
+    Wait Until Element Is Enabled    ${DDL_SUBDIVISION}    120s
     Wait Until Keyword Succeeds    3x    10s    Select From List By Label    ${DDL_SUBDIVISION}    ${subdiv_item}
 
 Select "${sc_item}" As Service Classification
@@ -58,19 +88,6 @@ Select "${sc_item}" As Service Classification
         Set Test Variable    ${SC_VALUE}    ${DDL_SC}\[text()="${SPACE}${sc_item}${SPACE}${SPACE}"]
         Wait Until Element Is Enabled    ${DDL_SC}    30s
         Run Keyword And Continue On Failure    Select Service Classification Value    ${sc_item}
-    END
-
-Select "${st_item}" As Service Type
-    [Documentation]    Select the service type
-    IF    "${st_item}" != "EMPTY"
-        Set Test Variable    ${ST_VALUE}    ${DDL_ST}\[text()="${SPACE}${st_item}${SPACE}"]
-        ${stat}    Run Keyword And Return Status    Click Element    ${ST_VALUE}
-        IF    "${stat}" == "False"
-            Set Test Variable    ${ST_VALUE}    ${DDL_ST}\[text()="${SPACE}${st_item}${SPACE}${SPACE}"]
-            # Run Keyword And Continue On Failure    Click Element    ${ST_VALUE}
-            Wait Until Element Is Enabled     ${DDL_ST}   30s
-            Run Keyword And Continue On Failure    Select Service Type Value    ${st_item}
-        END
     END
 
 Select "${sr_item}" As Service Requirement
@@ -85,18 +102,6 @@ Select "${sr_item}" As Service Requirement
         END
     END
 
-Select "${brand_item}" As Brand
-    [Documentation]    Select the service requirement
-    IF    "${brand_item}" != "EMPTY"
-        Set Test Variable    ${BRAND_VALUE}    ${DDL_BRAND}\[text()="${SPACE}${brand_item}${SPACE}"]
-        ${stat}    Run Keyword And Return Status    Click Element    ${BRAND_VALUE}
-        IF    "${stat}" == "False"
-            Set Test Variable    ${BRAND_VALUE}    ${DDL_BRAND}\[text()="${SPACE}${brand_item}${SPACE}${SPACE}"]
-            Wait Until Element Is Enabled     ${DDL_BRAND}   30s
-            Run Keyword And Continue On Failure    Select Brand Value    ${brand_item}
-        END
-    END
-
 Select Service Classification Value
     [Arguments]    ${sc_item}
     [Documentation]    Keyword to Select Service Classification Value
@@ -106,17 +111,6 @@ Select Service Classification Value
     EXCEPT
         Wait Until Element Is Enabled   ${DDL_SC}     30s
         Wait Until Keyword Succeeds    3x    1s    Select From List By Label    ${DDL_SC}    ${sc_item}
-    END
-
-Select Service Type Value
-    [Arguments]    ${st_item}
-    [Documentation]    Keyword to Select Service Type Value
-    TRY
-        Wait Until Element Is Enabled    ${DDL_ST}    30s
-        Wait Until Keyword Succeeds    3x    1s    Select From List By Value    ${DDL_ST}    ${st_item}
-    EXCEPT
-        Wait Until Element Is Enabled    ${DDL_ST}    30s
-        Wait Until Keyword Succeeds    3x    1s    Select From List By Label    ${DDL_ST}    ${st_item}
     END
 
 Select Service Requirement Value
@@ -130,17 +124,6 @@ Select Service Requirement Value
         Wait Until Keyword Succeeds    3x    1s    Select From List By Label    ${DDL_SR}    ${sr_item}
     END
 
-Select Brand Value
-    [Arguments]    ${brand_item}
-    [Documentation]    Keyword to Select Brand Value
-    TRY
-        Wait Until Element Is Enabled    ${DDL_BRAND}    30s
-        Wait Until Keyword Succeeds    3x    1s    Select From List By Value    ${DDL_BRAND}    ${brand_item}
-    EXCEPT
-        Wait Until Element Is Enabled    ${DDL_BRAND}    30s
-        Wait Until Keyword Succeeds    3x    1s    Select From List By Label    ${DDL_BRAND}    ${brand_item}
-    END
-
 Check Create Page
     [Documentation]    Check Create Page
     ${stat}    Run Keyword And Return Status    Page Should Contain Element    ${DDL_DIVISION}
@@ -151,130 +134,133 @@ Check Create Page
         Wait Until Page Contains Element    ${DDL_DIVISION}    60s
     END
 
-Verify Master Data, Ticket Submission And Ticket Summary : FACE UX
-    [Documentation]    Verify Ticket Creation And Master Data : FACE UX
+Verify Master Data, Ticket Submission And Ticket Summary : FACE BA
+    [Documentation]    Verify Ticket Creation And Master Data : FACE BA
     Check Create Page
     #    ----- Change Excel Sheet Name -----
-    Get Excel Data - FACE UX    UXUI
+    Get Excel Data - FACE BA    BA
     ${length}    Get Length    ${SUB_DIVISION}
     FOR    ${count}    IN RANGE    ${length}
         ${index}    Evaluate    ${count} - 1
         ${subdiv_item}    Get From List    ${SUB_DIVISION}    ${index}
         ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
-        ${st_item}    Get From List    ${SERVICE_TYPE}    ${index}
         ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
-        ${brand_item}    Get From List    ${BRAND}    ${index}
-        Set Test Variable    ${SC_ITEM}
 
-        #    ------- Fill In FACE UXUI Form -------
+        #    ------- Fill In FACE BA Form -------
         Check Create Page
-        Run Keyword And Continue On Failure    Fill In FACE UX Solution Tracker Form
-        ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${brand_item}
+        Run Keyword And Continue On Failure    Fill In FACE BA Solution Tracker Form
+        ...    ${subdiv_item}    ${sc_item}   ${sr_item}
         ${excel_index}    Evaluate    ${count} + 2
-
         #    ------- Submit The Ticket -------
-        Run Keyword And Continue On Failure    Submit The Ticket
-        # IF    "${excel_index}" == "3"
-        #    Set Cell Value    7    5    ${STR_CASE_NUM}
-        # END
-        Set Cell Value    ${excel_index}    6    ${STR_CASE_NUM}
+        Submit The Ticket
+        Set Cell Value    ${excel_index}    4    ${STR_CASE_NUM}
         Save Workbook
         #    ------- VerifY Ticket Summary -------
         Run Keyword And Continue On Failure    Verify Ticket Summary Data
     END
 
-Verify Master Data And Ticket Submission With CRM Checking : FACE UX
-    [Documentation]    Verify Master Data And Ticket Submission With CRM Checking : FACE UX
+Verify Master Data And Field Validation : FACE BA
+    [Documentation]    Verify Ticket Creation And Master Data : FACE BA
     Check Create Page
     #    ----- Change Excel Sheet Name -----
-    Get Excel Data - FACE UX    UX
+    Get Excel Data - FACE BA    BA
     ${length}    Get Length    ${SUB_DIVISION}
     FOR    ${count}    IN RANGE    ${length}
         ${index}    Evaluate    ${count} - 1
         ${subdiv_item}    Get From List    ${SUB_DIVISION}    ${index}
         ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
-        ${st_item}    Get From List    ${SERVICE_TYPE}    ${index}
         ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
-        ${brand_item}    Get From List    ${BRAND}   ${index}
-        IF    "${st_item}" != "EMPTY"
-            ${expected_title}    Catenate    ${sr_item}    ${st_item}    ${sc_item}
-        ELSE
-            ${expected_title}    Catenate    ${sr_item}   ${sc_item}
-        END
-
-        #    ------- Fill In FACE UX Form -------
+        #    ------- Fill In FACE BA Form -------
         Check Create Page
-        Run Keyword And Continue On Failure    Fill In FACE UX Solution Tracker Form
-        ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${brand_item}
-        #    ------- Submit The Ticket -------
-        Run Keyword And Continue On Failure    Submit The Ticket
-        #    ------- Verify Ticket Viewer -------
-        Run Keyword And Continue On Failure    Verify Ticket Title In The "Ticket Viewer"    ${expected_title}
-        #    ------- VerifY Ticket Summary -------
-        Run Keyword And Continue On Failure
-        ...    Verify Ticket Summary    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
-
-        #    ------ Solution Tracker Portal Verifications ------
-        Run Keyword And Continue On Failure    Get ST Ticket Number In Ticket Summary
-        Verify The Ticket In Solution Tracker Portal    ${URL_ALL_CASES_FACE}    ${STR_CASE_NUM}
-        Verify The Automated Ticket Title     ${STR_CASE_NUM}   ${sr_item}    ${st_item}    ${sc_item}
-        Go Back And Switch To ST Form Page
-    END
-
-Verify Master Data And Field Validation : FACE UX
-    [Documentation]    Verify Master Data And Field Validation : FACE UX
-    Check Create Page
-    #    ----- Change Excel Sheet Name -----
-    Get Excel Data - FACE UX    UXUI
-    ${length}    Get Length    ${SUB_DIVISION}
-    FOR    ${count}    IN RANGE    ${length}
-        ${index}    Evaluate    ${count} - 1
-        ${subdiv_item}    Get From List    ${SUB_DIVISION}    ${index}
-        ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
-        ${st_item}    Get From List    ${SERVICE_TYPE}    ${index}
-        ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
-        ${brand_item}    Get From List    ${BRAND}   ${index}
-
-        #    ------- Fill In FACE UXUI Form -------
-        Check Create Page
-        Run Keyword And Continue On Failure    Fill In FACE UX Solution Tracker Form
-        ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${brand_item}
+        Run Keyword And Continue On Failure    Fill In FACE BA Solution Tracker Form
+        ...    ${subdiv_item}    ${sc_item}   ${sr_item}
         ${excel_index}    Evaluate    ${count} + 2
         #    ------- Submit The Ticket -------
-        Submit The Ticket
-        # IF    "${excel_index}" == "3"
-        #    Set Cell Value    7    5    ${STR_CASE_NUM}
-        # END
-        Set Cell Value    ${excel_index}    6    ${STR_CASE_NUM}
+        Run Keyword And Continue On Failure    Submit The Ticket
+        Set Cell Value    ${excel_index}    4    ${STR_CASE_NUM}
         Save Workbook
     END
 
-Submit The Ticket
-    [Documentation]    Submit The Ticket
-    ${stat}    Run Keyword And Return Status
-    ...    Wait Until Element Is Enabled    //button[@class="btn btn-primary"]    30s
-    Retrieve All Entered Data In The Form
-    IF    "${stat}" == "True"
-        Click Element    //button[@class="btn btn-primary"]
-        Wait Until Page Contains Element    //div[@class="datatable-body-cell-label"]    120s
-        #Wait Until Page Contains Element    ${DATA_TABLE}    120s
-        Get The Case Ticket Number In Ticket Viewer
-    ELSE
-        Set Test Variable    ${STR_CASE_NUM}    Failed
-        Capture Page Screenshot
-        Fail    Submit Button is Disabled
+Verify Master Data And Ticket Submission With CRM Checking : FACE BA
+    [Documentation]    Verify Master Data And Ticket Submission With CRM Checking : FACE BA
+    Check Create Page
+    #    ----- Change Excel Sheet Name -----
+    Get Excel Data - FACE BA    BA
+    ${length}    Get Length    ${SUB_DIVISION}
+    FOR    ${count}    IN RANGE    ${length}
+        ${index}    Evaluate    ${count} - 1
+        ${subdiv_item}    Get From List    ${SUB_DIVISION}    ${index}
+        ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
+        ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
+
+        #    ------- Fill In FACE BA Form -------
+        Check Create Page
+        Run Keyword And Continue On Failure    Fill In FACE BA Solution Tracker Form
+        ...    ${subdiv_item}    ${sc_item}      ${sr_item}
+        ${excel_index}    Evaluate    ${count} + 2
+        #    ------- Submit The Ticket -------
+        Submit The Ticket
+        Open Workbook    ${MASTER_DATA}
+        ${table}    Select A Worksheet    BA
+        Set Cell Value    ${excel_index}    4    ${STR_CASE_NUM}
+        Save Workbook
+        #    ------- VerifY Ticket Summary -------
+        Run Keyword And Continue On Failure
+        ...    Verify Ticket Summary    ${subdiv_item}    ${sc_item}   ${sr_item}
+        #    ------ Solution Tracker Portal Verifications ------
+        Run Keyword And Continue On Failure    Get ST Ticket Number In Ticket Summary
+        Verify The Ticket In Solution Tracker Portal    ${URL_ALL_CASES_FACE}    ${STR_CASE_NUM}
+        Go Back And Switch To ST Form Page
+    END
+
+Fill In FACE BA Solution Tracker Form
+    [Documentation]    Fill In FACE BA Solution Tracker form
+    [Arguments]    ${subdiv_item}    ${sc_item}    ${sr_item}
+    Change Division    Face Tribes (FACE)
+    Select Sub-Division    ${subdiv_item}
+    Select "${sc_item}" As Service Classification
+    #    Select "${st_item}" As Service Type
+    Select "${sr_item}" As Service Requirement
+    Fill In Requestor's Info [Requestor's Name, Division, Sub-division, Location]
+    Fill In Request Info [Description, Priority]
+    ...    ${subdiv_item}    ${sc_item}    ${sr_item}
+    Fill In Attachment And Project Owner And Stakeholders Fields    ${sc_item}
+
+Get Excel Data - FACE BA
+    [Documentation]    Get Excel Data - FACE BA
+    [Arguments]    ${sheet_name}
+    Open Workbook       ${MASTER_DATA}
+    ${table}    Select A Worksheet    ${sheet_name}
+    Set Test Variable    ${TABLE}
+    ${SUB_DIVISION}    Get Table Column    ${TABLE}    Sub-Division
+    ${SERVICE_CLASSIFICATION}    Get Table Column    ${TABLE}    Service Classification
+#    ${SERVICE_TYPE}    Get Table Column    ${TABLE}    Service Type
+    ${SERVICE_REQUIREMENT}    Get Table Column    ${TABLE}    Service Requirement
+#    ${BRAND}    Get Table Column    ${TABLE}    Brand
+    Set Test Variable    ${SUB_DIVISION}
+    Set Test Variable    ${SERVICE_CLASSIFICATION}
+#    Set Test Variable    ${SERVICE_TYPE}
+    Set Test Variable    ${SERVICE_REQUIREMENT}
+
+Verify Ticket Summary
+    [Arguments]     ${subdiv_item}    ${sc_item}    ${sr_item}
+    Click Element    ${DATA_TABLE}
+    Wait Until Page Contains Element    //div[contains(text(),'Ticket Info')]
+    ${SD_RESULT}    Set Variable    //span[contains(text(),'Sub-Division:')]//following-sibling::strong[contains(text(),"${subdiv_item.strip()}")]
+    Run Keyword And Continue On Failure    Page Should Contain Element    ${SD_RESULT}
+    ${SC_RESULT}    Set Variable    //span[contains(text(),'Service Classification:')]//following-sibling::strong[contains(text(),"${sc_item.strip()}")]
+    Run Keyword And Continue On Failure    Page Should Contain Element    ${SC_RESULT}
+    IF    "${sr_item}" != "EMPTY"
+        ${SR_RESULT}    Set Variable    //span[contains(text(),'Service Requirement:')]//following-sibling::strong[contains(text(),"${sr_item.strip()}")]
+        Run Keyword And Continue On Failure    Page Should Contain Element    ${SR_RESULT}
     END
 
 Retrieve All Entered Data In The Form
     [Documentation]    Get the information entered by the user in the form
     ${DICT_RETRIEVED_VALUES}    Create Dictionary
-    FOR    ${field}    IN    @{LIST_UXUI_ALL_FIELDS}
-        IF    "${field}"=="Attachment"
+    FOR    ${field}    IN    @{LIST_TECH_ALL_FIELDS}
+        IF    "${field}"=="Attachment" or "${field}"=="Subject"
             ${str_value}    Set Variable    Download
-            Set To Dictionary    ${DICT_RETRIEVED_VALUES}    ${field}=${str_value}
-        END
-        IF    "${field}"=="Subject"
-            ${str_value}    Set Variable    ${sc_item}
             Set To Dictionary    ${DICT_RETRIEVED_VALUES}    ${field}=${str_value}
         END
         ${field_exist}    Run Keyword And Return Status    Element Should Be Visible    ${DICT_FORM_FIELDS_LOCATORS}[${field}]
@@ -293,10 +279,9 @@ Retrieve All Entered Data In The Form
 
 Verify Ticket Summary Data
     [Documentation]    The information provided by the user in the ticket form should match the ticket summary details.
-    Wait Until Element Is Visible    ${DATA_TABLE}    120s
     Click Element    ${DATA_TABLE}
     Wait Until Page Contains Element    //div[contains(text(),'Ticket Info')]
-    FOR    ${field}    IN    @{LIST_UXUI_ALL_FIELDS}
+    FOR    ${field}    IN    @{LIST_TECH_ALL_FIELDS}
         ${field_exist}    Run Keyword And Return Status    Element Should Be Visible    ${DETAIL_${field}}
         IF    ${field_exist}==${False}
             Log    N/A
@@ -304,65 +289,6 @@ Verify Ticket Summary Data
             ${actual_value}    Get Text    ${DETAIL_${field}}
             Run Keyword And Continue On Failure    Should Be Equal As Strings     ${DICT_RETRIEVED_VALUES}[${field}]    ${actual_value}
         END
-    END
-
-Get The Case Ticket Number In Ticket Viewer
-    [Documentation]    Keyword to get the case ticket number in the ticket viewer details
-    ${data_table_title}    Set Variable
-    ...    //div[@class="datatable-body-cell-label"]/a[text()="${SPACE}${EXPECTED_TITLE}"]
-    Wait Until Page Contains Element    ${data_table_title}    120s
-    ${data_table_title}    Get Variable Value    ${data_table_title}
-    ${data_table_case}    Set Variable    ${data_table_title}/preceding::datatable-body-cell[3]/div/a
-    ${str_case_num}    Get Text    ${data_table_case}
-    Set Suite Variable    ${STR_CASE_NUM}
-
-Fill In FACE UX Solution Tracker Form
-    [Documentation]    Fill In FACE UX Solution Tracker form
-    [Arguments]    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${brand_item}
-    Change Division    Face Tribes (FACE)
-    Select Sub-Division    ${subdiv_item}
-    Select "${sc_item}" As Service Classification
-    Select "${st_item}" As Service Type
-    Select "${sr_item}" As Service Requirement
-    Select "${brand_item}" As Brand
-    Fill In Requestor's Info [Division, Sub-division, Location]
-    Fill In Request Info [Description, Priority, Project Owner]
-    ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
-    Fill In Product Info And Other Fields
-
-Get Excel Data - FACE UX
-    [Documentation]    Get Excel Data - FACE UX
-    [Arguments]    ${sheet_name}
-    Open Workbook       ${MASTER_DATA}
-    ${table}    Select A Worksheet    ${sheet_name}
-    Set Test Variable    ${TABLE}
-    ${SUB_DIVISION}    Get Table Column    ${TABLE}    Sub-Division
-    ${SERVICE_CLASSIFICATION}    Get Table Column    ${TABLE}    Service Classification
-    ${SERVICE_TYPE}    Get Table Column    ${TABLE}    Service Type
-    ${SERVICE_REQUIREMENT}    Get Table Column    ${TABLE}    Service Requirement
-    ${BRAND}    Get Table Column    ${TABLE}    Brand
-    Set Test Variable    ${SUB_DIVISION}
-    Set Test Variable    ${SERVICE_CLASSIFICATION}
-    Set Test Variable    ${SERVICE_TYPE}
-    Set Test Variable    ${SERVICE_REQUIREMENT}
-    Set Test Variable    ${BRAND}
-
-Verify Ticket Summary
-    [Documentation]    Verify Ticket Summary
-    [Arguments]   ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
-    Click Element    ${DATA_TABLE}
-    Wait Until Page Contains Element    //div[contains(text(),'Ticket Info')]
-    ${SD_RESULT}    Set Variable    //span[contains(text(),'Sub-Division:')]//following-sibling::strong[contains(text(),"${subdiv_item.strip()}")]
-    Run Keyword And Continue On Failure    Page Should Contain Element    ${SD_RESULT}
-    ${SC_RESULT}    Set Variable    //span[contains(text(),'Service Classification:')]//following-sibling::strong[contains(text(),"${sc_item.strip()}")]
-    Run Keyword And Continue On Failure    Page Should Contain Element    ${SC_RESULT}
-    IF    "${st_item}" != "EMPTY"
-        ${ST_RESULT}    Set Variable    //span[contains(text(),'Service Type:')]//following-sibling::strong[contains(text(),"${st_item.strip()}")]
-        Run Keyword And Continue On Failure    Page Should Contain Element    ${ST_RESULT}
-    END
-    IF    "${sr_item}" != "EMPTY"
-        ${SR_RESULT}    Set Variable    //span[contains(text(),'Service Requirement:')]//following-sibling::strong[contains(text(),"${sr_item.strip()}")]
-        Run Keyword And Continue On Failure    Page Should Contain Element    ${SR_RESULT}
     END
 
 Navigate To Site
@@ -488,42 +414,91 @@ Select Random Option For "${field}" Dropdown
         ...    Select From List By Label    ${DDL_CUST_SUB_DIVISION}    FACE QUAL
     ELSE IF    "${field}" == "Customer Location"
         ${selected_location}    Random Element    ${LIST_LOCATION}
-        Scroll "${DDL_CUSTOMER LOCATION}" Into Center
+        Scroll "${DDL_CUST_LOCATION}" Into Center
         Wait Until Keyword Succeeds    3x    10s
-        ...    Select From List By Label    ${DDL_CUSTOMER LOCATION}    ${selected_location}
+        ...    Select From List By Label    ${DDL_CUST_LOCATION}     ET-VG1 (Empower Tribe VG1 Ltd.)
     ELSE IF    "${field}" == "Priority"
         ${selected_priority}    Random Element    ${LIST_PRIORITY}
         Scroll "${DDL_PRIORITY}" Into Center
-        Wait Until Keyword Succeeds    3x    1s
+        Wait Until Keyword Succeeds    3x    10s
         ...    Select From List By Label    ${DDL_PRIORITY}    ${selected_priority}
     ELSE IF    "${field}" == "Brand"
         ${selected_brand}    Random Element    ${LIST_BRANDS}
         Scroll "${DDL_BRAND}" Into Center
-        Wait Until Keyword Succeeds    3x    1s
+        Wait Until Keyword Succeeds    3x    10s
         ...    Select From List By Label    ${DDL_BRAND}    ${selected_brand}
-        Log    Brand
+    ELSE IF    "${field}" == "Model Code"
+        Wait Until Keyword Succeeds    3x    1s    Select Random Option    ${DDL_MODEL_CODE}          ${DDL_MODEL_CODE}/option
     END
 
-Fill In Attachment And Project Owner And Stakeholders Fields
-    [Documentation]    Fill In Attachment And Project Owner And Stakeholders Fields
-    [Arguments]    ${sc_item}
-    IF    "${sc_item}" == "Master Data" or "${sc_item}" == "User Acceptance Test (UAT) Verification" or "${sc_item}" == "User Testing"
-        Wait Until Element Is Enabled    ${ATTACHMENT}    30s
-        Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
-    ELSE IF  "${sc_item}" != "Templates"
-        IF    "${sc_item}" == "Requirement Documentation" or "${sc_item}" == "Vision Document"
-            Element Should Be Visible     //label[@for='attachment']/span[contains(text(),"*")]
-        END
-        Input Project Owner And Stakeholders Field
-        Wait Until Element Is Enabled    ${ATTACHMENT}    30s
-        Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
+Select Random Option
+    [Documentation]    Selects Random Option from the given (select) locator.
+    [Arguments]    ${locator}   ${options}    ${except_list}=${SPACE}
+    Scroll "${locator}" Into Center
+    Wait Until Element Is Enabled    ${locator}      30s
+    Click Element                    ${locator}
+    ${selected}    Wait Until Keyword Succeeds    10x    0s    Select Then Check Exception List    ${locator}    ${options}    ${except_list}
+    Log    Selected "${selected}" from the options of "${locator}".
+    Press Keys    ${locator}    ESCAPE
+    RETURN    ${selected}
+
+Select Then Check Exception List
+    [Documentation]    Selects Then Checks Exception List if selected value is valid. Throws error when invalid.
+    [Arguments]    ${locator}    ${options}    ${except_list}
+    ${index}    Get Random Index From Options    ${options}
+    ${option_locator}  Set Variable  (${options})[${index + 2}]
+    Set Test Variable    ${RANDOM_OPTION_LOCATOR}    ${option_locator}
+    ${selected}    Get Text    ${option_locator}
+    Select From List By Index    ${locator}    ${index + 1}
+    ${except_list_len}    Get Length    ${except_list}
+    IF    ${except_list_len} == ${0}    RETURN    ${selected}
+    ${except_list}    Convert To List If Not    ${except_list}
+    FOR    ${each}    IN    @{except_list}
+        IF    "${selected}" == "${each}"    Fail    Selected value "${each}" is included in the exception list ${except_list}.
     END
+    RETURN    ${selected}
+
+Convert To List If Not
+    [Documentation]    Convert To List If Not
+    [Arguments]        ${variable}
+    ${datatype}        Evaluate                   type($variable).__name__
+    IF                 "${datatype}" != "list"
+        ${variable}    Create List                ${variable}
+    END
+    RETURN             ${variable}
+
+Get Random Index From Options
+    [Documentation]    Gets random index from the length of locator. starts with 0 ends with option's length - 1.
+    [Arguments]            ${locator}
+    ${element_count}       Get "${locator}" Length
+    IF    ${element_count} <= ${1}
+        Capture Page Screenshot
+        Fail    "${locator}" should have more than 1 option.
+    END
+    ${index}               Get Random Integer Range ${0} And ${element_count - 1}
+    RETURN                 ${index}
+
+Get "${locator}" Length
+    [Documentation]    Gets WebElement's Length.
+    ${elements}         Get WebElements        ${locator}
+    ${length}           Get Length             ${elements}
+    RETURN              ${length}
 
 Get ST Ticket Number In Ticket Summary
     [Documentation]    Get The Ticket Number
     Wait Until Element Is Visible    //div[@class='ticket-details__header']/h4
     ${case_number}    Get Text    //div[@class='ticket-details__header']/h4
     ${str_case_num}    Remove String    ${case_number}    Ticket Number:${SPACE}
+    Set Suite Variable    ${STR_CASE_NUM}
+
+Get The Case Ticket Number In Ticket Viewer
+    [Documentation]    Keyword to get the case ticket number in the ticket viewer details
+    ${data_table_title}    Set Variable
+    ...    //div[@class="datatable-body-cell-label"]/a[text()="${SPACE}${EXPECTED_TITLE}"]
+    Wait Until Page Contains Element    ${data_table_title}    120s
+    ${data_table_title}    Get Variable Value    ${data_table_title}
+    ${data_table_case}    Set Variable    ${data_table_title}/preceding::datatable-body-cell[3]/div/a
+    ${str_case_num}    Get Text    ${data_table_case}
     Set Suite Variable    ${STR_CASE_NUM}
 
 Verify Ticket Title In The "${page}"
