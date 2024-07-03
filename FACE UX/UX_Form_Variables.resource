@@ -29,6 +29,32 @@ ${BTN_SUBMIT}                //input[@type='submit']
 
 # Ticket Details
 ${LBL_SUBJECT}               //input[@aria-label="Subject"]
+${TICKET_DETAILS_HEADER}     //*[@class='ticket-details__header']
+${TICKET_DETAILS_ITEMS}      //ul[@class='ticket-details__body']
+@{LIST_UXUI_ALL_FIELDS}      Division      Sub-Division    Service Classification    Service Type    Service Requirement    Subject
+...                          Description    Attachment    Project Owner    Brand    Priority
+...                          Customer Division    Customer Sub-Division     Customer Location
+
+${DETAIL_Division}                               ${TICKET_DETAILS_ITEMS}//li/span[contains(text(),"Division:")]/following-sibling::strong
+${DETAIL_Sub-Division}                           ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Sub-Division:")]/following-sibling::strong
+${DETAIL_Service Classification}                 ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Classification:")]/following-sibling::strong
+${DETAIL_Service Type}                           ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Type:")]/following-sibling::strong
+${DETAIL_Service Requirement}                    ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Requirement:")]/following-sibling::strong
+${DETAIL_Attachment}                             ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Attachment:")]/following-sibling::strong
+${DETAIL_Brand}                                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Brand:")]/following-sibling::strong
+${DETAIL_Project Owner}                          ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Project Owner:")]/following-sibling::strong
+${DETAIL_Priority}                               ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Priority:")]/following-sibling::strong
+${DETAIL_Customer Division}                      ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Division:")]/following-sibling::strong
+${DETAIL_Customer Sub-Division}                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Sub-Division:")]/following-sibling::strong
+${DETAIL_Customer Location}                      ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Location:")]/following-sibling::strong
+${DETAIL_Subject}                                ${TICKET_DETAILS_HEADER}/p[2]
+${DETAIL_Description}                            ${TICKET_DETAILS_HEADER}/p[3]
+
+#    Ticket Creation Form
+&{DICT_FORM_FIELDS_LOCATORS}           Division=${DDL_DIVISION}    Sub-Division=${DDL_SUBDIVISION}    Service Classification=${DDL_SC}    Service Type=${DDL_ST}
+...                                    Service Requirement=${DDL_SR}    Subject=${EMPTY}    Description=${DESCRIPTION}    Brand=${DDL_BRAND}
+...                                    Project Owner=${PROJECT_OWNER}            Priority=${DDL_PRIORITY}
+...                                    Customer Division=${DDL_CUST_DIVISION}    Customer Sub-Division=${DDL_CUST_SUB_DIVISION}     Customer Location=${DDL_CUSTOMER LOCATION}
 
 #    ........................Solution Tracker Customer Website.....................................
 

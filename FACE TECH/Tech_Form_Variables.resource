@@ -11,10 +11,18 @@ ${BROWSER}                        Chrome
 #    ........................Solution Tracker Portal---------------------------------------------
 # Login Credentials
 ${EMAIL}    email
-${PASSWORD}    password
+${PASSWORD}    pass
+${LOGO_CRM}                   //img[@title='Music Tribe CRM']
+${BTN_LOGIN_SUBMIT}           //input[@type='submit']
+${BTN_AGENT_PORTAL}           //header/div[1]/div[2]/a[1]
+${TAB_NAME_LOGIN}             Sign in to your account
+${UAT_CRM_V2}                 https://musictribeservice.crm5.dynamics.com/main.aspx?appid=b5f12461-796e-ee11-9ae7-002248ebf471&pagetype=dashboard&id=d201a642-6283-4f1d-81b7-da4b1685e698&type=system&_canOverride=true
+${UAT_SEARCH_ICON}            //body/div[@id='shell-container']/div[@id='ApplicationShell']/div[1]/div[1]/div[1]/div[3]/div[2]/div[1]/div[1]/div[1]/ul[1]/li[1]/button[1]/span[1]/span[1]
+${SEARCH_BOX_ICON}            //span[@id='searchButtonIcon']
 
 # URL Sandbox
 ${URL_ALL_CASES_FACE}                  https://musictribeservice.crm5.dynamics.com/main.aspx?appid=22fd57cc-73f4-ed11-8848-002248ebf403&pagetype=entitylist&etn=incident&viewid=8eb7d675-e50f-ee11-8f6e-002248ebf403&viewType=1039
+${CRM_GLOBAL_SEARCH_BOX}               //input[@aria-label='Search box']
 
 #    Locators
 ${SEARCH_BOX}                          //input[@aria-label='Case Filter by keyword']
@@ -39,14 +47,19 @@ ${TICKET_DETAILS_ITEMS}      //ul[@class='ticket-details__body']
 ...                          Priority    Date Needed     Requestor's Name
 ...                          Customer Division    Customer Sub-Division     Customer Location
 
+@{LIST_CRM_SUMMARY_TAB}            Case Number    Division      Sub-Division    Service Classification    Service Requirement    Subject
+...                                Description    Priority    Customer Division    Customer Sub-Division     Customer Location
+@{LIST_CRM_DETAILED_INFO_TAB}      Attachment    Brand    Brand Category Leader    Performance Product Leader
+...                                Date Needed     Requestor's Name
+
 ${DETAIL_Division}                               ${TICKET_DETAILS_ITEMS}//li/span[contains(text(),"Division:")]/following-sibling::strong
 ${DETAIL_Sub-Division}                           ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Sub-Division:")]/following-sibling::strong
 ${DETAIL_Service Classification}                 ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Classification:")]/following-sibling::strong
 ${DETAIL_Service Requirement}                    ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Requirement:")]/following-sibling::strong
 ${DETAIL_Attachment}                             ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Attachment:")]/following-sibling::strong
 ${DETAIL_Brand}                                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Brand:")]/following-sibling::strong
-${DETAIL_Brand Category Leader}                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Brand Category Leader:")]/following-sibling::strong
-${DETAIL_Performance Product Leader}             ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Performance Product Leader:")]/following-sibling::strong
+${DETAIL_Brand Category Leader}                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Brand Category Leader (BCL):")]/following-sibling::strong
+${DETAIL_Performance Product Leader}             ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Performance Product Leader (PPL):")]/following-sibling::strong
 ${DETAIL_Priority}                               ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Priority:")]/following-sibling::strong
 ${DETAIL_Date Needed}                            ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Date Needed:")]/following-sibling::strong
 ${DETAIL_Requestor's Name}                       ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Requestor's Name:")]/following-sibling::strong
@@ -56,6 +69,25 @@ ${DETAIL_Customer Sub-Division}                  ${TICKET_DETAILS_ITEMS}//span[c
 ${DETAIL_Customer Location}                      ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Location:")]/following-sibling::strong
 ${DETAIL_Subject}                                ${TICKET_DETAILS_HEADER}/p[2]
 ${DETAIL_Description}                            ${TICKET_DETAILS_HEADER}/p[3]
+
+# CRM Ticket Details
+${CRM_DETAIL_Case Number}                        //input[@aria-label="Case Number"]
+${CRM_DETAIL_Division}                           //ul[@title='Division']/li/div[2]/div
+${CRM_DETAIL_Sub-Division}                       //ul[@title='Sub-Division']/li/div[2]/div
+${CRM_DETAIL_Service Classification}             //ul[@title='Service Classification']/li/div[2]/div
+${CRM_DETAIL_Service Requirement}                //select[@aria-label="Service Requirement"]
+${CRM_DETAIL_PRIORITY}                           //div[contains(text(),'Priority')]/preceding-sibling::div/div
+${CRM_DETAIL_Subject}                            //input[@aria-label="Subject"]
+${CRM_DETAIL_Description}                        //textarea[@aria-label='Description']
+${CRM_DETAIL_Customer Division}                  //ul[@title='Customer Division']/li/div[2]/div
+${CRM_DETAIL_Customer Sub-Division}              //ul[@title='Customer Sub-Division']/li/div[2]/div
+${CRM_DETAIL_Customer Location}                  //select[@aria-label='Customer Location']
+${CRM_DETAIL_BRAND}                              //div[@data-id='mt_brand.fieldControl-LookupResultsDropdown_mt_brand_selected_tag_text']
+${CRM_DETAIL_Brand Category Leader}              //input[@data-id='mt_stv2_brandcategoryleaderbcl.fieldControl-text-box-text']
+${CRM_DETAIL_Performance Product Leader}         //input[@data-id='mt_stv2_performanceproductleaderppl.fieldControl-text-box-text']
+${CRM_DETAIL_Requestor's Name}                   //input[@aria-label="Requestor's Name"]
+${CRM_DETAIL_ATTACHMENT}                         //input[@aria-label="Attachments"]
+${CRM_DETAIL_DATE_NEEDED}                        //input[@aria-label="Date Needed"]
 
 #    Ticket Creation Form
 &{DICT_FORM_FIELDS_LOCATORS}           Division=${DDL_DIVISION}    Sub-Division=${DDL_SUBDIVISION}    Service Classification=${DDL_SC}
