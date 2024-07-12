@@ -34,42 +34,6 @@ ${TXT_EMAIL}                           //input[@type="email"]
 ${TXT_PASSWORD}                        //input[@type="password"]
 ${BTN_SUBMIT}                          //input[@type='submit']
 
-# Ticket Details
-${LBL_SUBJECT}                         //input[@aria-label="Subject"]
-
-#    ........................Solution Tracker Customer Website.....................................
-
-#    Ticket Summary
-${TICKET_DETAILS_HEADER}     //*[@class='ticket-details__header']
-${TICKET_DETAILS_ITEMS}      //ul[@class='ticket-details__body']
-@{LIST_TECH_ALL_FIELDS}      Division      Sub-Division    Service Classification    Service Requirement    Subject
-...                          Description    Attachment    Brand    Brand Category Leader    Performance Product Leader    Model Code
-...                          Priority    Date Needed     Requestor's Name
-...                          Customer Division    Customer Sub-Division     Customer Location
-
-@{LIST_CRM_SUMMARY_TAB}            Case Number    Division      Sub-Division    Service Classification    Service Requirement    Subject
-...                                Description    Priority    Customer Division    Customer Sub-Division     Customer Location
-@{LIST_CRM_DETAILED_INFO_TAB}      Attachment    Brand    Brand Category Leader    Performance Product Leader
-...                                Date Needed     Requestor's Name
-
-${DETAIL_Division}                               ${TICKET_DETAILS_ITEMS}//li/span[contains(text(),"Division:")]/following-sibling::strong
-${DETAIL_Sub-Division}                           ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Sub-Division:")]/following-sibling::strong
-${DETAIL_Service Classification}                 ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Classification:")]/following-sibling::strong
-${DETAIL_Service Requirement}                    ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Requirement:")]/following-sibling::strong
-${DETAIL_Attachment}                             ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Attachment:")]/following-sibling::strong
-${DETAIL_Brand}                                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Brand:")]/following-sibling::strong
-${DETAIL_Brand Category Leader}                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Brand Category Leader (BCL):")]/following-sibling::strong
-${DETAIL_Performance Product Leader}             ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Performance Product Leader (PPL):")]/following-sibling::strong
-${DETAIL_Priority}                               ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Priority:")]/following-sibling::strong
-${DETAIL_Date Needed}                            ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Date Needed:")]/following-sibling::strong
-${DETAIL_Requestor's Name}                       ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Requestor's Name:")]/following-sibling::strong
-${DETAIL_Model Code}                             ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Model Code:")]/following-sibling::strong
-${DETAIL_Customer Division}                      ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Division:")]/following-sibling::strong
-${DETAIL_Customer Sub-Division}                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Sub-Division:")]/following-sibling::strong
-${DETAIL_Customer Location}                      ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Location:")]/following-sibling::strong
-${DETAIL_Subject}                                ${TICKET_DETAILS_HEADER}/p[2]
-${DETAIL_Description}                            ${TICKET_DETAILS_HEADER}/p[3]
-
 # CRM Ticket Details
 ${CRM_DETAIL_Case Number}                        //input[@aria-label="Case Number"]
 ${CRM_DETAIL_Division}                           //ul[@title='Division']/li/div[2]/div
@@ -88,6 +52,42 @@ ${CRM_DETAIL_Performance Product Leader}         //input[@data-id='mt_stv2_perfo
 ${CRM_DETAIL_Requestor's Name}                   //input[@aria-label="Requestor's Name"]
 ${CRM_DETAIL_ATTACHMENT}                         //input[@aria-label="Attachments"]
 ${CRM_DETAIL_DATE_NEEDED}                        //input[@aria-label="Date Needed"]
+
+@{LIST_CRM_SUMMARY_TAB}            Case Number    Division      Sub-Division    Service Classification    Service Requirement    Subject
+...                                Description    Priority    Customer Division    Customer Sub-Division     Customer Location
+@{LIST_CRM_DETAILED_INFO_TAB}      Attachment    Brand    Brand Category Leader    Performance Product Leader
+...                                Date Needed     Requestor's Name
+
+# Ticket Details
+${LBL_SUBJECT}                         //input[@aria-label="Subject"]
+
+#    ........................Solution Tracker Customer Website.....................................
+
+#    Ticket Summary
+${TICKET_DETAILS_HEADER}     //*[@class='ticket-details__header']
+${TICKET_DETAILS_ITEMS}      //ul[@class='ticket-details__body']
+@{LIST_TECH_ALL_FIELDS}      Division      Sub-Division    Service Classification    Service Requirement    Subject
+...                          Description    Attachment    Brand    Brand Category Leader    Performance Product Leader    Model Code
+...                          Priority    Date Needed     Requestor's Name
+...                          Customer Division    Customer Sub-Division     Customer Location
+
+${DETAIL_Division}                               ${TICKET_DETAILS_ITEMS}//li/span[contains(text(),"Division:")]/following-sibling::strong
+${DETAIL_Sub-Division}                           ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Sub-Division:")]/following-sibling::strong
+${DETAIL_Service Classification}                 ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Classification:")]/following-sibling::strong
+${DETAIL_Service Requirement}                    ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Requirement:")]/following-sibling::strong
+${DETAIL_Attachment}                             ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Attachment:")]/following-sibling::strong
+${DETAIL_Brand}                                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Brand:")]/following-sibling::strong
+${DETAIL_Brand Category Leader}                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Brand Category Leader (BCL):")]/following-sibling::strong
+${DETAIL_Performance Product Leader}             ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Performance Product Leader (PPL):")]/following-sibling::strong
+${DETAIL_Priority}                               ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Priority:")]/following-sibling::strong
+${DETAIL_Date Needed}                            ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Date Needed:")]/following-sibling::strong
+${DETAIL_Requestor's Name}                       ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Requestor's Name:")]/following-sibling::strong
+${DETAIL_Model Code}                             ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Model Code:")]/following-sibling::strong
+${DETAIL_Customer Division}                      ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Division:")]/following-sibling::strong
+${DETAIL_Customer Sub-Division}                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Sub-Division:")]/following-sibling::strong
+${DETAIL_Customer Location}                      ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Location:")]/following-sibling::strong
+${DETAIL_Subject}                                ${TICKET_DETAILS_HEADER}/p[2]
+${DETAIL_Description}                            ${TICKET_DETAILS_HEADER}/p[3]
 
 #    Ticket Creation Form
 &{DICT_FORM_FIELDS_LOCATORS}           Division=${DDL_DIVISION}    Sub-Division=${DDL_SUBDIVISION}    Service Classification=${DDL_SC}

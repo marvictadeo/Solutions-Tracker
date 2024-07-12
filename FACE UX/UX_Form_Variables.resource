@@ -10,11 +10,21 @@ ${BROWSER}                        Chrome
 
 #    ........................Solution Tracker Portal---------------------------------------------
 # Login Credentials
-${EMAIL}    email
-${PASSWORD}    password
+${LOGO_CRM}                   //img[@title='Music Tribe CRM']
+${BTN_LOGIN_SUBMIT}           //input[@type='submit']
+${BTN_AGENT_PORTAL}           //header/div[1]/div[2]/a[1]
+${TAB_NAME_LOGIN}             Sign in to your account
+${UAT_CRM_V2}                 https://musictribeservice.crm5.dynamics.com/main.aspx?appid=b5f12461-796e-ee11-9ae7-002248ebf471&pagetype=dashboard&id=d201a642-6283-4f1d-81b7-da4b1685e698&type=system&_canOverride=true
+${UAT_SEARCH_ICON}            //body/div[@id='shell-container']/div[@id='ApplicationShell']/div[1]/div[1]/div[1]/div[3]/div[2]/div[1]/div[1]/div[1]/ul[1]/li[1]/button[1]/span[1]/span[1]
+${SEARCH_BOX_ICON}            //span[@id='searchButtonIcon']
 
 # URL Sandbox
-${URL_ALL_CASES_FACE}    https://musictribeservice.crm5.dynamics.com/main.aspx?appid=22fd57cc-73f4-ed11-8848-002248ebf403&pagetype=entitylist&etn=incident&viewid=8eb7d675-e50f-ee11-8f6e-002248ebf403&viewType=1039
+${URL_ALL_CASES_FACE}                  https://musictribeservice.crm5.dynamics.com/main.aspx?appid=22fd57cc-73f4-ed11-8848-002248ebf403&pagetype=entitylist&etn=incident&viewid=8eb7d675-e50f-ee11-8f6e-002248ebf403&viewType=1039
+${CRM_GLOBAL_SEARCH_BOX}               //input[@aria-label='Search box']
+
+# Login Credentials
+${EMAIL}    email
+${PASSWORD}    password
 
 #    Locators
 ${SEARCH_BOX}                //input[@aria-label='Case Filter by keyword']
@@ -26,6 +36,26 @@ ${DATA_TABLE}                //div[@class="datatable-body-cell-label"]
 ${TXT_EMAIL}                 //input[@type="email"]
 ${TXT_PASSWORD}              //input[@type="password"]
 ${BTN_SUBMIT}                //input[@type='submit']
+
+@{LIST_CRM_SUMMARY_TAB}            Case Number    Division      Sub-Division    Service Classification    Service Requirement    Subject
+...                                Description    Priority    Customer Division    Customer Sub-Division     Customer Location
+@{LIST_CRM_DETAILED_INFO_TAB}      Attachment    Brand    Project Owner
+
+# CRM Ticket Details
+${CRM_DETAIL_Case Number}                        //input[@aria-label="Case Number"]
+${CRM_DETAIL_Division}                           //ul[@title='Division']/li/div[2]/div
+${CRM_DETAIL_Sub-Division}                       //ul[@title='Sub-Division']/li/div[2]/div
+${CRM_DETAIL_Service Classification}             //ul[@title='Service Classification']/li/div[2]/div
+${CRM_DETAIL_Service Requirement}                //select[@aria-label="Service Requirement"]
+${CRM_DETAIL_PRIORITY}                           //div[contains(text(),'Priority')]/preceding-sibling::div/div
+${CRM_DETAIL_Subject}                            //input[@aria-label="Subject"]
+${CRM_DETAIL_Description}                        //textarea[@aria-label='Description']
+${CRM_DETAIL_Customer Division}                  //ul[@title='Customer Division']/li/div[2]/div
+${CRM_DETAIL_Customer Sub-Division}              //ul[@title='Customer Sub-Division']/li/div[2]/div
+${CRM_DETAIL_Customer Location}                  //select[@aria-label='Customer Location']
+${CRM_DETAIL_BRAND}                              //div[@data-id='mt_brand.fieldControl-LookupResultsDropdown_mt_brand_selected_tag_text']
+${CRM_DETAIL_Project Owner}                      //input[@aria-label="Project Owner"]
+${CRM_DETAIL_ATTACHMENT}                         //input[@aria-label="Attachments"]
 
 # Ticket Details
 ${LBL_SUBJECT}               //input[@aria-label="Subject"]
