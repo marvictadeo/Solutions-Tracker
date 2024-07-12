@@ -332,8 +332,9 @@ Retrieve All Entered Data In The Form
 Verify Ticket Summary Data
     [Documentation]    The information provided by the user in the ticket form should match the ticket summary details.
     Click Element    ${DATA_TABLE}
-    Wait Until Page Contains Element    //div[contains(text(),'Ticket Info')]
+    Wait Until Page Contains Element    //div[contains(text(),'Ticket Info')]    30s
     FOR    ${field}    IN    @{LIST_TECH_ALL_FIELDS}
+        Wait Until Element Is Visible    ${DETAIL_${field}}    30s
         Scroll "${DETAIL_${field}}" Into Center
         ${actual_value}    Get Text    ${DETAIL_${field}}
         Run Keyword And Continue On Failure    Should Be Equal As Strings     ${DICT_RETRIEVED_VALUES}[${field}]    ${actual_value}

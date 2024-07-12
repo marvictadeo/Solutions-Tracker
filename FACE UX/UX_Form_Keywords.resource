@@ -151,8 +151,8 @@ Check Create Page
         Wait Until Page Contains Element    ${DDL_DIVISION}    60s
     END
 
-Verify Master Data, Ticket Submission And Ticket Summary : FACE UX
-    [Documentation]    Verify Ticket Creation And Master Data : FACE UX
+Verify Ticket Submission And Correctness Of Data : FACE UXUI
+    [Documentation]    Verify Ticket Creation And Master Data : FACE UXUI
     Check Create Page
     #    ----- Change Excel Sheet Name -----
     Get Excel Data - FACE UX    UXUI
@@ -168,7 +168,7 @@ Verify Master Data, Ticket Submission And Ticket Summary : FACE UX
 
         #    ------- Fill In FACE UXUI Form -------
         Check Create Page
-        Run Keyword And Continue On Failure    Fill In FACE UX Solution Tracker Form
+        Run Keyword And Continue On Failure    Fill In FACE UXUI Solution Tracker Form
         ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${brand_item}
         ${excel_index}    Evaluate    ${count} + 2
 
@@ -181,6 +181,8 @@ Verify Master Data, Ticket Submission And Ticket Summary : FACE UX
         Save Workbook
         #    ------- VerifY Ticket Summary -------
         Run Keyword And Continue On Failure    Verify Ticket Summary Data
+        #    ------- Verify CRM Data -------------
+        Run Keyword And Continue On Failure    FACE UXUI: Verify CRM Data
     END
 
 Verify Master Data And Ticket Submission With CRM Checking : FACE UX
@@ -306,6 +308,83 @@ Verify Ticket Summary Data
         END
     END
 
+FACE UXUI: Verify CRM Data
+    [Documentation]    Keyword to verify data in the CRM
+    ${get_stat}    Run Keyword And Return Status    Switch Window    title=Search - Dynamics 365
+    IF    "${get_stat}" == "False"
+        Go To Agent Portal
+    ELSE
+        Log    Switched to CRM Page.
+    END
+    Login To Agent Portal
+    Go To Agent Portal Ticket Details    ${STR_CASE_NUM}
+    Run Keyword And Continue On Failure    FACE UXUI : Compare Data In CRM    ${LIST_CRM_SUMMARY_TAB}    Summary Tab
+    Run Keyword And Continue On Failure    FACE UXUI : Compare Data In CRM    ${LIST_CRM_DETAILED_INFO_TAB}    Detailed Information Tab
+    Run Keyword And Continue On Failure    Go Back And Switch To ST Form Page
+
+FACE UXUI : Compare Data In CRM
+    [Documentation]    The information provided by the user in the ticket form should match the ticket summary details.
+    [Arguments]    ${list}    ${tab}=none
+    Wait Until Element Is Visible    //h1[@title='${STR_CASE_NUM}']    120s
+    IF    "${tab}"=="Detailed Information Tab"    Click Element    //li[@aria-label='Detailed Information']
+    FOR    ${field}    IN    @{list}
+        IF    "${field}"=="Priority" or "${field}"=="Description"
+            ${actual_value}    Run Keyword And Continue On Failure    Get Text    ${CRM_DETAIL_${field}}
+            Run Keyword And Continue On Failure    Should Be Equal As Strings     ${DICT_RETRIEVED_VALUES}[${field}]    ${actual_value}
+        ELSE IF    "${field}"=="Attachment"
+            ${actual_value}    Run Keyword And Continue On Failure    Scroll To Element And Get Element Attribute    ${CRM_DETAIL_${field}}    title
+            Run Keyword And Continue On Failure    Should Contain    ${actual_value}     Jpg_Img_Photo.jpg
+        ELSE
+            ${actual_value}    Run Keyword And Continue On Failure    Scroll To Element And Get Element Attribute    ${CRM_DETAIL_${field}}    title
+            IF    "${field}"=="Case Number"
+                Run Keyword And Continue On Failure    Should Be Equal As Strings     ${STR_CASE_NUM}    ${actual_value}
+            ELSE
+                Run Keyword And Continue On Failure    Should Be Equal As Strings     ${DICT_RETRIEVED_VALUES}[${field}]    ${actual_value}
+            END
+        END
+    END
+
+Scroll To Element And Get Element Attribute
+    [Documentation]    Keyword to scroll to element and get text
+    [Arguments]    ${locator}    ${attribute}
+    Scroll "${locator}" Into Center
+    Wait Until Page Contains Element    ${locator}    20s
+    ${value}    Get Element Attribute    ${locator}    ${attribute}
+    RETURN    ${value}
+
+Login To Agent Portal
+    [Documentation]    Keyword to login on Agent Portal
+    ${login_status}    Run Keyword And Return Status    Wait Until Element Is Visible    ${LOGO_CRM}
+    IF    "${login_status}" == "True"
+        Log    Already logged in.
+    ELSE
+        Wait Until Element Is Visible    ${TXT_EMAIL}    120s
+        Input Text    ${TXT_EMAIL}    ${EMAIL}
+        Click Element    ${BTN_LOGIN_SUBMIT}
+        Wait Until Element Is Visible    ${TXT_PASSWORD}    120s
+        Input Text    ${TXT_PASSWORD}    ${PASSWORD}
+        Click Element    ${BTN_LOGIN_SUBMIT}
+        Pause Execution    #    Input verification code, Press OK on the dialog once done
+    END
+
+Go To Agent Portal
+    [Documentation]    Keyword to redirect the user to Agent Portal
+    Scroll And Click The Element    ${BTN_AGENT_PORTAL}
+    ${get_stat_1}    Run Keyword And Return Status    Switch Window    title=${TAB_NAME_LOGIN}    timeout=2s
+    Go To    ${UAT_CRM_V2}
+
+Go To Agent Portal Ticket Details
+    [Documentation]    Keyword to get the agent portal ticket details
+    [Arguments]    ${case_num}
+    Wait Until Page Contains Element    ${UAT_SEARCH_ICON}    30s
+    Click Element    ${UAT_SEARCH_ICON}
+    Wait Until Page Contains Element    ${CRM_GLOBAL_SEARCH_BOX}    120s
+    Input Text    ${CRM_GLOBAL_SEARCH_BOX}    ${case_num}
+    Click Element    ${SEARCH_BOX_ICON}
+    Set Test Variable    ${SEARCHED_CASE_NUM}    //span[text()='${case_num}'][1]
+    Wait Until Page Contains Element    ${SEARCHED_CASE_NUM}    30s
+    Click Element    ${SEARCHED_CASE_NUM}
+
 Get The Case Ticket Number In Ticket Viewer
     [Documentation]    Keyword to get the case ticket number in the ticket viewer details
     ${data_table_title}    Set Variable
@@ -316,7 +395,7 @@ Get The Case Ticket Number In Ticket Viewer
     ${str_case_num}    Get Text    ${data_table_case}
     Set Suite Variable    ${STR_CASE_NUM}
 
-Fill In FACE UX Solution Tracker Form
+Fill In FACE UXUI Solution Tracker Form
     [Documentation]    Fill In FACE UX Solution Tracker form
     [Arguments]    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}    ${brand_item}
     Change Division    Face Tribes (FACE)
@@ -502,21 +581,6 @@ Select Random Option For "${field}" Dropdown
         Wait Until Keyword Succeeds    3x    1s
         ...    Select From List By Label    ${DDL_BRAND}    ${selected_brand}
         Log    Brand
-    END
-
-Fill In Attachment And Project Owner And Stakeholders Fields
-    [Documentation]    Fill In Attachment And Project Owner And Stakeholders Fields
-    [Arguments]    ${sc_item}
-    IF    "${sc_item}" == "Master Data" or "${sc_item}" == "User Acceptance Test (UAT) Verification" or "${sc_item}" == "User Testing"
-        Wait Until Element Is Enabled    ${ATTACHMENT}    30s
-        Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
-    ELSE IF  "${sc_item}" != "Templates"
-        IF    "${sc_item}" == "Requirement Documentation" or "${sc_item}" == "Vision Document"
-            Element Should Be Visible     //label[@for='attachment']/span[contains(text(),"*")]
-        END
-        Input Project Owner And Stakeholders Field
-        Wait Until Element Is Enabled    ${ATTACHMENT}    30s
-        Choose File    ${ATTACHMENT}    ${JPG_IMAGE_SAMPLE}
     END
 
 Get ST Ticket Number In Ticket Summary

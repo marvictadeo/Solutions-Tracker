@@ -65,6 +65,6 @@ Go Back And Switch To ST Form Page
     [Documentation]    View The Specific Case Number
     Wait Until Element Is Visible    //div/button[@title='Go back']
     Click Element    //div/button[@title='Go back']
-    Wait Until Element Is Visible    ${SEARCH_BOX}    30s
-    Clear Text Field    ${SEARCH_BOX}
+    Wait Until Element Is Visible    ${CRM_GLOBAL_SEARCH_BOX}    30s
+    Clear Text Field    ${CRM_GLOBAL_SEARCH_BOX}
     Switch Window    title:MT Solutions Tracker
