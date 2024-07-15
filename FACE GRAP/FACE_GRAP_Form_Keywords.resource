@@ -8,7 +8,8 @@ Library          SeleniumLibrary
 Library          FakerLibrary
 Library          RPA.Tables
 Library          RPA.Excel.Files
-Resource         ./FACE_GRAP_Form_Variables.resource
+Resource         FACE_GRAP_Form_Variables.resource
+Resource         Solution_Tracker_Portal_Keywords.resource
 
 
 *** Keywords ***
@@ -93,41 +94,62 @@ Verify Ticket Creation Using Master Data - FACE GRAP
         ${st_item}    Get From List    ${SERVICE_TYPE}    ${index}
         ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
         Set Test Variable    ${SC_ITEM}
+
         Check Create Page
         Run Keyword And Continue On Failure    Complete FACE GRAP Form    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
-        Run Keyword And Continue On Failure    Submit Ticket
         ${row}    Evaluate    ${count} + 2
+        Run Keyword And Continue On Failure    Submit Ticket
         Update Excel With Case Number    ${row}    I
-        IF    "${CASE_NUM}" == "Failed"
-            Go To    http://10.224.57.5:8080/
-        ELSE
-            Scroll "${BTN_CREATE_A_TICKET}" Into Center
-            Click Element    ${BTN_CREATE_A_TICKET}
+        IF    "${CASE_NUM}" != "Failed"    Run Keyword And Continue On Failure    Verify Ticket Summary Data
+    END
+
+Verify Ticket Creation Using Master Data With CRM Checking - FACE GRAP
+    [Documentation]    Creates and verifies tickets for FACE GRAP with CRM Checking
+    # ----------- Change Excel Sheet Name ----------- #
+    Check Create Page
+    Get Excel Data    ${SHEET_NAME}
+    ${length}    Get Length    ${SUB_DIVISION}
+    FOR    ${count}    IN RANGE    ${length}
+        ${index}    Set Variable    ${count}
+        ${subdiv_item}    Get From List    ${SUB_DIVISION}    ${index}
+        ${sc_item}    Get From List    ${SERVICE_CLASSIFICATION}    ${index}
+        ${st_item}    Get From List    ${SERVICE_TYPE}    ${index}
+        ${sr_item}    Get From List    ${SERVICE_REQUIREMENT}    ${index}
+        Set Test Variable    ${SC_ITEM}
+
+        Check Create Page
+        Run Keyword And Continue On Failure    Complete FACE GRAP Form    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+        ${row}    Evaluate    ${count} + 2
+
+        Run Keyword And Continue On Failure    Submit Ticket
+        Update Excel With Case Number    ${row}    I
+        IF    "${CASE_NUM}" != "Failed"
+            Run Keyword And Continue On Failure    Verify Ticket Title In The "Ticket Viewer"    ${expected_title}
+            Run Keyword And Continue On Failure    Verify Ticket Summary    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+            # -------- CRM Checking --------#
+            Run Keyword And Continue On Failure    Get ST Ticket Number In Ticket Summary
+            Verify The Ticket In Solution Tracker Portal    ${URL_ALL_CASES_FACE}    ${CASE_NUM}
+            # ----- Removed for now -------#
+            # Verify The Automated Ticket Title     ${CASE_NUM}   ${sr_item}    ${st_item}    ${sc_item}
+            Go Back And Switch To ST Form Page
         END
-        # Run Keyword And Continue On Failure    Verify Ticket Summary      ${subdiv_item}    ${sc_item}    ${sr_item}
     END
 
 Update Excel With Case Number
     [Documentation]    Appends the case number of the created ticket to the excel file.
     ...                If ticket creation failed, "Failed" will be appended
     [Arguments]    ${row}    ${column}
-    ${case_num}    Get The Case Ticket Number In Ticket Viewer
     Set Cell Value     ${row}    ${column}    ${case_num}
     Save Workbook
 
 Get The Case Ticket Number In Ticket Viewer
     [Documentation]    Keyword to get the case ticket number in the ticket viewer details
     ${data_table_title}    Set Variable    //div[@class="datatable-body-cell-label"]/a[text()=" ${expected_title}"]
-    ${stat}    Run Keyword And Return Status    Wait Until Page Contains Element    ${data_table_title}    120s
-    IF    "${stat}" == "False"
-        Set Test Variable    ${CASE_NUM}    Failed
-        Capture Page Screenshot
-    ELSE
-       ${data_table_case}    Set Variable    ${data_table_title}/preceding::datatable-body-cell[3]/div/a
-       ${case_num}    Get Text    ${data_table_case}
-       Set Test Variable    ${CASE_NUM}
-    END
-    RETURN    ${CASE_NUM}
+    Wait Until Page Contains Element    ${data_table_title}    120s
+    ${data_table_title}    Get Variable Value    ${data_table_title}
+    ${data_table_case}    Set Variable    ${data_table_title}/preceding::datatable-body-cell[3]/div/a
+    ${case_num}    Get Text    ${data_table_case}
+    Set Suite Variable    ${CASE_NUM}
 
 Complete FACE GRAP Form
     [Documentation]    Fills in the Solution Tracker form for FACE GRAP
@@ -226,6 +248,9 @@ Fill Out Product Launch Asset Form
     Choose File    ${IMG_SPECIFIC_IMAGE}    ${JPG_IMAGE_SAMPLE}
     Input Text    ${TXT_HEADLINE}    ${INPUT_HEADLINE}
     Input Text    ${TXT_SUB_HEADLINE}    ${INPUT_SUB_HEADLINE}
+    ####
+    ${selected_series_or_single_product}    Random Element    ${LIST_SERIES_OR_SINGLE_PRODUCT}
+    Click Element    ${RB_SERIES_OR_SINGLE_PRODUCT}\[@for='${selected_series_or_single_product}']
     Select Product Details
     Select Asset Format
     ${next_date}    Get Current Date    result_format=%Y-%#m-%#d    increment=+1 day
@@ -331,8 +356,10 @@ Check Create Page
     [Documentation]    Verifies if the Ticket Creation page has loaded
     ${stat}    Run Keyword And Return Status    Page Should Contain Element    ${DDL_DIVISION}
     IF    "${stat}" == "False"
+        Click Element    //img[@class="header__logo-img"]
+        Wait Until Page Contains Element    ${BTN_CREATE}
         Click Element    ${BTN_CREATE}
-        Wait Until Page Contains Element    ${DDL_DIVISION}    120s
+        Wait Until Page Contains Element    ${DDL_DIVISION}    60s
     END
 
 Select SC VALUE
@@ -407,21 +434,59 @@ Select Random Option From "${field}" Dropdown
 Submit Ticket
     [Documentation]    Submits the ticket created
     ${stat}    Run Keyword And Return Status    Wait Until Element Is Enabled    //button[contains(text(),'Submit')]
-    IF    "${stat}" == "True"    Click Element    //button[@class="btn btn-primary"]
+    Retrieve All Entered Data In The Form
+    IF    "${stat}" == "True"
+        Click Element    //button[@class="btn btn-primary"]
+        Wait Until Page Contains Element    //div[@class="datatable-body-cell-label"]    120s
+        Get The Case Ticket Number In Ticket Viewer
+    ELSE
+        Set Test Variable    ${CASE_NUM}    Failed
+        Capture Page Screenshot
+        Fail    Submit Button is Disabled
+    END
 
-Verify Ticket Summary
+Retrieve All Entered Data In The Form
+    [Documentation]    Get the information entered by the user in the form
+    ${DICT_RETRIEVED_VALUES}    Create Dictionary
+    FOR    ${field}    IN    @{LIST_GRAP_ALL_FIELDS}
+        IF    "${field}"=="Attachment"
+            ${str_value}    Set Variable    Download
+            Set To Dictionary    ${DICT_RETRIEVED_VALUES}    ${field}=${str_value}
+        END
+        IF    "${field}"=="Subject"
+            ${str_value}    Set Variable    ${sc_item}
+            Set To Dictionary    ${DICT_RETRIEVED_VALUES}    ${field}=${str_value}
+        END
+        ${field_exist}    Run Keyword And Return Status    Element Should Be Visible    ${DICT_FORM_FIELDS_LOCATORS}[${field}]
+        IF    ${field_exist}==${False}
+            Log    N/A
+        ELSE
+            TRY
+                ${str_value}    Get Selected List Label   ${DICT_FORM_FIELDS_LOCATORS}[${field}]
+            EXCEPT
+                ${str_value}    Get Value   ${DICT_FORM_FIELDS_LOCATORS}[${field}]
+            END
+            Set To Dictionary    ${DICT_RETRIEVED_VALUES}    ${field}=${str_value}
+        END
+    END
+    Set Suite Variable    ${DICT_RETRIEVED_VALUES}
+
+Verify Ticket Summary Data
     [Documentation]    Verifies the ticket created on the Ticket Summary screen
-    [Arguments]     ${subdiv_item}    ${sc_item}    ${sr_item}
+    Wait Until Element Is Visible    ${DATA_TABLE}    120s
     Click Element    ${DATA_TABLE}
     Wait Until Page Contains Element    //div[contains(text(),'Ticket Info')]
-    ${SD_RESULT}    Set Variable    //span[contains(text(),'Sub-Division:')]//following-sibling::strong[contains(text(),"${subdiv_item.strip()}")]
-    Run Keyword And Continue On Failure    Page Should Contain Element    ${SD_RESULT}
-    ${SC_RESULT}    Set Variable    //span[contains(text(),'Service Classification:')]//following-sibling::strong[contains(text(),"${sc_item.strip()}")]
-    Run Keyword And Continue On Failure    Page Should Contain Element    ${SC_RESULT}
-    IF    "${sr_item}" != "EMPTY"
-            ${SR_RESULT}    Set Variable    //span[contains(text(),'Service Requirement:')]//following-sibling::strong[contains(text(),"${sr_item.strip()}")]
-            Run Keyword And Continue On Failure    Page Should Contain Element    ${SR_RESULT}
+    FOR    ${field}    IN    @{LIST_GRAP_ALL_FIELDS}
+        ${field_exist}    Run Keyword And Return Status    Element Should Be Visible    ${DETAIL_${field}}
+        IF    ${field_exist}==${False}
+            Log    N/A
+        ELSE
+            ${actual_value}    Get Text    ${DETAIL_${field}}
+            Run Keyword And Continue On Failure    Should Be Equal As Strings     ${DICT_RETRIEVED_VALUES}[${field}]    ${actual_value}
+        END
     END
+
+# ---- CRM Checking ----#
 
 Open Link In New Tab
     [Documentation]    Opens the Link In New Tab
@@ -433,3 +498,41 @@ Open Link In New Tab
         Execute Javascript   window.open('https://${link}');
     END
     Switch Window    NEW
+
+Verify Ticket Summary
+    [Documentation]    Verify Ticket Summary
+    [Arguments]   ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}
+    Click Element    ${DATA_TABLE}
+    Wait Until Page Contains Element    //div[contains(text(),'Ticket Info')]
+    ${SD_RESULT}    Set Variable    //span[contains(text(),'Sub-Division:')]//following-sibling::strong[contains(text(),"${subdiv_item.strip()}")]
+    Run Keyword And Continue On Failure    Page Should Contain Element    ${SD_RESULT}
+    ${SC_RESULT}    Set Variable    //span[contains(text(),'Service Classification:')]//following-sibling::strong[contains(text(),"${sc_item.strip()}")]
+    Run Keyword And Continue On Failure    Page Should Contain Element    ${SC_RESULT}
+    IF    "${st_item}" != "EMPTY"
+        ${ST_RESULT}    Set Variable    //span[contains(text(),'Service Type:')]//following-sibling::strong[contains(text(),"${st_item.strip()}")]
+        Run Keyword And Continue On Failure    Page Should Contain Element    ${ST_RESULT}
+    END
+    IF    "${sr_item}" != "EMPTY"
+        ${SR_RESULT}    Set Variable    //span[contains(text(),'Service Requirement:')]//following-sibling::strong[contains(text(),"${sr_item.strip()}")]
+        Run Keyword And Continue On Failure    Page Should Contain Element    ${SR_RESULT}
+    END
+
+Verify Ticket Title In The "${page}"
+    [Documentation]    Verify Ticket Title/Subject
+    [Arguments]    ${expected_title}
+    IF    "${page}" == "Ticket Details"
+        Wait Until Element Is Visible    //div[@class='ticket-details__header']
+        Element Should Be Visible    //div[@class='ticket-details__header']/p[contains(text(),'${expected_title}')]
+    ELSE
+        ${ticket_title}    Set Variable
+        ...    //div[@class="datatable-body-cell-label"]/a[text()=" ${expected_title}"]
+        Wait Until Element Is Visible    //div[@class="datatable-tickets"]    120s
+        Element Should Be Visible    ${ticket_title}
+    END
+
+Get ST Ticket Number In Ticket Summary
+    [Documentation]    Get The Ticket Number
+    Wait Until Element Is Visible    //div[@class='ticket-details__header']/h4
+    ${case_number}    Get Text    //div[@class='ticket-details__header']/h4
+    ${case_num}    Remove String    ${case_number}    Ticket Number:${SPACE}
+    Set Suite Variable    ${CASE_NUM}

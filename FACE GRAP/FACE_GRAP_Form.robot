@@ -10,3 +10,7 @@ Resource             ./FACE_GRAP_Form_Keywords.resource
 Verify Ticket Creation - FACE GRAP
     [Documentation]    Verifies Solution Tracker tickets creation using the new form of FACE GRAP
     Verify Ticket Creation Using Master Data - FACE GRAP
+
+Verify Ticket Creation With CRM Checking
+    [Documentation]    Verifies Solution Tracker tickets creation using the new form of FACE GRAP
+    Verify Ticket Creation Using Master Data With CRM Checking - FACE GRAP
