@@ -5,8 +5,53 @@ Documentation    Variables for FACE GRAP Form
 *** Variables ***
 ${MAX_TIMEOUT}                                   30s
 ${BTN_CREATE}                      //div[@class="card-button__wrapper"]//div[text()='Create']
-${DATA_TABLE}                      //div[@class="datatable-body-cell-label"]/a[text()=" Internal QA Test GRAP"]
 ${JPG_IMAGE_SAMPLE}                ${CURDIR}${/}Jpg_Img_Photo.jpg
+
+#    ........................Solution Tracker Portal---------------------------------------------
+# Login Credentials
+${EMAIL}    wainwright.rubia@musictribe.com
+${PASSWORD}    Terr@yne1017###@@@
+
+# URL Sandbox
+${URL_ALL_CASES_FACE}    https://musictribeservice.crm5.dynamics.com/main.aspx?appid=22fd57cc-73f4-ed11-8848-002248ebf403&pagetype=entitylist&etn=incident&viewid=8eb7d675-e50f-ee11-8f6e-002248ebf403&viewType=1039
+${URL_ALL_CASES}         https://musictribeservice.crm5.dynamics.com/main.aspx?appid=b5f12461-796e-ee11-9ae7-002248ebf471&pagetype=entitylist&etn=incident&viewid=00000000-0000-0000-00aa-000010001030&viewType=1039
+
+#    Locators
+${SEARCH_BOX}                //input[@aria-label='Case Filter by keyword']
+${SAVE_CASE}                 //button[@aria-label='Save (CTRL+S)']
+${TAB_DETAILED_INFO}         //li[@title='Detailed Information']
+${DATA_TABLE}                //div[@class="datatable-body-cell-label"]
+
+# Login Modal
+${TXT_EMAIL}                 //input[@type="email"]
+${TXT_PASSWORD}              //input[@type="password"]
+${BTN_SUBMIT}                //input[@type='submit']
+
+# Ticket Summary Details
+${LBL_SUBJECT}               //input[@aria-label="Subject"]
+${TICKET_DETAILS_HEADER}     //*[@class='ticket-details__header']
+${TICKET_DETAILS_ITEMS}      //ul[@class='ticket-details__body']
+
+
+@{LIST_GRAP_ALL_FIELDS}      Division      Sub-Division    Service Classification    Service Type    Service Requirement    Subject
+...                          Description    Attachment    Brand    Priority
+...                          Customer Division    Customer Sub-Division     Customer Location
+
+${DETAIL_Division}                               ${TICKET_DETAILS_ITEMS}//li/span[contains(text(),"Division:")]/following-sibling::strong
+${DETAIL_Sub-Division}                           ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Sub-Division:")]/following-sibling::strong
+${DETAIL_Service Classification}                 ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Classification:")]/following-sibling::strong
+${DETAIL_Service Type}                           ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Type:")]/following-sibling::strong
+${DETAIL_Service Requirement}                    ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Requirement:")]/following-sibling::strong
+${DETAIL_Attachment}                             ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Attachment:")]/following-sibling::strong
+${DETAIL_Brand}                                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Brand:")]/following-sibling::strong
+${DETAIL_Priority}                               ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Priority:")]/following-sibling::strong
+${DETAIL_Customer Division}                      ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Division:")]/following-sibling::strong
+${DETAIL_Customer Sub-Division}                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Sub-Division:")]/following-sibling::strong
+${DETAIL_Customer Location}                      ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Location:")]/following-sibling::strong
+${DETAIL_Subject}                                ${TICKET_DETAILS_HEADER}/p[2]
+${DETAIL_Description}                            ${TICKET_DETAILS_HEADER}/p[3]
+
+#    ---------------------------Solution Tracker Customer Website------------------------------------------
 
 # Excel Data
 ${MASTER_DATA}                          ${CURDIR}${/}..\\Master_File.xlsx
@@ -27,6 +72,10 @@ ${DDL_CUSTOMER_LOCATION}                     //label[@for="senderLocation"]//fol
 ${DDL_PRODUCT_CATEGORY}                      //select[@formcontrolname='productCategory']
 ${DDL_MODEL_CODE}                            //select[@formcontrolname='modelCode']
 ${DDL_MODEL_CODE_OPTION}                     //select[@formcontrolname='modelCode']/option[2]
+
+&{DICT_FORM_FIELDS_LOCATORS}           Division=${DDL_DIVISION}    Sub-Division=${DDL_SUBDIVISION}    Service Classification=${DDL_SC}    Service Type=${DDL_ST}
+...                                    Service Requirement=${DDL_SR}    Subject=${EMPTY}    Description=${TXT_DESCRIPTION}    Brand=${DDL_BRAND}    Priority=${DDL_PRIORITY}
+...                                    Customer Division=${DDL_CUSTOMER_DIVISION}    Customer Sub-Division=${DDL_CUSTOMER_SUBDIVISION}     Customer Location=${DDL_CUSTOMER_LOCATION}
 
 # DDL Value Lists
 @{LIST_PRIORITY}                      Minor    Major    Critical
@@ -110,6 +159,8 @@ ${DDL_MODEL_CODE_OPTION}                     //select[@formcontrolname='modelCod
 
 @{LIST_FORMAT}                        JPG    PNG    TIFF    PDF    AI
 
+@{LIST_SERIES_OR_SINGLE_PRODUCT}      seriesRadio    singleProductRadio    bundle
+
 ${IMG_SPECIFIC_IMAGE}                  //label[contains(text(), 'Specific Images to use')]/following::input[@name='attachment'][1]
 ${IMG_HEADER_CONTENT}                  //label[contains(text(), 'Header and content Image')]/following::input[@name='attachment'][1]
 ${IMG_FLOORPLAN}                       //label[contains(text(), 'Structural Floorplan')]/following::input[@name='attachment'][1]
@@ -128,6 +179,8 @@ ${DATE_NEEDED}                         //label[@for='dateNeeded']/following::inp
 ${DDL_BRAND}                           //label[@for='brand']/following-sibling::div/select
 ${TXT_ASSET_FORMATS}                   //label[@for='requiredAssetFormats']/following::input[1]
 ${TXT_FORMAT}                          //label[@for='formats']/following::input[1]
+
+${RB_SERIES_OR_SINGLE_PRODUCT}         //div[@class="form-check"]/label
 
 # Ticket Viewer Locators
 ${TICKET_VIEWER_SEARCH}                   //input[@formcontrolname='search']

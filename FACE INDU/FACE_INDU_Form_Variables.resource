@@ -5,9 +5,51 @@ Documentation    Variables for FACE INDU Form
 *** Variables ***
 ${MAX_TIMEOUT}                                   30s
 ${BTN_CREATE}                      //div[@class="card-button__wrapper"]//div[text()='Create']
-${DATA_TABLE}                      //div[@class="datatable-body-cell-label"]/a[text()=" Internal QA Test GRAP"]
 ${JPG_IMAGE_SAMPLE}                ${CURDIR}${/}Jpg_Img_Photo.jpg
 
+#    ........................Solution Tracker Portal---------------------------------------------
+# Login Credentials
+${EMAIL}    wainwright.rubia@musictribe.com
+${PASSWORD}    Terr@yne1017###@@@
+
+# URL Sandbox
+${URL_ALL_CASES_FACE}    https://musictribeservice.crm5.dynamics.com/main.aspx?appid=22fd57cc-73f4-ed11-8848-002248ebf403&pagetype=entitylist&etn=incident&viewid=8eb7d675-e50f-ee11-8f6e-002248ebf403&viewType=1039
+
+#    Locators
+${SEARCH_BOX}                //input[@aria-label='Case Filter by keyword']
+${SAVE_CASE}                 //button[@aria-label='Save (CTRL+S)']
+${TAB_DETAILED_INFO}         //li[@title='Detailed Information']
+${DATA_TABLE}                //div[@class="datatable-body-cell-label"]
+
+# Login Modal
+${TXT_EMAIL}                 //input[@type="email"]
+${TXT_PASSWORD}              //input[@type="password"]
+${BTN_SUBMIT}                //input[@type='submit']
+
+# Ticket Summary Details
+${LBL_SUBJECT}               //input[@aria-label="Subject"]
+${TICKET_DETAILS_HEADER}     //*[@class='ticket-details__header']
+${TICKET_DETAILS_ITEMS}      //ul[@class='ticket-details__body']
+
+@{LIST_INDU_ALL_FIELDS}      Division      Sub-Division    Service Classification    Service Type    Service Requirement    Subject
+...                          Description    Attachment    Brand    Priority
+...                          Customer Division    Customer Sub-Division     Customer Location
+
+${DETAIL_Division}                               ${TICKET_DETAILS_ITEMS}//li/span[contains(text(),"Division:")]/following-sibling::strong
+${DETAIL_Sub-Division}                           ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Sub-Division:")]/following-sibling::strong
+${DETAIL_Service Classification}                 ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Classification:")]/following-sibling::strong
+${DETAIL_Service Type}                           ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Type:")]/following-sibling::strong
+${DETAIL_Service Requirement}                    ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Service Requirement:")]/following-sibling::strong
+${DETAIL_Attachment}                             ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Attachment:")]/following-sibling::strong
+${DETAIL_Brand}                                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Brand:")]/following-sibling::strong
+${DETAIL_Priority}                               ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Priority:")]/following-sibling::strong
+${DETAIL_Customer Division}                      ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Division:")]/following-sibling::strong
+${DETAIL_Customer Sub-Division}                  ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Sub-Division:")]/following-sibling::strong
+${DETAIL_Customer Location}                      ${TICKET_DETAILS_ITEMS}//span[contains(text(),"Customer Location:")]/following-sibling::strong
+${DETAIL_Subject}                                ${TICKET_DETAILS_HEADER}/p[2]
+${DETAIL_Description}                            ${TICKET_DETAILS_HEADER}/p[3]
+
+#    ---------------------------Solution Tracker Customer Website------------------------------------------
 # Excel Data
 ${MASTER_DATA}                          ${CURDIR}${/}..\\Master_File.xlsx
 
@@ -24,8 +66,12 @@ ${DDL_PRIORITY}                              //select[@formcontrolname="priority
 ${DDL_CUSTOMER_DIVISION}                     //label[@for="senderDivision"]//following-sibling::div/select
 ${DDL_CUSTOMER_SUBDIVISION}                  //label[@for="senderSubDivision"]//following-sibling::div/select
 ${DDL_CUSTOMER_LOCATION}                     //label[@for="senderLocation"]//following-sibling::div/select
-${DDL_MODEL_CODE}                            //select[@formcontrolname='modelCodeInput']
-${DDL_MODEL_CODE_OPTION}                     //select[@formcontrolname='modelCodeInput']/option[1]
+${DDL_MODEL_CODE}                            //select[contains(@formcontrolname,'modelCode')]
+${DDL_MODEL_CODE_OPTION}                     //select[contains(@formcontrolname,'modelCode')]/option[2]
+
+&{DICT_FORM_FIELDS_LOCATORS}           Division=${DDL_DIVISION}    Sub-Division=${DDL_SUBDIVISION}    Service Classification=${DDL_SC}    Service Type=${DDL_ST}
+...                                    Service Requirement=${DDL_SR}    Subject=${EMPTY}    Description=${TXT_DESCRIPTION}    Brand=${DDL_BRAND}    Priority=${DDL_PRIORITY}
+...                                    Customer Division=${DDL_CUSTOMER_DIVISION}    Customer Sub-Division=${DDL_CUSTOMER_SUBDIVISION}     Customer Location=${DDL_CUSTOMER_LOCATION}
 
 # DDL Value Lists
 @{LIST_PRIORITY}                      Minor    Major    Critical
@@ -101,14 +147,14 @@ ${DDL_MODEL_CODE_OPTION}                     //select[@formcontrolname='modelCod
 @{LIST_DEVELOPMENT_CLASSIFICATION}    In-House    External JDM    External OEM
 @{LIST_PDI_TYPE}                      PDI 0    PDI 1
 
-
 # Pending Locators
 ${IMG_REQUIREMENT}                        //label[@for='designReqAttachment']/following::input[@name='attachment'][1]
-${IMG_REFERENCE}                          //label[@for='']/following::input[@name='attachment'][1]
-${IMG_PRODUCT_3D}                         //label[@for='stpFileAttachment']/following::input[@name='attachment'][1]
-${IMG_ROADMAP}                            //label[@for='approvedRoadmapAttachment']/following::input[@name='attachment'][1]
+${IMG_REFERENCES}                         //app-attachment-link-input[@label='References']/div/div[2]/form/input
+${IMG_IMAGE_REFERENCE}                    //label[@for='imageReferenceAttachment']/following::input[@name='attachment'][1]
+${IMG_PRODUCT_3D}                         //app-attachment-link-input[contains(@label,'Complete Product')]/div/div[2]/form/input
+${IMG_ROADMAP}                            //form[@class='attachment-link-input ng-pristine ng-valid ng-touched']
 
-${TXT_BRAND_CATEGORY_LEAD}                //input[@formcontrolname='brandCategoryLeader']
+${TXT_BRAND_CATEGORY_LEAD}                //input[@formcontrolname='induBrandCategoryLeader']
 ${TXT_SERIES_NAME}                        //input[@formcontrolname='seriesName']
 ${TXT_MODEL_CODE}                         //input[@formcontrolname='modelCodeInput']
 ${TXT_MODEL_NAME}                         //input[@formcontrolname='modelNameText']
@@ -127,8 +173,8 @@ ${TXT_LOGO_TEXT}                          //input[@formcontrolname='logoText']
 ${TXT_FILE_LINK}                          //input[@formcontrolname='fileLink']
 ${TXT_PANTONE_COLOR}                      //input[@formcontrolname='pantoneColor']
 
-${TXT_PRODUCT_3D}
-${TXT_ROADMAP}
+# ${TXT_PRODUCT_3D}
+# ${TXT_ROADMAP}
 
 ${DDL_BRAND}                              //label[@for='brand']/following-sibling::div/select
 ${DDL_DEVELOPMENT_CLASSIFICATION}         //select[@formcontrolname='developmentClassification']
@@ -139,7 +185,7 @@ ${DDL_MATERIAL_CATEGORY_L2}               //select[@formcontrolname='materialCat
 ${DDL_MATERIAL_CATEGORY_L2_OPTION}        //select[@formcontrolname='materialCategoryL2']/option[2]
 ${DDL_MATERIAL_CATEGORY_L3}               //select[@formcontrolname='materialCategoryL3']
 ${DDL_MATERIAL_CATEGORY_L3_OPTION}        //select[@formcontrolname='materialCategoryL3']/option[2]
-${CBX_ARTWORK_APPROVED}                   //div[@class='checkbox mr-4']/input
+${CBX_ARTWORK_APPROVED}                   //div[@class='checkbox mr-4']
 
 # Ticket Viewer Locators
 ${TICKET_VIEWER_SEARCH}                   //input[@formcontrolname='search']
@@ -191,4 +237,4 @@ ${INPUT_PERFORMANCE_PRODUCT_SPECIALIST}  Sample Leader
 ${INPUT_LOGO_TEXT}                       Sample Logo Text
 ${INPUT_FILE_LINK}                       https://file-examples.com/index.php/sample-images-download/sample-jpg-download/
 ${INPUT_PANTONE}                         15-3920
-${INPUT_SUBJECT}                         Internal QA Test GRAP
+${INPUT_SUBJECT}                         Internal QA Test INDU
