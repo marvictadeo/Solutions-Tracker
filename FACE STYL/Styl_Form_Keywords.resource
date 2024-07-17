@@ -240,8 +240,8 @@ Check Create Page
         Wait Until Page Contains Element    ${DDL_DIVISION}    60s
     END
 
-Verify Master Data, Ticket Submission And Ticket Summary : FACE STYL
-    [Documentation]    Verify Ticket Creation And Master Data : FACE TECH
+Verify Ticket Submission And Correctness Of Data : FACE STYL
+    [Documentation]    Verify Ticket Creation And Master Data : FACE STYL
     Check Create Page
     #    ----- Change Excel Sheet Name -----
     Get Excel Data - FACE STYL    STYL

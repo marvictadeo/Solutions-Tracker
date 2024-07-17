@@ -13,11 +13,11 @@ Resource             Solution_Tracker_Portal_Keywords.resource
 
 
 *** Test Cases ***
-Verify Ticket Creation And Ticket Summary : FACE STYL
+Verify FACE STYL New Form
     [Documentation]    Test Case to Verify FACE STYL Form Master Data
     ...    Ticket Submission
     ...    Ticket Summary
-    Verify Master Data, Ticket Submission And Ticket Summary : FACE STYL
+    Verify Ticket Submission And Correctness Of Data : FACE STYL
 
 #Verify Ticket Creation With CRM Checking : FACE STYL
 #    [Documentation]    Test Case to Verify FACE STYL Form Master Data
