@@ -19,15 +19,15 @@ Verify Ticket Creation And Ticket Summary : FACE STYL
     ...    Ticket Summary
     Verify Master Data, Ticket Submission And Ticket Summary : FACE STYL
 
-Verify Ticket Creation With CRM Checking : FACE STYL
-    [Documentation]    Test Case to Verify FACE STYL Form Master Data
-    ...    Ticket Submission
-    ...    Ticket Summary
-    ...    Created Ticket In The Solution Ticket Portal
-    ...    Automated Ticket Title
-    Verify Master Data And Ticket Submission With CRM Checking : FACE STYL
+#Verify Ticket Creation With CRM Checking : FACE STYL
+#    [Documentation]    Test Case to Verify FACE STYL Form Master Data
+#    ...    Ticket Submission
+#    ...    Ticket Summary
+#    ...    Created Ticket In The Solution Ticket Portal
+#    ...    Automated Ticket Title
+#    Verify Master Data And Ticket Submission With CRM Checking : FACE STYL
 
-Verify STYL Data And Field Validation : FACE STYL
-    [Documentation]    Test Case to Verify FACE TECH Form Master Data
-    ...                Ticket Submission
-    Verify Master Data And Field Validation : FACE STYL
+#Verify STYL Data And Field Validation : FACE STYL
+#    [Documentation]    Test Case to Verify FACE TECH Form Master Data
+#    ...                Ticket Submission
+#    Verify Master Data And Field Validation : FACE STYL

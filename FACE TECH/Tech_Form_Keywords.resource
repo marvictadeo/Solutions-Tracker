@@ -411,6 +411,11 @@ Go To Agent Portal Ticket Details
     Wait Until Page Contains Element    ${UAT_SEARCH_ICON}    30s
     Click Element    ${UAT_SEARCH_ICON}
     Wait Until Page Contains Element    ${CRM_GLOBAL_SEARCH_BOX}    120s
+    Wait Until Keyword Succeeds    3x    10s    Search And View Case Number    ${case_num}
+
+Search And View Case Number
+    [Documentation]    Search And View Case Number
+    [Arguments]    ${case_num}
     Input Text    ${CRM_GLOBAL_SEARCH_BOX}    ${case_num}
     Click Element    ${SEARCH_BOX_ICON}
     Set Test Variable    ${SEARCHED_CASE_NUM}    //span[text()='${case_num}'][1]
