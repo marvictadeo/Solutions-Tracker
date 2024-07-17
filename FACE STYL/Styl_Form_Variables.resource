@@ -14,23 +14,58 @@ ${EMAIL}    yna.calimlim@musictribe.com
 ${PASSWORD}    Pass4Mail@041122*
 
 # URL Sandbox
-${URL_ALL_CASES_FACE}    https://musictribeservice.crm5.dynamics.com/main.aspx?appid=22fd57cc-73f4-ed11-8848-002248ebf403&pagetype=entitylist&etn=incident&viewid=8eb7d675-e50f-ee11-8f6e-002248ebf403&viewType=1039
-${URL_ALL_CASES}         https://musictribeservice.crm5.dynamics.com/main.aspx?appid=b5f12461-796e-ee11-9ae7-002248ebf471&pagetype=entitylist&etn=incident&viewid=00000000-0000-0000-00aa-000010001030&viewType=1039
+${URL_ALL_CASES_FACE}            https://musictribeservice.crm5.dynamics.com/main.aspx?appid=22fd57cc-73f4-ed11-8848-002248ebf403&pagetype=entitylist&etn=incident&viewid=8eb7d675-e50f-ee11-8f6e-002248ebf403&viewType=1039
+${URL_ALL_CASES}                 https://musictribeservice.crm5.dynamics.com/main.aspx?appid=b5f12461-796e-ee11-9ae7-002248ebf471&pagetype=entitylist&etn=incident&viewid=00000000-0000-0000-00aa-000010001030&viewType=1039
+${UAT_CRM_V2}                    https://musictribeservice.crm5.dynamics.com/main.aspx?appid=b5f12461-796e-ee11-9ae7-002248ebf471&pagetype=dashboard&id=d201a642-6283-4f1d-81b7-da4b1685e698&type=system&_canOverride=true
+${UAT_SEARCH_ICON}               //body/div[@id='shell-container']/div[@id='ApplicationShell']/div[1]/div[1]/div[1]/div[3]/div[2]/div[1]/div[1]/div[1]/ul[1]/li[1]/button[1]/span[1]/span[1]
+${SEARCH_BOX_ICON}               //span[@id='searchButtonIcon']
+${CRM_GLOBAL_SEARCH_BOX}               //input[@aria-label='Search box']
 
 #    Locators
-${SEARCH_BOX}                //input[@aria-label='Case Filter by keyword']
-${SAVE_CASE}                 //button[@aria-label='Save (CTRL+S)']
-${TAB_DETAILED_INFO}         //li[@title='Detailed Information']
+${SEARCH_BOX}                    //input[@aria-label='Case Filter by keyword']
+${SAVE_CASE}                     //button[@aria-label='Save (CTRL+S)']
+${TAB_DETAILED_INFO}             //li[@title='Detailed Information']
+${BTN_AGENT_PORTAL}              //header/div[1]/div[2]/a[1]
+${LOGO_CRM}                      //img[@title='Music Tribe CRM']
+${BTN_LOGIN_SUBMIT}              //input[@type='submit']
+${TAB_NAME_LOGIN}                Sign in to your account
+${UAT_TAB_NAME_AGENT_PORTAL}     Customer Service Agent Dashboard - Dynamics 365
+${PROD_TAB_NAME_AGENT_PORTAL}    Solution Tracker Agent Dashboard - Dynamics 365
 
 # Login Modal
 ${TXT_EMAIL}                 //input[@type="email"]
 ${TXT_PASSWORD}              //input[@type="password"]
 ${BTN_SUBMIT}                //input[@type='submit']
 
-# Ticket Details
-${LBL_SUBJECT}               //input[@aria-label="Subject"]
+@{LIST_CRM_SUMMARY_TAB}            Case Number    Division      Sub-Division    Service Classification    Service Type
+...                                Service Requirement    Service Category    Subject
+...                                Description    Priority    Customer Division    Customer Sub-Division     Customer Location
+@{LIST_CRM_DETAILED_INFO_TAB}      Attachment    Type of Output    Academy Upload    Required File Format    Required Color
+
+# CRM Ticket Details
+${CRM_DETAIL_Case Number}                        //input[@aria-label="Case Number"]
+${CRM_DETAIL_Division}                           //ul[@title='Division']/li/div[2]/div
+${CRM_DETAIL_Sub-Division}                       //ul[@title='Sub-Division']/li/div[2]/div
+${CRM_DETAIL_Service Classification}             //ul[@title='Service Classification']/li/div[2]/div
+${CRM_DETAIL_Service Requirement}                //select[@aria-label="Service Requirement"]
+${CRM_DETAIL_Service Type}                       //ul[@title="Service Type"]/li/div[2]/div
+${CRM_DETAIL_Service Category}                   //ul[@title="Service Category"]/li/div[2]/div
+${CRM_DETAIL_PRIORITY}                           //div[contains(text(),'Priority')]/preceding-sibling::div/div
+${CRM_DETAIL_Subject}                            //input[@aria-label="Subject"]
+${CRM_DETAIL_Description}                        //textarea[@aria-label='Description']
+${CRM_DETAIL_Customer Division}                  //ul[@title='Customer Division']/li/div[2]/div
+${CRM_DETAIL_Customer Sub-Division}              //ul[@title='Customer Sub-Division']/li/div[2]/div
+${CRM_DETAIL_Customer Location}                  //select[@aria-label='Customer Location']
+${CRM_DETAIL_ATTACHMENT}                         //input[@aria-label="Attachments"]
+${CRM_DETAIL_Type of Output}                     //select[@aria-label="Type of Output"]
+${CRM_DETAIL_Academy Upload}                     //select[@aria-label="Academy Upload?"]
+${CRM_DETAIL_Required File Format}               //input[@aria-label="Required File Format"]
+${CRM_DETAIL_Required Color}                     //input[@aria-label="Required Color"]
 
 #    ........................Solution Tracker Customer Website.....................................
+
+# Ticket Details
+${LBL_SUBJECT}               //input[@aria-label="Subject"]
 
 #    Ticket Summary
 ${TICKET_DETAILS_HEADER}     //*[@class='ticket-details__header']

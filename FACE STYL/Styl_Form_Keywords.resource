@@ -51,6 +51,8 @@ Fill In Request Information
         ${RAD_BTN_ACADEMY_UPLOAD}    Get WebElements    ${ACADEMY_UPLOAD}
         ${RANDOM_BTN}    Random Element        ${RAD_BTN_ACADEMY_UPLOAD}
         Click Element    ${RANDOM_BTN}
+        ${AU_VALUE}    Get Text    ${RANDOM_BTN}
+        Set Test Variable    ${AU_VALUE}
     END
     #    --- Attachment(s) ---
     Wait Until Element Is Enabled    ${ATTACHMENT}    30s
@@ -79,36 +81,34 @@ Retrieve All Entered Data In The Form
     [Documentation]    Get the information entered by the user in the form
     ${DICT_RETRIEVED_VALUES}    Create Dictionary
     FOR    ${field}    IN    @{LIST_STYL_ALL_FIELDS}
-        IF    "${field}"=="Attachment(s)/Link"
-            ${str_value}    Set Variable    Download
-            Set To Dictionary    ${DICT_RETRIEVED_VALUES}    ${field}=${str_value}
-        END
-        IF    "${field}"=="Subject"
-            ${str_value}    Set Variable    ${sc_item}
-            Set To Dictionary    ${DICT_RETRIEVED_VALUES}    ${field}=${str_value}
-        END
         ${field_exist}    Run Keyword And Return Status    Element Should Be Visible    ${DICT_FORM_FIELDS_LOCATORS}[${field}]
         IF    ${field_exist}==${False}
-            Log    N/A
+            ${str_value}    Set Variable    Not Available
+        ELSE IF    "${field}"=="Attachment(s)/Link"
+            ${str_value}    Set Variable    Download
+        ELSE IF    "${field}"=="Subject"
+            ${str_value}    Set Variable    ${sc_item}
+        ELSE IF    "${field}"=="Academy Upload"
+            ${str_value}    Set Variable    ${AU_VALUE}
         ELSE
             TRY
                 ${str_value}    Get Selected List Label   ${DICT_FORM_FIELDS_LOCATORS}[${field}]
             EXCEPT
                 ${str_value}    Get Value   ${DICT_FORM_FIELDS_LOCATORS}[${field}]
             END
-            Set To Dictionary    ${DICT_RETRIEVED_VALUES}    ${field}=${str_value}
         END
+        Set To Dictionary    ${DICT_RETRIEVED_VALUES}    ${field}=${str_value}
     END
     Set Suite Variable    ${DICT_RETRIEVED_VALUES}
 
 Verify Ticket Summary Data
     [Documentation]    The information provided by the user in the ticket form should match the ticket summary details.
     Click Element    ${DATA_TABLE}
-    Wait Until Page Contains Element    //div[contains(text(),'Ticket Info')]
+    Wait Until Page Contains Element    //div[contains(text(),'Ticket Info')]    30s
     FOR    ${field}    IN    @{LIST_STYL_ALL_FIELDS}
-        ${field_exist}    Run Keyword And Return Status    Element Should Be Visible    ${DETAIL_${field}}
-        IF    ${field_exist}==${False}
-            Log    N/A
+        ${not_available}    Run Keyword And Return Status    Should Be Equal As Strings    ${DICT_RETRIEVED_VALUES}[${field}]    Not Available
+        IF    ${not_available}
+            CONTINUE
         ELSE
             ${actual_value}    Get Text    ${DETAIL_${field}}
             Run Keyword And Continue On Failure    Should Be Equal As Strings     ${DICT_RETRIEVED_VALUES}[${field}]    ${actual_value}
@@ -240,8 +240,8 @@ Check Create Page
         Wait Until Page Contains Element    ${DDL_DIVISION}    60s
     END
 
-Verify Master Data, Ticket Submission And Ticket Summary : FACE STYL
-    [Documentation]    Verify Ticket Creation And Master Data : FACE TECH
+Verify Ticket Submission And Correctness Of Data : FACE STYL
+    [Documentation]    Verify Ticket Creation And Master Data : FACE STYL
     Check Create Page
     #    ----- Change Excel Sheet Name -----
     Get Excel Data - FACE STYL    STYL
@@ -260,11 +260,12 @@ Verify Master Data, Ticket Submission And Ticket Summary : FACE STYL
         ...    ${subdiv_item}    ${sc_item}    ${st_item}    ${sr_item}     ${scat_item}
 	    ${excel_index}    Evaluate    ${count} + 2
         #    ------- Submit The Ticket -------
-        Submit The Ticket
+        Run Keyword And Continue On Failure    Submit The Ticket
         Set Cell Value    ${excel_index}    6    ${STR_CASE_NUM}
         Save Workbook
         #    ------- Verify Ticket Summary -------
         Run Keyword And Continue On Failure    Verify Ticket Summary Data
+        Run Keyword And Continue On Failure    FACE STYL: Verify CRM Data
     END
 
 Verify Master Data And Ticket Submission With CRM Checking : FACE STYL
@@ -328,6 +329,91 @@ Verify Master Data And Field Validation : FACE STYL
         #Run Keyword And Continue On Failure    Wait Until Element Is Enabled   //button[@class="btn btn-primary"]    20s
         #Pause Execution
     END
+
+FACE STYL: Verify CRM Data
+    [Documentation]    Keyword to verify data in the CRM
+    ${get_stat}    Run Keyword And Return Status    Switch Window    title=Search - Dynamics 365
+    IF    "${get_stat}" == "False"
+        Go To Agent Portal
+    ELSE
+        Log    Switched to CRM Page.
+    END
+    Login To Agent Portal
+    Go To Agent Portal Ticket Details    ${STR_CASE_NUM}
+    Run Keyword And Continue On Failure    FACE STYL : Compare Data In CRM    ${LIST_CRM_SUMMARY_TAB}    Summary Tab
+    Run Keyword And Continue On Failure    FACE STYL : Compare Data In CRM    ${LIST_CRM_DETAILED_INFO_TAB}    Detailed Information Tab
+    Run Keyword And Continue On Failure    Go Back And Switch To ST Form Page
+
+Go To Agent Portal
+    [Documentation]    Keyword to redirect the user to Agent Portal
+    Scroll And Click The Element    ${BTN_AGENT_PORTAL}
+    ${get_stat_1}    Run Keyword And Return Status    Switch Window    title=${TAB_NAME_LOGIN}    timeout=2s
+    Go To    ${UAT_CRM_V2}
+
+Login To Agent Portal
+    [Documentation]    Keyword to login on Agent Portal
+    ${login_status}    Run Keyword And Return Status    Wait Until Element Is Visible    ${LOGO_CRM}
+    IF    "${login_status}" == "True"
+        Log    Already logged in.
+    ELSE
+        Wait Until Element Is Visible    ${TXT_EMAIL}    120s
+        Input Text    ${TXT_EMAIL}    ${EMAIL}
+        Click Element    ${BTN_LOGIN_SUBMIT}
+        Wait Until Element Is Visible    ${TXT_PASSWORD}    120s
+        Input Text    ${TXT_PASSWORD}    ${PASSWORD}
+        Click Element    ${BTN_LOGIN_SUBMIT}
+        Pause Execution    #    Input verification code, Press OK on the dialog once done
+    END
+
+Go To Agent Portal Ticket Details
+    [Documentation]    Keyword to get the agent portal ticket details
+    [Arguments]    ${case_num}
+    Wait Until Page Contains Element    ${UAT_SEARCH_ICON}    30s
+    Click Element    ${UAT_SEARCH_ICON}
+    Wait Until Page Contains Element    ${CRM_GLOBAL_SEARCH_BOX}    120s
+    Wait Until Keyword Succeeds    3x    10s    Search And View Case Number    ${case_num}
+
+Search And View Case Number
+    [Documentation]    Search And View Case Number
+    [Arguments]    ${case_num}
+    Input Text    ${CRM_GLOBAL_SEARCH_BOX}    ${case_num}
+    Click Element    ${SEARCH_BOX_ICON}
+    Set Test Variable    ${SEARCHED_CASE_NUM}    //span[text()='${case_num}'][1]
+    Wait Until Page Contains Element    ${SEARCHED_CASE_NUM}    30s
+    Click Element    ${SEARCHED_CASE_NUM}
+
+FACE STYL : Compare Data In CRM
+    [Documentation]    The information provided by the user in the ticket form should match the ticket summary details.
+    [Arguments]    ${list}    ${tab}=none
+    Wait Until Element Is Visible    //h1[@title='${STR_CASE_NUM}']    120s
+    IF    "${tab}"=="Detailed Information Tab"    Click Element    //li[@aria-label='Detailed Information']
+    FOR    ${field}    IN    @{list}
+        IF    "${field}"=="Priority" or "${field}"=="Description"
+            ${actual_value}    Run Keyword And Continue On Failure    Get Text    ${CRM_DETAIL_${field}}
+            Run Keyword And Continue On Failure    Should Be Equal As Strings     ${DICT_RETRIEVED_VALUES}[${field}]    ${actual_value}
+        ELSE IF    "${field}"=="Attachment"
+            ${actual_value}    Run Keyword And Continue On Failure    Scroll To Element And Get Element Attribute    ${CRM_DETAIL_${field}}    title
+            Run Keyword And Continue On Failure    Should Contain    ${actual_value}     Jpg_Img_Photo.jpg
+        ELSE
+            IF    "${field}"=="Case Number"
+                ${actual_value}    Run Keyword And Continue On Failure    Scroll To Element And Get Element Attribute    ${CRM_DETAIL_${field}}    title
+                Run Keyword And Continue On Failure    Should Be Equal As Strings     ${STR_CASE_NUM}    ${actual_value}
+            ELSE IF  "${DICT_RETRIEVED_VALUES}[${field}]" == "Not Available"
+                CONTINUE
+            ELSE
+                ${actual_value}    Run Keyword And Continue On Failure    Scroll To Element And Get Element Attribute    ${CRM_DETAIL_${field}}    title
+                Run Keyword And Continue On Failure    Should Be Equal As Strings     ${DICT_RETRIEVED_VALUES}[${field}]    ${actual_value}
+            END
+        END
+    END
+
+Scroll To Element And Get Element Attribute
+    [Documentation]    Keyword to scroll to element and get text
+    [Arguments]    ${locator}    ${attribute}
+    Scroll "${locator}" Into Center
+    Wait Until Page Contains Element    ${locator}    20s
+    ${value}    Get Element Attribute    ${locator}    ${attribute}
+    RETURN    ${value}
 
 Verify CRM Summary Tab Ticket Details
     [Documentation]    Verify Summary Tab Ticket Details
