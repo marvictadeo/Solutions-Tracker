@@ -9,8 +9,8 @@ ${JPG_IMAGE_SAMPLE}                ${CURDIR}${/}Jpg_Img_Photo.jpg
 
 #    ........................Solution Tracker Portal---------------------------------------------
 # Login Credentials
-${EMAIL}    wainwright.rubia@musictribe.com
-${PASSWORD}    Terr@yne1017###@@@
+${EMAIL}    email
+${PASSWORD}    password
 
 # URL Sandbox
 ${URL_ALL_CASES_FACE}    https://musictribeservice.crm5.dynamics.com/main.aspx?appid=22fd57cc-73f4-ed11-8848-002248ebf403&pagetype=entitylist&etn=incident&viewid=8eb7d675-e50f-ee11-8f6e-002248ebf403&viewType=1039
