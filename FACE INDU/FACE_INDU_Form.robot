@@ -12,5 +12,5 @@ Verify Ticket Creation - FACE INDU
     Verify Ticket Creation Using Master Data - FACE INDU
 
 Verify Ticket Creation With CRM Checking
-    [Documentation]    Verifies Solution Tracker tickets creation using the new form of FACE INDU
+    [Documentation]    Verifies Solution Tracker tickets creation using the new form of FACE INDU with CRM checking
     Verify Ticket Creation Using Master Data With CRM Checking - FACE INDU
